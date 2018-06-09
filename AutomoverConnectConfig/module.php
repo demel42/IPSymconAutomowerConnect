@@ -6,28 +6,28 @@ require_once __DIR__ . '/../libs/library.php';  // modul-bezogene Funktionen
 class AutomowerConfig extends IPSModule
 {
     use AutomowerCommon;
-	use AutomowerLibrary;
+    use AutomowerLibrary;
 
     public function Create()
     {
         parent::Create();
 
-		$this->RegisterPropertyString('user', '');
-		$this->RegisterPropertyString('password', '');
+        $this->RegisterPropertyString('user', '');
+        $this->RegisterPropertyString('password', '');
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
 
-		$user = $this->ReadPropertyString('user');
-		$password = $this->ReadPropertyString('password');
+        $user = $this->ReadPropertyString('user');
+        $password = $this->ReadPropertyString('password');
 
-		$ok = true;
-		if ($user == '' || $password == '') {
-			$ok = false;
-		}
-		$this->SetStatus($ok ? 102 : 201);
+        $ok = true;
+        if ($user == '' || $password == '') {
+            $ok = false;
+        }
+        $this->SetStatus($ok ? 102 : 201);
     }
 
     public function GetConfigurationForm()
@@ -38,17 +38,17 @@ class AutomowerConfig extends IPSModule
 
         $options = [];
 
-		$user = $this->ReadPropertyString('user');
-		$password = $this->ReadPropertyString('password');
+        $user = $this->ReadPropertyString('user');
+        $password = $this->ReadPropertyString('password');
 
-		if ($user != '' || $password != '') {
-			$mowers = $this->GetMowerList();
-			if ($mowers != '') {
-				foreach ($mowers as $mower) {
-					$name = $mower['name'];
-					$options[] = ['label' => $name, 'value' => $name];
-				}
-			}
+        if ($user != '' || $password != '') {
+            $mowers = $this->GetMowerList();
+            if ($mowers != '') {
+                foreach ($mowers as $mower) {
+                    $name = $mower['name'];
+                    $options[] = ['label' => $name, 'value' => $name];
+                }
+            }
         }
 
         $formActions = [];
@@ -70,8 +70,8 @@ class AutomowerConfig extends IPSModule
 
     private function FindOrCreateInstance($device_id, $name, $info, $properties, $pos)
     {
-		$user = $this->ReadPropertyString('user');
-		$password = $this->ReadPropertyString('password');
+        $user = $this->ReadPropertyString('user');
+        $password = $this->ReadPropertyString('password');
 
         $instID = '';
 
@@ -117,19 +117,19 @@ class AutomowerConfig extends IPSModule
         $do_abort = false;
 
         $mowers = $this->GetMowerList();
-		if ($mowers != '') {
-			$mower_found = false;
-			foreach ($mowers as $mower) {
-				if ($mower_name == $mower['name']) {
-					$mower_found = true;
-					break;
-				}
-			}
-			if (!$mower_found) {
-				$err = "mower \"$name\" don't exists";
-				$statuscode = 202;
-				$do_abort = true;
-			}
+        if ($mowers != '') {
+            $mower_found = false;
+            foreach ($mowers as $mower) {
+                if ($mower_name == $mower['name']) {
+                    $mower_found = true;
+                    break;
+                }
+            }
+            if (!$mower_found) {
+                $err = "mower \"$name\" don't exists";
+                $statuscode = 202;
+                $do_abort = true;
+            }
         } else {
             $err = 'no data';
             $statuscode = 204;
@@ -145,9 +145,9 @@ class AutomowerConfig extends IPSModule
 
         $this->SetStatus(102);
 
-		$device_id = $mower['id'];
-		$name = $mower['name'];
-		$model = $mower['model'];
+        $device_id = $mower['id'];
+        $name = $mower['name'];
+        $model = $mower['model'];
 
         $info = 'Automower  ' . $model;
         $properties = [

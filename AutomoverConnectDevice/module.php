@@ -40,46 +40,46 @@ class AutomowerDevice extends IPSModule
         $device_id = $this->ReadPropertyString('device_id');
 
         $ok = true;
-        if ($user == '' || $password == '' || $device_id== '') {
+        if ($user == '' || $password == '' || $device_id == '') {
             $ok = false;
         }
         $this->SetStatus($ok ? 102 : 201);
 
-		$this->SetSummary($device_id);
+        $this->SetSummary($device_id);
     }
 
     public function TestAccount()
     {
-		$mowers = $this->GetMowerList();
-		foreach ($mowers as $mower) {
-			$device_id = $mower['id'];
-			$name = $mower['name'];
-			$model = $mower['model'];
-			$this->SendDebug(__FUNCTION__, 'device_id=' . $device_id . ', name=' . $name . ', model=' . $model, 0);
-		}
+        $mowers = $this->GetMowerList();
+        foreach ($mowers as $mower) {
+            $device_id = $mower['id'];
+            $name = $mower['name'];
+            $model = $mower['model'];
+            $this->SendDebug(__FUNCTION__, 'device_id=' . $device_id . ', name=' . $name . ', model=' . $model, 0);
+        }
 
-/*
-	jdata=[
-			{
-				"id":"174300218-172830223"
-				"name":"Automower"
-				"model":"G"
-				"valueFound":true
-					"status": {
-						"batteryPercent":100
-						"connected":true
-						"lastErrorCode":0
-						"lastErrorCodeTimestamp":0
-						"mowerStatus":"PARKED_PARKED_SELECTED"
-						"nextStartSource":"COUNTDOWN_TIMER"
-						"nextStartTimestamp":1528707634
-						"operatingMode":"AUTO"
-						"storedTimestamp":1528552264029
-						"showAsDisconnected":false
-						"valueFound":true
-					}
-			}
-		]
-*/
+        /*
+            jdata=[
+                    {
+                        "id":"174300218-172830223"
+                        "name":"Automower"
+                        "model":"G"
+                        "valueFound":true
+                            "status": {
+                                "batteryPercent":100
+                                "connected":true
+                                "lastErrorCode":0
+                                "lastErrorCodeTimestamp":0
+                                "mowerStatus":"PARKED_PARKED_SELECTED"
+                                "nextStartSource":"COUNTDOWN_TIMER"
+                                "nextStartTimestamp":1528707634
+                                "operatingMode":"AUTO"
+                                "storedTimestamp":1528552264029
+                                "showAsDisconnected":false
+                                "valueFound":true
+                            }
+                    }
+                ]
+        */
     }
 }

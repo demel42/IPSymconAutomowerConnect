@@ -2,17 +2,18 @@
 
 trait AutomowerLibrary
 {
-	private $url_im = 'https://iam-api.dss.husqvarnagroup.net/api/v3/';
-	private $url_track = 'https://amc-api.dss.husqvarnagroup.net/v1/';
+    private $url_im = 'https://iam-api.dss.husqvarnagroup.net/api/v3/';
+    private $url_track = 'https://amc-api.dss.husqvarnagroup.net/v1/';
 
     public function GetMowerList()
     {
-		$cdata = $this->do_ApiCall($this->url_track . 'mowers');
-		if ($cdata == '')	
-			return false;
+        $cdata = $this->do_ApiCall($this->url_track . 'mowers');
+        if ($cdata == '') {
+            return false;
+        }
         $mowers = json_decode($cdata, true);
-		return $mowers;
-	}
+        return $mowers;
+    }
 
     private function getToken()
     {
@@ -27,13 +28,13 @@ trait AutomowerLibrary
 
         if ($expiration < time()) {
             $postdata = [
-					'data' => [
-						'attributes' => [
-							'username' => $user,
-							'password' => $password
-						],
-						'type' => 'token'
-					]
+                    'data' => [
+                        'attributes' => [
+                            'username' => $user,
+                            'password' => $password
+                        ],
+                        'type' => 'token'
+                    ]
                 ];
 
             $header = [
@@ -77,7 +78,7 @@ trait AutomowerLibrary
 
         $header = [];
         $header[] = 'Accept: application/json';
-		$header[] = 'Content-Type: application/json';
+        $header[] = 'Content-Type: application/json';
         $header[] = 'Authorization: Bearer ' . $token;
         $header[] = 'Authorization-Provider: ' . $provider;
 
@@ -90,7 +91,7 @@ trait AutomowerLibrary
 
     private function do_HttpRequest($url, $header = '', $postdata = '')
     {
-		$req = $postdata != '' ? 'post' : 'get';
+        $req = $postdata != '' ? 'post' : 'get';
 
         $this->SendDebug(__FUNCTION__, 'http-' . $req . ': url=' . $url, 0);
         $time_start = microtime(true);
@@ -103,7 +104,7 @@ trait AutomowerLibrary
         }
         if ($postdata != '') {
             $this->SendDebug(__FUNCTION__, '    postdata=' . json_encode($postdata), 0);
-			curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postdata));
         }
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -139,13 +140,13 @@ trait AutomowerLibrary
             $statuscode = 204;
             $err = 'no data';
         } else {
-			$jdata = json_decode($cdata, true);
-			if ($jdata == '') {
-				$statuscode = 204;
-				$err = 'malformed response';
-			} else {
-				$data = $cdata;
-			}
+            $jdata = json_decode($cdata, true);
+            if ($jdata == '') {
+                $statuscode = 204;
+                $err = 'malformed response';
+            } else {
+                $data = $cdata;
+            }
         }
 
         if ($statuscode) {
