@@ -53,32 +53,32 @@ class AutomowerDevice extends IPSModule
         $device_id = $this->ReadPropertyString('device_id');
 
         $mowers = $this->GetMowerList();
-		if ($mowers == '') {
-			$this->SetStatus(201);
-			echo $this->Translate('invalid account-data');
-			return;
-		}
+        if ($mowers == '') {
+            $this->SetStatus(201);
+            echo $this->Translate('invalid account-data');
+            return;
+        }
 
-		$msg = '';
-		$mower_found = false;
+        $msg = '';
+        $mower_found = false;
         foreach ($mowers as $mower) {
             if ($device_id == $mower['id']) {
-				$mower_found = true;
-			}
+                $mower_found = true;
+            }
             $name = $mower['name'];
             $model = $mower['model'];
 
-			$msg = $this->Translate('mower') . ' "' . $name . '", ' . $this->Translate('model') . '=' . $model;
+            $msg = $this->Translate('mower') . ' "' . $name . '", ' . $this->Translate('model') . '=' . $model;
 
             $this->SendDebug(__FUNCTION__, 'device_id=' . $device_id . ', name=' . $name . ', model=' . $model, 0);
-		}
+        }
 
-		if (!$mower_found) {
-			$this->SetStatus(205);
-			echo $this->Translate('device not found');
-			return;
-		}
+        if (!$mower_found) {
+            $this->SetStatus(205);
+            echo $this->Translate('device not found');
+            return;
+        }
 
-		echo $this->translate('valid account-data') . "\n" . $msg;
+        echo $this->translate('valid account-data') . "\n" . $msg;
     }
 }
