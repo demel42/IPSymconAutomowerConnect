@@ -50,36 +50,35 @@ class AutomowerDevice extends IPSModule
 
     public function TestAccount()
     {
+        $device_id = $this->ReadPropertyString('device_id');
+
         $mowers = $this->GetMowerList();
+		if ($mowers == '') {
+			$this->SetStatus(201);
+			echo $this->Translate('invalid account-data');
+			return;
+		}
+
+		$msg = '';
+		$mower_found = false;
         foreach ($mowers as $mower) {
-            $device_id = $mower['id'];
+            if ($device_id == $mower['id']) {
+				$mower_found = true;
+			}
             $name = $mower['name'];
             $model = $mower['model'];
-            $this->SendDebug(__FUNCTION__, 'device_id=' . $device_id . ', name=' . $name . ', model=' . $model, 0);
-        }
 
-        /*
-            jdata=[
-                    {
-                        "id":"174300218-172830223"
-                        "name":"Automower"
-                        "model":"G"
-                        "valueFound":true
-                            "status": {
-                                "batteryPercent":100
-                                "connected":true
-                                "lastErrorCode":0
-                                "lastErrorCodeTimestamp":0
-                                "mowerStatus":"PARKED_PARKED_SELECTED"
-                                "nextStartSource":"COUNTDOWN_TIMER"
-                                "nextStartTimestamp":1528707634
-                                "operatingMode":"AUTO"
-                                "storedTimestamp":1528552264029
-                                "showAsDisconnected":false
-                                "valueFound":true
-                            }
-                    }
-                ]
-        */
+			$msg = $this->Translate('mower') . ' "' . $name . '", ' . $this->Translate('model') . '=' . $model;
+
+            $this->SendDebug(__FUNCTION__, 'device_id=' . $device_id . ', name=' . $name . ', model=' . $model, 0);
+		}
+
+		if (!$mower_found) {
+			$this->SetStatus(205);
+			echo $this->Translate('device not found');
+			return;
+		}
+
+		echo $this->translate('valid account-data') . "\n" . $msg;
     }
 }

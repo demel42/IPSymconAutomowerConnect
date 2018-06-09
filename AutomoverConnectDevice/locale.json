@@ -3,8 +3,16 @@
 		"de": {
 			"User": "Benutzer",
 			"Password": "Passwort",
+			"Device-ID": "Geräte-ID",
+			"Model": "Modell",
 
 			"Test account": "Zugangsdaten überprüfen",
+
+			"device not found": "Gerät nicht gefunden",
+			"invalid account-data": "ungültige Zugangsdaten",
+			"model": "Modell",
+			"mower": "Rasenmäher",
+			"valid account-data": "gültige Zugangsdaten",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
@@ -13,7 +21,8 @@
 			"Instance is inactive (unauthorized)": "Instanz ist inaktiv (Authorisierung fehlerhaft)",
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
-			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)"
+			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
+			"Instance is inactive (device missing)": "Instanz ist inaktiv (Gerät fehlt)"
 		}
 	}
 }
