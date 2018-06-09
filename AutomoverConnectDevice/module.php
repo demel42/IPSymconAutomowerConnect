@@ -30,9 +30,9 @@ class AutomowerDevice extends IPSModule
         $this->RegisterPropertyString('device_id', '');
         $this->RegisterPropertyString('model', '');
 
-		$this->RegisterPropertyInteger('update_interval', '5');
+        $this->RegisterPropertyInteger('update_interval', '5');
 
-		$this->RegisterTimer('UpdateStatus', 0, 'AutomowerDevice_UpdateStatus(' . $this->InstanceID . ');');
+        $this->RegisterTimer('UpdateStatus', 0, 'AutomowerDevice_UpdateStatus(' . $this->InstanceID . ');');
     }
 
     public function ApplyChanges()
@@ -44,35 +44,35 @@ class AutomowerDevice extends IPSModule
         $device_id = $this->ReadPropertyString('device_id');
 
         if ($user != '' || $password != '' || $device_id != '') {
-			$this->RegisterMessage(0, IPS_KERNELMESSAGE);
-			$this->SetUpdateInterval();
-			$this->SetStatus(102);
-		} else {
-			$this->SetStatus(104);
-		}
+            $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+            $this->SetUpdateInterval();
+            $this->SetStatus(102);
+        } else {
+            $this->SetStatus(104);
+        }
 
         $this->SetSummary($device_id);
     }
 
-	// Inspired by module SymconTest/HookServe
-	public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
-	{
-		parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
+    // Inspired by module SymconTest/HookServe
+    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    {
+        parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
 
-		if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
-			$this->UpdateStatus();
-		}
-	}
+        if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
+            $this->UpdateStatus();
+        }
+    }
 
-	protected function SetUpdateInterval()
-	{
-		$min = $this->ReadPropertyInteger('update_interval');
-		$msec = $min > 0 ? $min * 1000 * 60 : 0;
-		$this->SetTimerInterval('UpdateStatus', $msec);
-	}
+    protected function SetUpdateInterval()
+    {
+        $min = $this->ReadPropertyInteger('update_interval');
+        $msec = $min > 0 ? $min * 1000 * 60 : 0;
+        $this->SetTimerInterval('UpdateStatus', $msec);
+    }
 
-	public function UpdateStatus()
-	{
+    public function UpdateStatus()
+    {
         $device_id = $this->ReadPropertyString('device_id');
 
         $cdata = $this->do_ApiCall($this->url_track . 'mowers/' . $device_id . '/status');
@@ -80,10 +80,10 @@ class AutomowerDevice extends IPSModule
             return false;
         }
         $status = json_decode($cdata, true);
-		$this->SendDebug(__FUNCTION__, 'status=' . print_r($status, true), 0);
-	}
+        $this->SendDebug(__FUNCTION__, 'status=' . print_r($status, true), 0);
+    }
 
-	public function TestAccount()
+    public function TestAccount()
     {
         $device_id = $this->ReadPropertyString('device_id');
 
