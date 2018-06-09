@@ -6,7 +6,11 @@
 			"Device-ID": "Geräte-ID",
 			"Model": "Modell",
 
+            "Update status every X minutes": "Aktualisiere Status alle X Minuten",
+			"Minutes": "Minuten",
+
 			"Test account": "Zugangsdaten überprüfen",
+			"Update status": "Aktualisiere Status",
 
 			"device not found": "Gerät nicht gefunden",
 			"invalid account-data": "ungültige Zugangsdaten",

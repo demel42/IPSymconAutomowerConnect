@@ -4,11 +4,16 @@
 				{ "type": "ValidationTextBox", "name": "user", "caption": "User" },
 				{ "type": "ValidationTextBox", "name": "password", "caption": "Password" },
 				{ "type": "ValidationTextBox", "name": "device_id", "caption": "Device-ID" },
-				{ "type": "ValidationTextBox", "name": "model", "caption": "Model" }
+				{ "type": "ValidationTextBox", "name": "model", "caption": "Model" },
+
+				{ "type": "Label", "label": "" },
+				{ "type": "Label", "label": "Update status every X minutes" },
+				{ "type": "IntervalBox", "name": "update_interval", "caption": "Minutes" }
 			],
 	"actions":
 			[
-				{ "type": "Button", "label": "Test account", "onClick": "AutomowerDevice_TestAccount($id);" }
+				{ "type": "Button", "label": "Test account", "onClick": "AutomowerDevice_TestAccount($id);" },
+				{ "type": "Button", "label": "Update status", "onClick": "AutomowerDevice_UpdateStatus($id);" }
 			],		
 	"status":
 			[
@@ -19,7 +24,7 @@
 				{ "code": 201, "icon": "error", "caption": "Instance is inactive (unauthorized)" },
 				{ "code": 202, "icon": "error", "caption": "Instance is inactive (server error)" },
 				{ "code": 203, "icon": "error", "caption": "Instance is inactive (http error)" },
-				{ "code": 204, "icon": "error", "caption": "Instance is inactive (invalid data)" }
+				{ "code": 204, "icon": "error", "caption": "Instance is inactive (invalid data)" },
 				{ "code": 205, "icon": "error", "caption": "Instance is inactive (device missing)" }
 			]
 }

@@ -29,6 +29,10 @@ class AutomowerDevice extends IPSModule
         $this->RegisterPropertyString('password', '');
         $this->RegisterPropertyString('device_id', '');
         $this->RegisterPropertyString('model', '');
+
+		$this->RegisterPropertyInteger('update_interval', '5');
+
+		$this->RegisterTimer('UpdateStatus', 0, 'AutomowerDevice_UpdateStatus(' . $this->InstanceID . ');');
     }
 
     public function ApplyChanges()
@@ -39,16 +43,47 @@ class AutomowerDevice extends IPSModule
         $password = $this->ReadPropertyString('password');
         $device_id = $this->ReadPropertyString('device_id');
 
-        $ok = true;
-        if ($user == '' || $password == '' || $device_id == '') {
-            $ok = false;
-        }
-        $this->SetStatus($ok ? 102 : 201);
+        if ($user != '' || $password != '' || $device_id != '') {
+			$this->RegisterMessage(0, IPS_KERNELMESSAGE);
+			$this->SetUpdateInterval();
+			$this->SetStatus(102);
+		} else {
+			$this->SetStatus(104);
+		}
 
         $this->SetSummary($device_id);
     }
 
-    public function TestAccount()
+	// Inspired by module SymconTest/HookServe
+	public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+	{
+		parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
+
+		if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
+			$this->UpdateStatus();
+		}
+	}
+
+	protected function SetUpdateInterval()
+	{
+		$min = $this->ReadPropertyInteger('update_interval');
+		$msec = $min > 0 ? $min * 1000 * 60 : 0;
+		$this->SetTimerInterval('UpdateStatus', $msec);
+	}
+
+	public function UpdateStatus()
+	{
+        $device_id = $this->ReadPropertyString('device_id');
+
+        $cdata = $this->do_ApiCall($this->url_track . 'mowers/' . $device_id . '/status');
+        if ($cdata == '') {
+            return false;
+        }
+        $status = json_decode($cdata, true);
+		$this->SendDebug(__FUNCTION__, 'status=' . print_r($status, true), 0);
+	}
+
+	public function TestAccount()
     {
         $device_id = $this->ReadPropertyString('device_id');
 
@@ -69,7 +104,6 @@ class AutomowerDevice extends IPSModule
             $model = $mower['model'];
 
             $msg = $this->Translate('mower') . ' "' . $name . '", ' . $this->Translate('model') . '=' . $model;
-
             $this->SendDebug(__FUNCTION__, 'device_id=' . $device_id . ', name=' . $name . ', model=' . $model, 0);
         }
 
