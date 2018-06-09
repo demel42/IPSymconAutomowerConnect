@@ -1,49 +1,18 @@
 <?php
 
-require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
-
-if (!defined('IPS_BOOLEAN')) {
-    define('IPS_BOOLEAN', 0);
-}
-if (!defined('IPS_INTEGER')) {
-    define('IPS_INTEGER', 1);
-}
-if (!defined('IPS_FLOAT')) {
-    define('IPS_FLOAT', 2);
-}
-if (!defined('IPS_STRING')) {
-    define('IPS_STRING', 3);
-}
-
-class Automower extends IPSModule
+trait AutomowerLibrary
 {
-    use AutomowerCommon;
+	private $url_im = 'https://iam-api.dss.husqvarnagroup.net/api/v3/';
+	private $url_track = 'https://amc-api.dss.husqvarnagroup.net/v1/';
 
-    public function Create()
+    public function GetMowerList()
     {
-        parent::Create();
-
-        $this->RegisterPropertyString('user', '');
-        $this->RegisterPropertyString('password', '');
-    }
-
-    public function ApplyChanges()
-    {
-        parent::ApplyChanges();
-
-        $user = $this->ReadPropertyString('user');
-        $password = $this->ReadPropertyString('password');
-
-        $ok = true;
-        if ($user == '' || $password == '') {
-            $ok = false;
-        }
-        $this->SetStatus($ok ? 102 : 201);
-    }
-
-    public function TestAccount()
-    {
-    }
+		$cdata = $this->do_ApiCall($this->url_track . 'mowers');
+		if ($cdata == '')	
+			return false;
+        $mowers = json_decode($cdata, true);
+		return $mowers;
+	}
 
     private function getToken()
     {
@@ -53,12 +22,18 @@ class Automower extends IPSModule
         $dtoken = $this->GetBuffer('Token');
         $jtoken = json_decode($dtoken, true);
         $token = isset($jtoken['token']) ? $jtoken['token'] : '';
-        $token_expiration = isset($jtoken['token_expiration']) ? $jtoken['token_expiration'] : 0;
+        $provider = isset($jtoken['provider']) ? $jtoken['provider'] : '';
+        $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
 
-        if ($token_expiration < time()) {
+        if ($expiration < time()) {
             $postdata = [
-                    'username' => $user,
-                    'password' => $password
+					'data' => [
+						'attributes' => [
+							'username' => $user,
+							'password' => $password
+						],
+						'type' => 'token'
+					]
                 ];
 
             $header = [
@@ -66,64 +41,56 @@ class Automower extends IPSModule
                     'Content-Type: application/json'
                 ];
 
-            $ctoken = $this->do_HttpRequest('/authorization/token', $header, $postdata, true);
+            $ctoken = $this->do_HttpRequest($this->url_im . 'token', $header, $postdata, true);
             $this->SendDebug(__FUNCTION__, 'ctoken=' . print_r($ctoken, true), 0);
             if ($ctoken == '') {
                 return false;
             }
             $jtoken = json_decode($ctoken, true);
-            $token = $jtoken['token'];
+            $this->SendDebug(__FUNCTION__, 'jtoken=' . print_r($jtoken, true), 0);
+
+            $token = $jtoken['data']['id'];
+            $provider = $jtoken['data']['attributes']['provider'];
+            $expires_in = $jtoken['data']['attributes']['expires_in'];
+            $user_id = $jtoken['data']['attributes']['user_id'];
 
             $jtoken = [
                     'token'            => $token,
-                    'token_expiration' => time() + 300
+                    'provider'         => $provider,
+                    'user_id'          => $user_id,
+                    'expiration'       => time() + $expires_in
                 ];
             $this->SetBuffer('Token', json_encode($jtoken));
         }
 
-        return $token;
+        return $jtoken;
     }
 
-    private function do_ApiCall($cmd_url, $postdata = '', $isJson = true, $customrequest = '')
+    private function do_ApiCall($url, $postdata = '')
     {
-        $token = $this->getToken();
-        if ($token == '') {
+        $jtoken = $this->getToken();
+        if ($jtoken == '') {
             return false;
         }
+        $token = $jtoken['token'];
+        $provider = $jtoken['provider'];
 
         $header = [];
         $header[] = 'Accept: application/json';
-
-        if ($postdata != '') {
-            $header[] = 'Content-Type: application/json';
-            $header[] = 'Content-Length: ' . strlen(json_encode($postdata));
-        } elseif ($customrequest == '') {
-            $header[] = 'Content-Type: application/x-www-form-urlencoded';
-        }
+		$header[] = 'Content-Type: application/json';
         $header[] = 'Authorization: Bearer ' . $token;
+        $header[] = 'Authorization-Provider: ' . $provider;
 
-        $cdata = $this->do_HttpRequest($cmd_url, $header, $postdata, $isJson, $customrequest);
+        $cdata = $this->do_HttpRequest($url, $header, $postdata);
         $this->SendDebug(__FUNCTION__, 'cdata=' . print_r($cdata, true), 0);
 
         $this->SetStatus(102);
         return $cdata;
     }
 
-    private function do_HttpRequest($cmd_url, $header = '', $postdata = '', $isJson = true, $customrequest = '')
+    private function do_HttpRequest($url, $header = '', $postdata = '')
     {
-        $base_url = 'https://api.sipgate.com/v2';
-
-        $url = $base_url . $cmd_url;
-
-        if ($customrequest != '') {
-            $req = $customrequest;
-        } elseif ($postdata != '') {
-            $req = 'post';
-        } else {
-            $req = 'get';
-        }
-        //$req = $customrequest != '' ? $customrequest : $postdata != '' ? 'post' : 'get';
-        $this->SendDebug(__FUNCTION__, 'cmd_url=' . $cmd_url . ', customrequest=' . $customrequest . ', req=' . $req, 0);
+		$req = $postdata != '' ? 'post' : 'get';
 
         $this->SendDebug(__FUNCTION__, 'http-' . $req . ': url=' . $url, 0);
         $time_start = microtime(true);
@@ -136,13 +103,8 @@ class Automower extends IPSModule
         }
         if ($postdata != '') {
             $this->SendDebug(__FUNCTION__, '    postdata=' . json_encode($postdata), 0);
-            if ($customrequest == '') {
-                curl_setopt($ch, CURLOPT_POST, true);
-            }
+			curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postdata));
-        }
-        if ($customrequest != '') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $customrequest);
         }
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -153,11 +115,12 @@ class Automower extends IPSModule
 
         $duration = floor((microtime(true) - $time_start) * 100) / 100;
         $this->SendDebug(__FUNCTION__, ' => httpcode=' . $httpcode . ', duration=' . $duration . 's', 0);
+        $this->SendDebug(__FUNCTION__, ' => cdata=' . $cdata, 0);
 
         $statuscode = 0;
         $err = '';
         $data = '';
-        if ($httpcode != 200) {
+        if ($httpcode != 200 && $httpcode != 201) {
             if ($httpcode == 401) {
                 $statuscode = 201;
                 $err = "got http-code $httpcode (unauthorized)";
@@ -176,17 +139,13 @@ class Automower extends IPSModule
             $statuscode = 204;
             $err = 'no data';
         } else {
-            if ($isJson) {
-                $jdata = json_decode($cdata, true);
-                if ($jdata == '') {
-                    $statuscode = 204;
-                    $err = 'malformed response';
-                } else {
-                    $data = $cdata;
-                }
-            } else {
-                $data = $cdata;
-            }
+			$jdata = json_decode($cdata, true);
+			if ($jdata == '') {
+				$statuscode = 204;
+				$err = 'malformed response';
+			} else {
+				$data = $cdata;
+			}
         }
 
         if ($statuscode) {

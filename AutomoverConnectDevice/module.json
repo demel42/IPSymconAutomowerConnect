@@ -1,0 +1,13 @@
+{
+	"id": "{B64D5F1C-6F12-474B-8DBC-3B263E67954E}",
+	"name": "AutomowerDevice",
+	"type": 3,
+	"vendor": "Husqvarna",
+	"aliases": [
+		"Automower"
+	],
+	"parentRequirements": [],
+	"childRequirements": [],
+	"implemented": [],
+	"prefix": "AutomowerDevice"
+}

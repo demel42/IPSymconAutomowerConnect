@@ -1,0 +1,11 @@
+{
+	"id": "{664A5A69-6171-481A-BCB7-1CACDE4BF50D}",
+	"name": "AutomowerConfig",
+	"type": 4,
+	"vendor": "Husqvarna",
+	"aliases": ["AutomowerConnect Konfigurator"],
+	"parentRequirements": [],
+	"childRequirements": [],
+	"implemented": [],
+	"prefix": "AutomowerConfig"
+}

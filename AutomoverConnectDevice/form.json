@@ -2,11 +2,13 @@
 	"elements":
 			[
 				{ "type": "ValidationTextBox", "name": "user", "caption": "User" },
-				{ "type": "ValidationTextBox", "name": "password", "caption": "Password" }
+				{ "type": "ValidationTextBox", "name": "password", "caption": "Password" },
+				{ "type": "ValidationTextBox", "name": "device_id", "caption": "Mower-ID" },
+				{ "type": "ValidationTextBox", "name": "model", "caption": "Model" }
 			],
 	"actions":
 			[
-				{ "type": "Button", "label": "Test account", "onClick": "Automower_TestAccount($id);" }
+				{ "type": "Button", "label": "Test account", "onClick": "AutomowerDevice_TestAccount($id);" }
 			],		
 	"status":
 			[

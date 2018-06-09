@@ -72,4 +72,5 @@ In dem Konfigurationsdialog die Zugangsdaten des Accounts eintragen.
 GUIDs
 - Modul: `{5D3A5F03-B872-4C4F-802C-65A654A7772C}`
 - Instanzen:
-  - AutomowerConnect: `{B64D5F1C-6F12-474B-8DBC-3B263E67954E}`
+  - AutomowerConnectConfig: `{664A5A69-6171-481A-BCB7-1CACDE4BF50D}`
+  - AutomowerConnectDevice: `{B64D5F1C-6F12-474B-8DBC-3B263E67954E}`
