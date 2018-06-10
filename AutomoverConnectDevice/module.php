@@ -167,7 +167,7 @@ class AutomowerDevice extends IPSModule
 
         $cdata = $this->do_ApiCall($this->url_track . 'mowers/' . $device_id . '/status');
         if ($cdata == '') {
-			$this->SetValue('Connected', false);
+            $this->SetValue('Connected', false);
             return false;
         }
         $status = json_decode($cdata, true);
