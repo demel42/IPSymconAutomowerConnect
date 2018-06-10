@@ -53,13 +53,13 @@ Die so erzeugte Instanz enthält neben den Zugangsdaten die interne Geräte-ID.
 
 ### zentrale Funktion
 
-`boolean ParkMower(integer $InstanzID)`
+`boolean ParkMower(integer $InstanzID)`<br>
 Parken des Mähers in der Ladestation
 
-`boolean StartMower(integer $InstanzID)`
+`boolean StartMower(integer $InstanzID)`<br>
 Starten eines manuellen Mähvorgangs
 
-`boolean StopMower(integer $InstanzID)`
+`boolean StopMower(integer $InstanzID)`<br>
 Stoppen der Aktivität der Mähers
 
 ## 5. Konfiguration:
@@ -71,21 +71,20 @@ Stoppen der Aktivität der Mähers
 | Benutzer                  | string   |              | Husqvarna-Benutzer |
 | Passwort                  | string   |              | Passwort des Benutzers |
 |                           |          |              |                        |
-
-nur _AutomowerDevice_
+| nur _*AutomowerDevice*_   |          |              |                        |
 | Geräte-ID                 | string   |              | interne Geräte-ID |
-| Modell                    | string   |              | Modell (scheint aber nicht das konkrete Automower-Modell zu meinen, bisher nur _*G*_)  |
+| Modell                    | string   |              | Modell |
+
+Das _Modell_ scheint nicht das konkrete Automower-Modell zu meinen, bisher nur _*G*_, ich interpretiere das z.Zt als Variante mit _GPS_.
 
 ### Schaltflächen
 
 | Bezeichnung                  | Beschreibung |
 | :--------------------------: | :-------------------------------------------------: |
 | Zugangsdaten überprüfen      | Testet die Zugangsdaten und gibt ggfs Accout-Details aus |
-
-nur _AutomowerConfig_
+| nur _*AutomowerConfig*_      | |
 | Import des Rasenmähers       | Anlage einer _AutomowerDevice_-Instanz |
-
-nur _AutomowerDevice_
+| nur _*AutomowerDevice*_      | |
 | Aktualisiere Status          | Status des Rasenmähers abrufen |
 
 ### Statusvariablen
