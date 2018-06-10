@@ -117,6 +117,7 @@ class AutomowerDevice extends IPSModule
         $user = $this->ReadPropertyString('user');
         $password = $this->ReadPropertyString('password');
         $device_id = $this->ReadPropertyString('device_id');
+        $model = $this->ReadPropertyString('model');
 
         $vpos = 0;
         $this->MaintainVariable('Connected', $this->Translate('Connected'), IPS_BOOLEAN, '~Alert.Reversed', $vpos++, true);
@@ -126,8 +127,8 @@ class AutomowerDevice extends IPSModule
         $this->MaintainVariable('MowerActivity', $this->Translate('Mower activity'), IPS_INTEGER, 'Automower.Activity', $vpos++, true);
         $this->MaintainVariable('MowerAction', $this->Translate('Mower action'), IPS_INTEGER, 'Automower.Action', $vpos++, true);
         $this->MaintainVariable('NextStart', $this->Translate('Next start'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
-        $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, true);
-        $this->MaintainVariable('LastLatitude', $this->Translate('Last position (latitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, true);
+        $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
+        $this->MaintainVariable('LastLatitude', $this->Translate('Last position (latitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
         $this->MaintainVariable('LastStatus', $this->Translate('Last status'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
 
         $this->MaintainAction('MowerAction', true);
@@ -166,6 +167,7 @@ class AutomowerDevice extends IPSModule
 
         $cdata = $this->do_ApiCall($this->url_track . 'mowers/' . $device_id . '/status');
         if ($cdata == '') {
+			$this->SetValue('Connected', false);
             return false;
         }
         $status = json_decode($cdata, true);
