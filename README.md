@@ -110,9 +110,9 @@ In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten g
 | :--: | :---------------------------------------------: |
 | -1   | Fehler                                          |
 |  0   | ausser Betrieb                                  |
-|  1   | pausiert                                        |
-|  2   | geparkt                                         |
-|  3   | lädt                                            |
+|  1   | geparkt                                         |
+|  2   | lädt                                            |
+|  3   | pausiert                                        |
 |  4   | fährt                                           |
 |  5   | mäht                                            |
 

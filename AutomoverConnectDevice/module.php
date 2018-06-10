@@ -46,14 +46,14 @@ if (!defined('AUTOMOWER_ACTIVITY_ERROR')) {
 if (!defined('AUTOMOWER_ACTIVITY_DISABLED')) {
     define('AUTOMOWER_ACTIVITY_DISABLED', 0);
 }
-if (!defined('AUTOMOWER_ACTIVITY_PAUSED')) {
-    define('AUTOMOWER_ACTIVITY_PAUSED', 1);
-}
 if (!defined('AUTOMOWER_ACTIVITY_PARKED')) {
-    define('AUTOMOWER_ACTIVITY_PARKED', 2);
+    define('AUTOMOWER_ACTIVITY_PARKED', 1);
 }
 if (!defined('AUTOMOWER_ACTIVITY_CHARGING')) {
-    define('AUTOMOWER_ACTIVITY_CHARGING', 3);
+    define('AUTOMOWER_ACTIVITY_CHARGING', 2);
+}
+if (!defined('AUTOMOWER_ACTIVITY_PAUSED')) {
+    define('AUTOMOWER_ACTIVITY_PAUSED', 3);
 }
 if (!defined('AUTOMOWER_ACTIVITY_MOVING')) {
     define('AUTOMOWER_ACTIVITY_MOVING', 4);
@@ -99,9 +99,9 @@ class AutomowerDevice extends IPSModule
         $associations = [];
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_ERROR, 'Name' => $this->Translate('error'), 'Farbe' => -1];
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_DISABLED, 'Name' => $this->Translate('disabled'), 'Farbe' => -1];
-        $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_PAUSED, 'Name' => $this->Translate('paused'), 'Farbe' => -1];
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_PARKED, 'Name' => $this->Translate('parked'), 'Farbe' => -1];
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_CHARGING, 'Name' => $this->Translate('charging'), 'Farbe' => -1];
+        $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_PAUSED, 'Name' => $this->Translate('paused'), 'Farbe' => -1];
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_MOVING, 'Name' => $this->Translate('moving'), 'Farbe' => -1];
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_CUTTING, 'Name' => $this->Translate('cutting'), 'Farbe' => -1];
         $this->CreateVarProfile('Automower.Activity', IPS_INTEGER, '', 0, 0, 0, 0, '', $associations);
