@@ -53,13 +53,13 @@ Die so erzeugte Instanz enthält neben den Zugangsdaten die interne Geräte-ID.
 
 ### zentrale Funktion
 
-`boolean ParkMower(integer $InstanzID)`<br>
+`boolean AutomoverDevice_ParkMower(integer $InstanzID)`<br>
 Parken des Mähers in der Ladestation
 
-`boolean StartMower(integer $InstanzID)`<br>
+`boolean AutomoverDevice_StartMower(integer $InstanzID)`<br>
 Starten eines manuellen Mähvorgangs
 
-`boolean StopMower(integer $InstanzID)`<br>
+`boolean AutomoverDevice_StopMower(integer $InstanzID)`<br>
 Stoppen der Aktivität der Mähers
 
 ## 5. Konfiguration:
