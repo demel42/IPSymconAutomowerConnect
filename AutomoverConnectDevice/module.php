@@ -118,7 +118,7 @@ class AutomowerDevice extends IPSModule
 
         $this->CreateVarProfile('Automower.Battery', IPS_INTEGER, ' %', 0, 0, 0, 0, 'Battery');
         $this->CreateVarProfile('Automower.Location', IPS_FLOAT, ' °', 0, 0, 0, 5, '');
-		$this->CreateVarProfile('Automower.Duration', IPS_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass');
+        $this->CreateVarProfile('Automower.Duration', IPS_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass');
     }
 
     public function ApplyChanges()
@@ -138,10 +138,10 @@ class AutomowerDevice extends IPSModule
         $this->MaintainVariable('MowerActivity', $this->Translate('Mower activity'), IPS_INTEGER, 'Automower.Activity', $vpos++, true);
         $this->MaintainVariable('MowerAction', $this->Translate('Mower action'), IPS_INTEGER, 'Automower.Action', $vpos++, true);
         $this->MaintainVariable('NextStart', $this->Translate('Next start'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
-		$this->MaintainVariable('DailyReference', $this->Translate('Day of cumulation'), IPS_INTEGER, '~UnixTimestampDate', $vpos++, true);
-		$this->MaintainVariable('DailyWorking', $this->Translate('Working time (day)'), IPS_INTEGER, 'Automower.Duration', $vpos++, true);
-		$this->MaintainVariable('LastErrorCode', $this->Translate('Last error'), IPS_INTEGER, 'Automower.Error', $vpos++, true);
-		$this->MaintainVariable('LastErrorTimestamp', $this->Translate('Timestamp of last error'), IPS_INTEGER, '~UnixTimestampDate', $vpos++, true);
+        $this->MaintainVariable('DailyReference', $this->Translate('Day of cumulation'), IPS_INTEGER, '~UnixTimestampDate', $vpos++, true);
+        $this->MaintainVariable('DailyWorking', $this->Translate('Working time (day)'), IPS_INTEGER, 'Automower.Duration', $vpos++, true);
+        $this->MaintainVariable('LastErrorCode', $this->Translate('Last error'), IPS_INTEGER, 'Automower.Error', $vpos++, true);
+        $this->MaintainVariable('LastErrorTimestamp', $this->Translate('Timestamp of last error'), IPS_INTEGER, '~UnixTimestampDate', $vpos++, true);
         $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
         $this->MaintainVariable('LastLatitude', $this->Translate('Last position (latitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
         $this->MaintainVariable('LastStatus', $this->Translate('Last status'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
@@ -248,50 +248,50 @@ class AutomowerDevice extends IPSModule
             $msg = __FUNCTION__ . ': error-code=' . $lastErrorCode . ' @' . date('d-m-Y H:i:s', $lastErrorCodeTimestamp);
             $this->LogMessage($msg, KL_WARNING);
         } else {
-			$lastErrorCodeTimestamp = 0;
-		}
-		$this->SetValue('LastErrorCode', $lastErrorCode);
-		$this->SetValue('LastErrorTimestamp', $lastErrorCodeTimestamp);
+            $lastErrorCodeTimestamp = 0;
+        }
+        $this->SetValue('LastErrorCode', $lastErrorCode);
+        $this->SetValue('LastErrorTimestamp', $lastErrorCodeTimestamp);
 
-		$dt = new DateTime(date('d.m.Y 00:00:00'));
-		$ts_today = $dt->format('U');
-		$ts_watch = $this->GetValue('DailyReference');
-		if ($ts_today != $ts_watch) {
-			$this->SetValue('DailyReference', $ts_today);
-			$this->SetValue('DailyWorking', 0);
-		}
-		switch ($mowerActivity) {
-		    case AUTOMOWER_ACTIVITY_MOVING:
-			case AUTOMOWER_ACTIVITY_CUTTING:
-				$isWorking = true;
-				break;
-			default:
-				$isWorking = false;
-				break;
-		}
-		$tstamp = $this->GetBuffer('Working');
-		$this->SendDebug(__FUNCTION__, 'isWorking=' . $isWorking . ', tstamp[GET]=' . $tstamp, 0);
-		if ($tstamp != '') {
-			$daily_working = $this->GetBuffer('DailyWorking');
-			$duration = $daily_working + ((time() - $tstamp) / 60);
-			$this->SetValue('DailyWorking', $duration);
-			$this->SendDebug(__FUNCTION__, 'daily_working[GET]=' . $daily_working . ', duration=' . $duration, 0);
-			if (!$isWorking) {
-				$tstamp = '';
-				$this->SetBuffer('Working', '');
-				$this->SetBuffer('DailyWorking', 0);
-				$this->SendDebug(__FUNCTION__, 'tstamp[CLR], daily_working[CLR]', 0);
-			}
-		} else {
-			if ($isWorking) {
-				$tstamp = time();
-				$this->SetBuffer('Working', $tstamp);
-				$daily_working = $this->GetValue('DailyWorking');
-				$this->SetBuffer('DailyWorking', $daily_working);
-				$this->SendDebug(__FUNCTION__, 'tstamp[SET]=' . $tstamp . ', daily_working[SET]=' . $daily_working, 0);
-			}
-		}
-	}
+        $dt = new DateTime(date('d.m.Y 00:00:00'));
+        $ts_today = $dt->format('U');
+        $ts_watch = $this->GetValue('DailyReference');
+        if ($ts_today != $ts_watch) {
+            $this->SetValue('DailyReference', $ts_today);
+            $this->SetValue('DailyWorking', 0);
+        }
+        switch ($mowerActivity) {
+            case AUTOMOWER_ACTIVITY_MOVING:
+            case AUTOMOWER_ACTIVITY_CUTTING:
+                $isWorking = true;
+                break;
+            default:
+                $isWorking = false;
+                break;
+        }
+        $tstamp = $this->GetBuffer('Working');
+        $this->SendDebug(__FUNCTION__, 'isWorking=' . $isWorking . ', tstamp[GET]=' . $tstamp, 0);
+        if ($tstamp != '') {
+            $daily_working = $this->GetBuffer('DailyWorking');
+            $duration = $daily_working + ((time() - $tstamp) / 60);
+            $this->SetValue('DailyWorking', $duration);
+            $this->SendDebug(__FUNCTION__, 'daily_working[GET]=' . $daily_working . ', duration=' . $duration, 0);
+            if (!$isWorking) {
+                $tstamp = '';
+                $this->SetBuffer('Working', '');
+                $this->SetBuffer('DailyWorking', 0);
+                $this->SendDebug(__FUNCTION__, 'tstamp[CLR], daily_working[CLR]', 0);
+            }
+        } else {
+            if ($isWorking) {
+                $tstamp = time();
+                $this->SetBuffer('Working', $tstamp);
+                $daily_working = $this->GetValue('DailyWorking');
+                $this->SetBuffer('DailyWorking', $daily_working);
+                $this->SendDebug(__FUNCTION__, 'tstamp[SET]=' . $tstamp . ', daily_working[SET]=' . $daily_working, 0);
+            }
+        }
+    }
 
     public function TestAccount()
     {
