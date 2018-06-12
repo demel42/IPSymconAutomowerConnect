@@ -62,6 +62,13 @@ Starten eines manuellen Mähvorgangs
 `boolean AutomoverDevice_StopMower(integer $InstanzID)`<br>
 Stoppen der Aktivität der Mähers
 
+`AutomoverDevice_GetRawData(integer $InstanceID, string $Name)`<br>
+Liefert interne Datenstrukturen
+
+| Name                          | Beschreibung                                                  |
+| :---------------------------: | :-----------------------------------------------------------: |
+| LastLocations                 | mit dem Status werden die letzten 50 GPS-Positionen geliefert |
+
 ## 5. Konfiguration:
 
 ### Variablen
@@ -118,6 +125,16 @@ In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten g
 
 Es ist damit z.B. egal, ob der Mähvorgang vom Timer ausgelöst wurde oder manuell.
 Das kann man dann leicht in einem Diagramm darstellen bzw. als Basis für Berechnungen verwenden.
+
+### Variablenprofile
+
+Es werden folgende Variableprofile angelegt:
+* Integer<br>
+  - Automower.Error: enthält die (unvollständige) Umsetzung der Fehlercodes vom Automower.
+  - Automower.Action, Automower.Activity, Automower.Battery, Automower.Duration
+
+* Float<br>
+  - Automower.Location
 
 ## 6. Anhang
 

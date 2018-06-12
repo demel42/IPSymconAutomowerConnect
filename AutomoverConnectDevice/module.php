@@ -291,6 +291,8 @@ class AutomowerDevice extends IPSModule
                 $this->SendDebug(__FUNCTION__, 'tstamp[SET]=' . $tstamp . ', daily_working[SET]=' . $daily_working, 0);
             }
         }
+
+		$this->SetBuffer('LastLocations', json_encode($status['lastLocations']));
     }
 
     public function TestAccount()
@@ -478,4 +480,17 @@ class AutomowerDevice extends IPSModule
         $errorCode = $jdata['errorCode'];
         $this->SendDebug(__FUNCTION__, 'command failed, status=' . $status . ', errorCode=' . $errorCode, 0);
     }
+
+    protected function SetBuffer($name, $data)
+	{
+		$this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
+		parent::SetBuffer($name, $data);
+	}
+
+	public function GetRawData(string $name)
+	{
+		$data = $this->GetBuffer($name);
+		$this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
+		return $data;
+	}
 }
