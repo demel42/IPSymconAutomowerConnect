@@ -106,8 +106,19 @@ class AutomowerDevice extends IPSModule
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_CUTTING, 'Name' => $this->Translate('cutting'), 'Farbe' => -1];
         $this->CreateVarProfile('Automower.Activity', IPS_INTEGER, '', 0, 0, 0, 0, '', $associations);
 
+        $associations = [];
+        $associations[] = ['Wert' =>  0, 'Name' => '-', 'Farbe' => -1];
+        $associations[] = ['Wert' =>  1, 'Name' => $this->Translate('outside mowing area'), 'Farbe' => -1];
+        $associations[] = ['Wert' =>  2, 'Name' => $this->Translate('empty battery'), 'Farbe' => -1];
+        $associations[] = ['Wert' => 10, 'Name' => $this->Translate('upside down'), 'Farbe' => -1];
+        $associations[] = ['Wert' => 15, 'Name' => $this->Translate('lifted'), 'Farbe' => -1];
+        $associations[] = ['Wert' => 18, 'Name' => $this->Translate('problem with rear bumper'), 'Farbe' => -1];
+        $associations[] = ['Wert' => 19, 'Name' => $this->Translate('problem with front bumper'), 'Farbe' => -1];
+        $this->CreateVarProfile('Automower.Error', IPS_INTEGER, '', 0, 0, 0, 0, '', $associations);
+
         $this->CreateVarProfile('Automower.Battery', IPS_INTEGER, ' %', 0, 0, 0, 0, 'Battery');
         $this->CreateVarProfile('Automower.Location', IPS_FLOAT, ' °', 0, 0, 0, 5, '');
+		$this->CreateVarProfile('Automower.Duration', IPS_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass');
     }
 
     public function ApplyChanges()
@@ -127,6 +138,10 @@ class AutomowerDevice extends IPSModule
         $this->MaintainVariable('MowerActivity', $this->Translate('Mower activity'), IPS_INTEGER, 'Automower.Activity', $vpos++, true);
         $this->MaintainVariable('MowerAction', $this->Translate('Mower action'), IPS_INTEGER, 'Automower.Action', $vpos++, true);
         $this->MaintainVariable('NextStart', $this->Translate('Next start'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
+		$this->MaintainVariable('DailyReference', $this->Translate('Day of cumulation'), IPS_INTEGER, '~UnixTimestampDate', $vpos++, true);
+		$this->MaintainVariable('DailyWorking', $this->Translate('Working time (day)'), IPS_INTEGER, 'Automower.Duration', $vpos++, true);
+		$this->MaintainVariable('LastErrorCode', $this->Translate('Last error'), IPS_INTEGER, 'Automower.Error', $vpos++, true);
+		$this->MaintainVariable('LastErrorTimestamp', $this->Translate('Timestamp of last error'), IPS_INTEGER, '~UnixTimestampDate', $vpos++, true);
         $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
         $this->MaintainVariable('LastLatitude', $this->Translate('Last position (latitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
         $this->MaintainVariable('LastStatus', $this->Translate('Last status'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
@@ -232,8 +247,51 @@ class AutomowerDevice extends IPSModule
         if ($lastErrorCode) {
             $msg = __FUNCTION__ . ': error-code=' . $lastErrorCode . ' @' . date('d-m-Y H:i:s', $lastErrorCodeTimestamp);
             $this->LogMessage($msg, KL_WARNING);
-        }
-    }
+        } else {
+			$lastErrorCodeTimestamp = 0;
+		}
+		$this->SetValue('LastErrorCode', $lastErrorCode);
+		$this->SetValue('LastErrorTimestamp', $lastErrorCodeTimestamp);
+
+		$dt = new DateTime(date('d.m.Y 00:00:00'));
+		$ts_today = $dt->format('U');
+		$ts_watch = $this->GetValue('DailyReference');
+		if ($ts_today != $ts_watch) {
+			$this->SetValue('DailyReference', $ts_today);
+			$this->SetValue('DailyWorking', 0);
+		}
+		switch ($mowerActivity) {
+		    case AUTOMOWER_ACTIVITY_MOVING:
+			case AUTOMOWER_ACTIVITY_CUTTING:
+				$isWorking = true;
+				break;
+			default:
+				$isWorking = false;
+				break;
+		}
+		$tstamp = $this->GetBuffer('Working');
+		$this->SendDebug(__FUNCTION__, 'isWorking=' . $isWorking . ', tstamp[GET]=' . $tstamp, 0);
+		if ($tstamp != '') {
+			$daily_working = $this->GetBuffer('DailyWorking');
+			$duration = $daily_working + ((time() - $tstamp) / 60);
+			$this->SetValue('DailyWorking', $duration);
+			$this->SendDebug(__FUNCTION__, 'daily_working[GET]=' . $daily_working . ', duration=' . $duration, 0);
+			if (!$isWorking) {
+				$tstamp = '';
+				$this->SetBuffer('Working', '');
+				$this->SetBuffer('DailyWorking', 0);
+				$this->SendDebug(__FUNCTION__, 'tstamp[CLR], daily_working[CLR]', 0);
+			}
+		} else {
+			if ($isWorking) {
+				$tstamp = time();
+				$this->SetBuffer('Working', $tstamp);
+				$daily_working = $this->GetValue('DailyWorking');
+				$this->SetBuffer('DailyWorking', $daily_working);
+				$this->SendDebug(__FUNCTION__, 'tstamp[SET]=' . $tstamp . ', daily_working[SET]=' . $daily_working, 0);
+			}
+		}
+	}
 
     public function TestAccount()
     {
@@ -318,25 +376,25 @@ class AutomowerDevice extends IPSModule
     private function decode_mowerStatus($val)
     {
         $val2txt = [
-                'ERROR'							=> 'error',
+                'ERROR'                       => 'error',
 
-                'OK_CUTTING'					             => 'cutting',
-                'OK_CUTTING_NOT_AUTO'			      => 'manual cutting',
-                'OK_CUTTING_TIMER_OVERRIDDEN'	=> 'manual cutting',
+                'OK_CUTTING'                  => 'cutting',
+                'OK_CUTTING_NOT_AUTO'         => 'manual cutting',
+                'OK_CUTTING_TIMER_OVERRIDDEN' => 'manual cutting',
 
-                'PARKED_TIMER'					       => 'parked',
-                'PARKED_PARKED_SELECTED'		=> 'manual parked',
+                'PARKED_TIMER'                => 'parked',
+                'PARKED_PARKED_SELECTED'      => 'manual parked',
 
-                'PAUSED'						=> 'paused',
+                'PAUSED'                      => 'paused',
 
-                'OFF_DISABLED'					             => 'disabled',
-                'OFF_HATCH_OPEN'                => 'hatch open',
-                'OFF_HATCH_CLOSED'				          => 'hatch closed',
+                'OFF_DISABLED'                => 'disabled',
+                'OFF_HATCH_OPEN'              => 'hatch open',
+                'OFF_HATCH_CLOSED'            => 'hatch closed',
 
-                'OK_SEARCHING'					=> 'searching base',
-                'OK_LEAVING'					  => 'leaving base',
+                'OK_SEARCHING'                => 'searching base',
+                'OK_LEAVING'                  => 'leaving base',
 
-                'OK_CHARGING'					=> 'charging',
+                'OK_CHARGING'                 => 'charging',
             ];
 
         if (isset($val2txt[$val])) {
@@ -353,25 +411,25 @@ class AutomowerDevice extends IPSModule
     private function normalize_mowerStatus($val)
     {
         $val2code = [
-                'ERROR'							=> AUTOMOWER_ACTIVITY_ERROR,
+                'ERROR'                       => AUTOMOWER_ACTIVITY_ERROR,
 
-                'OK_CUTTING'					             => AUTOMOWER_ACTIVITY_CUTTING,
-                'OK_CUTTING_NOT_AUTO'			      => AUTOMOWER_ACTIVITY_CUTTING,
-                'OK_CUTTING_TIMER_OVERRIDDEN'	=> AUTOMOWER_ACTIVITY_CUTTING,
+                'OK_CUTTING'                  => AUTOMOWER_ACTIVITY_CUTTING,
+                'OK_CUTTING_NOT_AUTO'         => AUTOMOWER_ACTIVITY_CUTTING,
+                'OK_CUTTING_TIMER_OVERRIDDEN' => AUTOMOWER_ACTIVITY_CUTTING,
 
-                'PARKED_TIMER'					       => AUTOMOWER_ACTIVITY_PARKED,
-                'PARKED_PARKED_SELECTED'		=> AUTOMOWER_ACTIVITY_PARKED,
+                'PARKED_TIMER'                => AUTOMOWER_ACTIVITY_PARKED,
+                'PARKED_PARKED_SELECTED'      => AUTOMOWER_ACTIVITY_PARKED,
 
-                'PAUSED'						=> AUTOMOWER_ACTIVITY_PAUSED,
+                'PAUSED'                      => AUTOMOWER_ACTIVITY_PAUSED,
 
-                'OFF_DISABLED'					             => AUTOMOWER_ACTIVITY_DISABLED,
-                'OFF_HATCH_OPEN'                => AUTOMOWER_ACTIVITY_DISABLED,
-                'OFF_HATCH_CLOSED'				          => AUTOMOWER_ACTIVITY_DISABLED,
+                'OFF_DISABLED'                => AUTOMOWER_ACTIVITY_DISABLED,
+                'OFF_HATCH_OPEN'              => AUTOMOWER_ACTIVITY_DISABLED,
+                'OFF_HATCH_CLOSED'            => AUTOMOWER_ACTIVITY_DISABLED,
 
-                'OK_SEARCHING'					=> AUTOMOWER_ACTIVITY_MOVING,
-                'OK_LEAVING'					  => AUTOMOWER_ACTIVITY_MOVING,
+                'OK_SEARCHING'                => AUTOMOWER_ACTIVITY_MOVING,
+                'OK_LEAVING'                  => AUTOMOWER_ACTIVITY_MOVING,
 
-                'OK_CHARGING'					=> AUTOMOWER_ACTIVITY_CHARGING,
+                'OK_CHARGING'                 => AUTOMOWER_ACTIVITY_CHARGING,
             ];
 
         if (isset($val2code[$val])) {
