@@ -292,7 +292,7 @@ class AutomowerDevice extends IPSModule
             }
         }
 
-		$this->SetBuffer('LastLocations', json_encode($status['lastLocations']));
+        $this->SetBuffer('LastLocations', json_encode($status['lastLocations']));
     }
 
     public function TestAccount()
@@ -482,15 +482,15 @@ class AutomowerDevice extends IPSModule
     }
 
     protected function SetBuffer($name, $data)
-	{
-		$this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
-		parent::SetBuffer($name, $data);
-	}
+    {
+        $this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
+        parent::SetBuffer($name, $data);
+    }
 
-	public function GetRawData(string $name)
-	{
-		$data = $this->GetBuffer($name);
-		$this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
-		return $data;
-	}
+    public function GetRawData(string $name)
+    {
+        $data = $this->GetBuffer($name);
+        $this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
+        return $data;
+    }
 }
