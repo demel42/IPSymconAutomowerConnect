@@ -1,6 +1,11 @@
-# sipgate
+# IPSymconAutomowerConnect
 
-Modul für IP-Symcon ab Version 4.4
+[![Version](https://img.shields.io/badge/Symcon_Version-4.4+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+![Version](https://img.shields.io/badge/Modul_Version-1.0-blue.svg)
+![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
+[![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![StyleCI](https://github.styleci.io/repos/136723075/shield?branch=master)](https://github.styleci.io/repos/136723075)
+
 
 ## Dokumentation
 
