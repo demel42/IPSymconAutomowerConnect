@@ -27,7 +27,14 @@ trait AutomowerCommon
             $this->SendDebug(__FUNCTION__, 'missing variable ' . $Ident, 0);
             return false;
         }
-        return GetValue($varID);
+
+        if (IPS_GetKernelVersion() >= 5) {
+            $ret = parent::GetValue($Ident);
+        } else {
+            $ret = GetValue($varID);
+        }
+
+        return $ret;
     }
 
     private function CreateVarProfile($Name, $ProfileType, $Suffix, $MinValue, $MaxValue, $StepSize, $Digits, $Icon, $Asscociations = '')
