@@ -41,11 +41,11 @@ $paths = [];
 $paths_color = ['0xB0E0E6', '0x7FFFD4', '0xADD8E6'];
 
 $dt = new DateTime(date('d.m.Y 00:00:00', time()));
-$from = $dt->format('U');
+$now = $dt->format('U');
 
-for ($i = 0; $i < 3; $i++) {
-    $from -= ($i * 86400);
-    $until = $from + 86400 - 1;
+for ($i = 2; $i >= 0; $i--) {
+	$from = $now - ($i * 24 * 60 * 60);
+	$until = $from + (24 * 60 * 60) - 1;
 
     $values = AC_GetLoggedValues(17849 /*[Archive]*/, 54501 /*[Rasenmäher\Automower\Position]*/, $from, $until, 0);
 
