@@ -86,6 +86,8 @@ class AutomowerDevice extends IPSModule
         $this->RegisterPropertyString('device_id', '');
         $this->RegisterPropertyString('model', '');
 
+        $this->RegisterPropertyBoolean('save_position', true);
+
         $this->RegisterPropertyInteger('update_interval', '5');
 
         $this->RegisterTimer('UpdateStatus', 0, 'AutomowerDevice_UpdateStatus(' . $this->InstanceID . ');');
@@ -129,6 +131,7 @@ class AutomowerDevice extends IPSModule
         $password = $this->ReadPropertyString('password');
         $device_id = $this->ReadPropertyString('device_id');
         $model = $this->ReadPropertyString('model');
+        $save_position = $this->ReadPropertyBoolean('save_position');
 
         $vpos = 0;
         $this->MaintainVariable('Connected', $this->Translate('Connected'), IPS_BOOLEAN, '~Alert.Reversed', $vpos++, true);
@@ -145,6 +148,7 @@ class AutomowerDevice extends IPSModule
         $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
         $this->MaintainVariable('LastLatitude', $this->Translate('Last position (latitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
         $this->MaintainVariable('LastStatus', $this->Translate('Last status'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
+        $this->MaintainVariable('Position', $this->Translate('Position'), IPS_STRING, '', $vpos++, $save_position);
 
         $this->MaintainAction('MowerAction', true);
 
@@ -179,6 +183,7 @@ class AutomowerDevice extends IPSModule
     public function UpdateStatus()
     {
         $device_id = $this->ReadPropertyString('device_id');
+        $save_position = $this->ReadPropertyBoolean('save_position');
 
         $cdata = $this->do_ApiCall($this->url_track . 'mowers/' . $device_id . '/status');
         if ($cdata == '') {
@@ -271,13 +276,13 @@ class AutomowerDevice extends IPSModule
         }
         $tstamp = $this->GetBuffer('Working');
         $this->SendDebug(__FUNCTION__, 'isWorking=' . $isWorking . ', tstamp[GET]=' . $tstamp, 0);
+
         if ($tstamp != '') {
             $daily_working = $this->GetBuffer('DailyWorking');
             $duration = $daily_working + ((time() - $tstamp) / 60);
             $this->SetValue('DailyWorking', $duration);
             $this->SendDebug(__FUNCTION__, 'daily_working[GET]=' . $daily_working . ', duration=' . $duration, 0);
             if (!$isWorking) {
-                $tstamp = '';
                 $this->SetBuffer('Working', '');
                 $this->SetBuffer('DailyWorking', 0);
                 $this->SendDebug(__FUNCTION__, 'tstamp[CLR], daily_working[CLR]', 0);
@@ -292,7 +297,26 @@ class AutomowerDevice extends IPSModule
             }
         }
 
-        $this->SetBuffer('LastLocations', json_encode($status['lastLocations']));
+        if (isset($status['lastLocations'])) {
+			$lastLocations = $status['lastLocations'];
+			$this->SetBuffer('LastLocations', json_encode($lastLocations));
+			if ($save_position && $isWorking) {
+				if (count($lastLocations)) {
+					$pos = json_encode([
+							'latitude'  => $lastLocations[0]['latitude'],
+							'longitude' => $lastLocations[0]['longitude'],
+						]);
+					if ($this->GetValue('Position') != $pos) {
+						$this->SetValue('Position', $pos);
+						$this->SendDebug(__FUNCTION__, 'changed Position=' . $pos, 0);
+					}
+				}
+			}
+		}
+
+		// bisher unausgewertet url's:
+		//  - $this->url_track . 'mowers/' . $device_id . '/settings'
+		//  - $this->url_track . 'mowers/' . $device_id . '/geofence'
     }
 
     public function TestAccount()

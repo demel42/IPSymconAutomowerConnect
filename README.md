@@ -67,7 +67,7 @@ Starten eines manuellen Mähvorgangs
 Stoppen der Aktivität der Mähers
 
 `AutomoverDevice_GetRawData(integer $InstanceID, string $Name)`<br>
-Liefert interne Datenstrukturen
+Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2GoogelMaps.php`.
 
 | Name                          | Beschreibung                                                  |
 | :---------------------------: | :-----------------------------------------------------------: |
@@ -85,6 +85,8 @@ Liefert interne Datenstrukturen
 | nur _*AutomowerDevice*_   |          |              |                        |
 | Geräte-ID                 | string   |              | interne Geräte-ID |
 | Modell                    | string   |              | Modell |
+|                           |          |              |                        |
+| Position speichern        | boolean  | false        | Position in der Variablen 'Position' speichern |
 
 Das _Modell_ scheint nicht das konkrete Automower-Modell zu meinen, bisher nur _*G*_, ich interpretiere das z.Zt als Variante mit _GPS_.
 
@@ -114,6 +116,7 @@ folgende Variable werden angelegt, zum Teil optional
 | LastLongitude           | integer        | letzter Längengrad                              |
 | LastLatitude            | integer        | letzter Breitengrad                             |
 | LastStatus              | UNIX-Timestamp | letzte Status-Abfrage                           |
+| Position                | string         | letzte Position (Longitude, Latitude)           |
 
 In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten gruppiert und als Integer abgelegt:
 
@@ -129,6 +132,9 @@ In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten g
 
 Es ist damit z.B. egal, ob der Mähvorgang vom Timer ausgelöst wurde oder manuell.
 Das kann man dann leicht in einem Diagramm darstellen bzw. als Basis für Berechnungen verwenden.
+
+in _Position_ wird die akuelle Positon gespeichert; es werden Longitude und Latitude als json-encodeded String abgelegt. Wenn die Variable protokolliert wird, können damit längerfristig die Weg des Mähers dargestellt werden.
+Beistpiel-Script siehe `docs/docs/Position2GoogelMaps.php`.
 
 ### Variablenprofile
 

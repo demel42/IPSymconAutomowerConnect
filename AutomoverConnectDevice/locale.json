@@ -6,6 +6,9 @@
 			"Device-ID": "Geräte-ID",
 			"Model": "Modell",
 
+			"save position to (logged) variable 'Position'": "Position in der (protokollierten) Variablen 'Position' speichern",
+			"save position": "Position speichern",
+
             "Update status every X minutes": "Aktualisiere Status alle X Minuten",
 			"Minutes": "Minuten",
 
@@ -42,6 +45,7 @@
 			"Operation mode": "Betriebsart",
 			"parked": "geparkt",
 			"paused": "pausiert",
+			"Position": "Position",
 			"searching base": "sucht Ladestation",
 			"Timestamp of last error": "Zeitpunkt des letzten Fehlers",
 			"Working time (day)": "Arbeitszeit (Tag)",

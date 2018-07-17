@@ -6,6 +6,9 @@
 				{ "type": "ValidationTextBox", "name": "device_id", "caption": "Device-ID" },
 				{ "type": "ValidationTextBox", "name": "model", "caption": "Model" },
 
+				{ "type": "Label", "label": "save position to (logged) variable 'Position'" },
+				{ "type": "CheckBox", "name": "save_position", "caption": "save position" },
+
 				{ "type": "Label", "label": "" },
 				{ "type": "Label", "label": "Update status every X minutes" },
 				{ "type": "IntervalBox", "name": "update_interval", "caption": "Minutes" }
