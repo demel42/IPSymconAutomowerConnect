@@ -298,25 +298,25 @@ class AutomowerDevice extends IPSModule
         }
 
         if (isset($status['lastLocations'])) {
-			$lastLocations = $status['lastLocations'];
-			$this->SetBuffer('LastLocations', json_encode($lastLocations));
-			if ($save_position && $isWorking) {
-				if (count($lastLocations)) {
-					$pos = json_encode([
-							'latitude'  => $lastLocations[0]['latitude'],
-							'longitude' => $lastLocations[0]['longitude'],
-						]);
-					if ($this->GetValue('Position') != $pos) {
-						$this->SetValue('Position', $pos);
-						$this->SendDebug(__FUNCTION__, 'changed Position=' . $pos, 0);
-					}
-				}
-			}
-		}
+            $lastLocations = $status['lastLocations'];
+            $this->SetBuffer('LastLocations', json_encode($lastLocations));
+            if ($save_position && $isWorking) {
+                if (count($lastLocations)) {
+                    $pos = json_encode([
+                            'latitude'  => $lastLocations[0]['latitude'],
+                            'longitude' => $lastLocations[0]['longitude'],
+                        ]);
+                    if ($this->GetValue('Position') != $pos) {
+                        $this->SetValue('Position', $pos);
+                        $this->SendDebug(__FUNCTION__, 'changed Position=' . $pos, 0);
+                    }
+                }
+            }
+        }
 
-		// bisher unausgewertet url's:
-		//  - $this->url_track . 'mowers/' . $device_id . '/settings'
-		//  - $this->url_track . 'mowers/' . $device_id . '/geofence'
+        // bisher unausgewertet url's:
+        //  - $this->url_track . 'mowers/' . $device_id . '/settings'
+        //  - $this->url_track . 'mowers/' . $device_id . '/geofence'
     }
 
     public function TestAccount()
