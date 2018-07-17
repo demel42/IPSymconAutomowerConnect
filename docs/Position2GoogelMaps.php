@@ -44,8 +44,8 @@ $dt = new DateTime(date('d.m.Y 00:00:00', time()));
 $now = $dt->format('U');
 
 for ($i = 2; $i >= 0; $i--) {
-	$from = $now - ($i * 24 * 60 * 60);
-	$until = $from + (24 * 60 * 60) - 1;
+    $from = $now - ($i * 24 * 60 * 60);
+    $until = $from + (24 * 60 * 60) - 1;
 
     $values = AC_GetLoggedValues(17849 /*[Archive]*/, 54501 /*[Rasenmäher\Automower\Position]*/, $from, $until, 0);
 
