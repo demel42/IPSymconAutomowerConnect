@@ -86,7 +86,7 @@ class AutomowerDevice extends IPSModule
         $this->RegisterPropertyString('device_id', '');
         $this->RegisterPropertyString('model', '');
 
-        $this->RegisterPropertyBoolean('save_position', true);
+        $this->RegisterPropertyBoolean('save_position', false);
 
         $this->RegisterPropertyInteger('update_interval', '5');
 
