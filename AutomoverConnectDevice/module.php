@@ -202,7 +202,7 @@ class AutomowerDevice extends IPSModule
         $mowerStatus = $this->decode_mowerStatus($status['mowerStatus']);
         $this->SetValue('MowerStatus', $mowerStatus);
 
-        $oldActivity = $this->SetValue('MowerActivity');
+        $oldActivity = $this->GetValue('MowerActivity');
         switch ($oldActivity) {
             case AUTOMOWER_ACTIVITY_MOVING:
             case AUTOMOWER_ACTIVITY_CUTTING:
