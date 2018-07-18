@@ -202,6 +202,17 @@ class AutomowerDevice extends IPSModule
         $mowerStatus = $this->decode_mowerStatus($status['mowerStatus']);
         $this->SetValue('MowerStatus', $mowerStatus);
 
+        $oldActivity = $this->SetValue('MowerActivity');
+        switch ($oldActivity) {
+            case AUTOMOWER_ACTIVITY_MOVING:
+            case AUTOMOWER_ACTIVITY_CUTTING:
+                $wasWorking = true;
+                break;
+            default:
+                $wasWorking = false;
+                break;
+        }
+
         $mowerActivity = $this->normalize_mowerStatus($status['mowerStatus']);
         $this->SetValue('MowerActivity', $mowerActivity);
 
@@ -300,7 +311,7 @@ class AutomowerDevice extends IPSModule
         if (isset($status['lastLocations'])) {
             $lastLocations = $status['lastLocations'];
             $this->SetBuffer('LastLocations', json_encode($lastLocations));
-            if ($save_position && $isWorking) {
+            if ($save_position && ($wasWorking || $isWorking)) {
                 if (count($lastLocations)) {
                     $pos = json_encode([
                             'latitude'  => $lastLocations[0]['latitude'],
