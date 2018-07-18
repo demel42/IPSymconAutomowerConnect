@@ -38,7 +38,7 @@ $map['markers'] = $markers;
 // Fahrten der letzten 3 Tage
 $paths = [];
 
-$paths_color = ['0xB0E0E6', '0x7FFFD4', '0xADD8E6'];
+$paths_color = [ '0xFF4040', '0x67B68EE', '0x00FF00' ];
 
 $dt = new DateTime(date('d.m.Y 00:00:00', time()));
 $now = $dt->format('U');
