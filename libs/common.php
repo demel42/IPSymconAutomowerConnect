@@ -160,4 +160,19 @@ trait AutomowerCommon
     {
         return isset($data[$var]) ? $data[$var] : $dflt;
     }
+
+    private function format_float($number, $dec_points = -1)
+    {
+        $restult = '';
+        if (is_numeric($number)) {
+            $nk = abs($number - floor($number));
+            $n = strlen(floatval($nk));
+            $d = ($n > 1) ? $n - 2 : 0;
+            if ($dec_points == -1 || $dec_points > $d) {
+                $dec_points = $d;
+            }
+            $result = number_format($number, $dec_points, '.', '');
+        }
+        return $result;
+    }
 }
