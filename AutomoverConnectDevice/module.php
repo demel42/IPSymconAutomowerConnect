@@ -256,16 +256,16 @@ class AutomowerDevice extends IPSModule
         $this->SendDebug(__FUNCTION__, 'operatingMode="' . $status['operatingMode'] . '" => OperationMode=' . $operatingMode, 0);
         $this->SetValue('OperationMode', $operatingMode);
 
-		if ($with_gps) {
-			if (isset($status['lastLocations'][0]['longitude'])) {
-				$lon = $status['lastLocations'][0]['longitude'];
-				$this->SetValue('LastLongitude', $lon);
-			}
-			if (isset($status['lastLocations'][0]['latitude'])) {
-				$lat = $status['lastLocations'][0]['latitude'];
-				$this->SetValue('LastLatitude', $lat);
-			}
-		}
+        if ($with_gps) {
+            if (isset($status['lastLocations'][0]['longitude'])) {
+                $lon = $status['lastLocations'][0]['longitude'];
+                $this->SetValue('LastLongitude', $lon);
+            }
+            if (isset($status['lastLocations'][0]['latitude'])) {
+                $lat = $status['lastLocations'][0]['latitude'];
+                $this->SetValue('LastLatitude', $lat);
+            }
+        }
 
         $this->SetValue('LastStatus', time());
 

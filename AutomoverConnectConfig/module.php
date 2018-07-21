@@ -149,15 +149,15 @@ class AutomowerConfig extends IPSModule
         $device_id = $mower['id'];
         $name = $mower['name'];
         $model = $mower['model'];
-		switch ($model) {
-			case 'G':
-			case 'H':
-				$with_gps = true;
-				break;
-			default:
-				$with_gps = false;
-				break;
-		}
+        switch ($model) {
+            case 'G':
+            case 'H':
+                $with_gps = true;
+                break;
+            default:
+                $with_gps = false;
+                break;
+        }
 
         $info = 'Automower  ' . $model;
         $properties = [
