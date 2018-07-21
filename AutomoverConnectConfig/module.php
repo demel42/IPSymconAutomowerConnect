@@ -149,10 +149,20 @@ class AutomowerConfig extends IPSModule
         $device_id = $mower['id'];
         $name = $mower['name'];
         $model = $mower['model'];
+		switch ($model) {
+			case 'G':
+			case 'H':
+				$with_gps = true;
+				break;
+			default:
+				$with_gps = false;
+				break;
+		}
 
         $info = 'Automower  ' . $model;
         $properties = [
-                'model'       => $model
+                'model'       => $model,
+                'with_gps'    => $with_gps
             ];
         $pos = 1000;
         $instID = $this->FindOrCreateInstance($device_id, $name, $info, $properties, $pos++);

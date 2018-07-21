@@ -5,6 +5,7 @@
 			"Password": "Passwort",
 			"Device-ID": "Geräte-ID",
 			"Model": "Modell",
+			"with GPS-Data": "mit GPS-Daten",
 
 			"save position to (logged) variable 'Position'": "Position in der (protokollierten) Variablen 'Position' speichern",
 			"save position": "Position speichern",

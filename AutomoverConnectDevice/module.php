@@ -86,6 +86,7 @@ class AutomowerDevice extends IPSModule
         $this->RegisterPropertyString('device_id', '');
         $this->RegisterPropertyString('model', '');
 
+        $this->RegisterPropertyBoolean('with_gps', true);
         $this->RegisterPropertyBoolean('save_position', false);
 
         $this->RegisterPropertyInteger('update_interval', '5');
@@ -131,6 +132,7 @@ class AutomowerDevice extends IPSModule
         $password = $this->ReadPropertyString('password');
         $device_id = $this->ReadPropertyString('device_id');
         $model = $this->ReadPropertyString('model');
+        $with_gps = $this->ReadPropertyBoolean('with_gps');
         $save_position = $this->ReadPropertyBoolean('save_position');
 
         $vpos = 0;
@@ -145,8 +147,8 @@ class AutomowerDevice extends IPSModule
         $this->MaintainVariable('DailyWorking', $this->Translate('Working time (day)'), IPS_INTEGER, 'Automower.Duration', $vpos++, true);
         $this->MaintainVariable('LastErrorCode', $this->Translate('Last error'), IPS_INTEGER, 'Automower.Error', $vpos++, true);
         $this->MaintainVariable('LastErrorTimestamp', $this->Translate('Timestamp of last error'), IPS_INTEGER, '~UnixTimestampDate', $vpos++, true);
-        $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
-        $this->MaintainVariable('LastLatitude', $this->Translate('Last position (latitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $model == 'G');
+        $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $with_gps);
+        $this->MaintainVariable('LastLatitude', $this->Translate('Last position (latitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $with_gps);
         $this->MaintainVariable('LastStatus', $this->Translate('Last status'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
         $this->MaintainVariable('Position', $this->Translate('Position'), IPS_STRING, '', $vpos++, $save_position);
 
@@ -183,6 +185,8 @@ class AutomowerDevice extends IPSModule
     public function UpdateStatus()
     {
         $device_id = $this->ReadPropertyString('device_id');
+        $model = $this->ReadPropertyString('model');
+        $with_gps = $this->ReadPropertyBoolean('with_gps');
         $save_position = $this->ReadPropertyBoolean('save_position');
 
         $cdata = $this->do_ApiCall($this->url_track . 'mowers/' . $device_id . '/status');
@@ -200,6 +204,7 @@ class AutomowerDevice extends IPSModule
         $this->SetValue('Connected', $connected);
 
         $mowerStatus = $this->decode_mowerStatus($status['mowerStatus']);
+        $this->SendDebug(__FUNCTION__, 'mowerStatus="' . $status['mowerStatus'] . '" => MowerStatus=' . $mowerStatus, 0);
         $this->SetValue('MowerStatus', $mowerStatus);
 
         $oldActivity = $this->GetValue('MowerActivity');
@@ -212,8 +217,10 @@ class AutomowerDevice extends IPSModule
                 $wasWorking = false;
                 break;
         }
+        $this->SendDebug(__FUNCTION__, 'wasWorking=' . $wasWorking, 0);
 
         $mowerActivity = $this->normalize_mowerStatus($status['mowerStatus']);
+        $this->SendDebug(__FUNCTION__, 'MowerActivity=' . $mowerActivity, 0);
         $this->SetValue('MowerActivity', $mowerActivity);
 
         switch ($mowerActivity) {
@@ -231,6 +238,7 @@ class AutomowerDevice extends IPSModule
                 $action = AUTOMOWER_ACTION_STOP;
                 break;
         }
+        $this->SendDebug(__FUNCTION__, 'MowerAction=' . $action, 0);
         $this->SetValue('MowerAction', $action);
 
         $nextStartSource = $status['nextStartSource'];
@@ -245,16 +253,19 @@ class AutomowerDevice extends IPSModule
         $this->SetValue('NextStart', $ts);
 
         $operatingMode = $this->decode_operatingMode($status['operatingMode']);
+        $this->SendDebug(__FUNCTION__, 'operatingMode="' . $status['operatingMode'] . '" => OperationMode=' . $operatingMode, 0);
         $this->SetValue('OperationMode', $operatingMode);
 
-        if (isset($status['lastLocations'][0]['longitude'])) {
-            $lon = $status['lastLocations'][0]['longitude'];
-            $this->SetValue('LastLongitude', $lon);
-        }
-        if (isset($status['lastLocations'][0]['latitude'])) {
-            $lat = $status['lastLocations'][0]['latitude'];
-            $this->SetValue('LastLatitude', $lat);
-        }
+		if ($with_gps) {
+			if (isset($status['lastLocations'][0]['longitude'])) {
+				$lon = $status['lastLocations'][0]['longitude'];
+				$this->SetValue('LastLongitude', $lon);
+			}
+			if (isset($status['lastLocations'][0]['latitude'])) {
+				$lat = $status['lastLocations'][0]['latitude'];
+				$this->SetValue('LastLatitude', $lat);
+			}
+		}
 
         $this->SetValue('LastStatus', time());
 
