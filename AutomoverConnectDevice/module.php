@@ -324,9 +324,9 @@ class AutomowerDevice extends IPSModule
             $this->SetBuffer('LastLocations', json_encode($lastLocations));
             if ($save_position && ($wasWorking || $isWorking)) {
                 if (count($lastLocations)) {
-					$latitude  = (float) $this->format_float($lastLocations[0]['latitude'], 6);
-					$longitude = (float) $this->format_float($lastLocations[0]['longitude'], 6);
-                    $pos = json_encode([ 'latitude'  => $latitude, 'longitude' => $longitude ]);
+                    $latitude = (float) $this->format_float($lastLocations[0]['latitude'], 6);
+                    $longitude = (float) $this->format_float($lastLocations[0]['longitude'], 6);
+                    $pos = json_encode(['latitude'  => $latitude, 'longitude' => $longitude]);
                     if ($this->GetValue('Position') != $pos) {
                         $this->SetValue('Position', $pos);
                         $this->SendDebug(__FUNCTION__, 'changed Position=' . $pos, 0);
