@@ -163,8 +163,7 @@ trait AutomowerCommon
 
     private function format_float($number, $dec_points = -1)
     {
-        $restult = '';
-        if (is_numeric($number)) {
+        if (is_numeric((float)$number)) {
             $nk = abs($number - floor($number));
             $n = strlen(floatval($nk));
             $d = ($n > 1) ? $n - 2 : 0;
@@ -172,7 +171,9 @@ trait AutomowerCommon
                 $dec_points = $d;
             }
             $result = number_format($number, $dec_points, '.', '');
-        }
+        } else {
+			$result = false;
+		}
         return $result;
     }
 }
