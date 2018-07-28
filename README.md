@@ -81,16 +81,18 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 | :-----------------------: | :-----:  | :----------: | :-------------------------------------------: |
 | Benutzer                  | string   |              | Husqvarna-Benutzer |
 | Passwort                  | string   |              | Passwort des Benutzers |
-|                           |          |              |                        |
-| nur _*AutomowerDevice*_   |          |              |                        |
+|                           |          |              | |
+| nur _*AutomowerDevice*_   |          |              | |
 | Geräte-ID                 | string   |              | interne Geräte-ID |
 | Modell                    | string   |              | Modell |
-|                           |          |              |                        |
+|                           |          |              | |
+| mit GPS-Daten             | boolean  | false        | Gerät schickt GPS-Daten |
 | Position speichern        | boolean  | false        | Position in der Variablen 'Position' speichern |
+|                           |          |              | |
+| Aktualisiere Daten ...    | integer  | 1            | Aktualisierungsintervall, Angabe in Minuten |
 
-Das _Modell_ scheint nicht das konkrete Automower-Modell zu meinen, bisher nur _*G*_, ich interpretiere das z.Zt als Variante mit _GPS_.
 
-### Schaltflächen
+##
 
 | Bezeichnung                  | Beschreibung |
 | :--------------------------: | :-------------------------------------------------: |
