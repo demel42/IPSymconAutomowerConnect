@@ -92,7 +92,7 @@ class AutomowerDevice extends IPSModule
         $this->RegisterPropertyInteger('update_interval', '5');
 
         $this->RegisterTimer('UpdateStatus', 0, 'AutomowerDevice_UpdateStatus(' . $this->InstanceID . ');');
-		$this->RegisterMessage(0, IPS_KERNELMESSAGE);
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
 
         $associations = [];
         $associations[] = ['Wert' => AUTOMOWER_ACTION_PARK, 'Name' => $this->Translate('park'), 'Farbe' => -1];
@@ -157,11 +157,11 @@ class AutomowerDevice extends IPSModule
 
         if ($user != '' || $password != '' || $device_id != '') {
             $this->SetUpdateInterval();
-			// Inspired by module SymconTest/HookServe
-			// We need to call the RegisterHook function on Kernel READY
-			if (IPS_GetKernelRunlevel() == KR_READY) {
-				$this->UpdateData();
-			}
+            // Inspired by module SymconTest/HookServe
+            // We need to call the RegisterHook function on Kernel READY
+            if (IPS_GetKernelRunlevel() == KR_READY) {
+                $this->UpdateData();
+            }
             $this->SetStatus(102);
         } else {
             $this->SetStatus(104);
