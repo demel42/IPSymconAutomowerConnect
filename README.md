@@ -1,7 +1,7 @@
 # IPSymconAutomowerConnect
 
 [![Version](https://img.shields.io/badge/Symcon_Version-4.4+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Version](https://img.shields.io/badge/Modul_Version-1.0-blue.svg)
+![Version](https://img.shields.io/badge/Modul_Version-1.1-blue.svg)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/136723075/shield?branch=master)](https://github.styleci.io/repos/136723075)
@@ -16,6 +16,7 @@
 4. [Funktionsreferenz](#4-funktionsreferenz)
 5. [Konfiguration](#5-konfiguration)
 6. [Anhang](#6-anhang)
+7. [Versions-Historie](#7-versions-historie)
 
 ## 1. Funktionsumfang
 
@@ -160,3 +161,13 @@ Quellen:
   - https://github.com/chrisz/pyhusmow
   - https://github.com/krannich/dkFHEM/blob/master/FHEM/74_HusqvarnaAutomower.pm
   - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
+
+## 7. Versions-Historie
+
+- 1.1 @ 17.09.2018 17:54<br>
+  - Versionshistorie dazu,
+  - define's der Variablentypen,
+  - Schaltfläche mit Link zu README.md im Konfigurationsdialog
+
+- 1.0 @ 25.06.2018 16:59<br>
+  Initiale Version

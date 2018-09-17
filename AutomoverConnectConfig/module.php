@@ -54,6 +54,12 @@ class AutomowerConfig extends IPSModule
         $formActions = [];
         $formActions[] = ['type' => 'Select', 'name' => 'mower_name', 'caption' => 'Mower-Name', 'options' => $options];
         $formActions[] = ['type' => 'Button', 'label' => 'Import of mower', 'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'];
+        $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
+        $formActions[] = [
+                            'type'    => 'Button',
+                            'caption' => 'Module description',
+                            'onClick' => 'echo "https://github.com/demel42/IPSymconAutomoverConnect/blob/master/README.md";'
+                        ];
 
         $formStatus = [];
         $formStatus[] = ['code' => '101', 'icon' => 'inactive', 'caption' => 'Instance getting created'];

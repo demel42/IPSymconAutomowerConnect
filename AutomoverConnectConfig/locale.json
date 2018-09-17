@@ -4,7 +4,9 @@
 			"User": "Benutzer",
 			"Password": "Passwort",
 			"Mower-Name": "Bezeichnung",
+
 			"Import of mower": "Importieren des Rasenmähers",
+			"Module description": "Modulbeschreibung",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
