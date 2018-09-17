@@ -26,49 +26,29 @@ if (@constant('IPS_BASE') == null) {
     define('KL_CUSTOM', IPS_LOGMESSAGE + 7);			// User Message
 }
 
-if (!defined('IPS_BOOLEAN')) {
-    define('IPS_BOOLEAN', 0);
-}
-if (!defined('IPS_INTEGER')) {
-    define('IPS_INTEGER', 1);
-}
-if (!defined('IPS_FLOAT')) {
-    define('IPS_FLOAT', 2);
-}
-if (!defined('IPS_STRING')) {
-    define('IPS_STRING', 3);
+if (!defined('vtBoolean')) {
+    define('vtBoolean', 0);
+    define('vtInteger', 1);
+    define('vtFloat', 2);
+    define('vtString', 3);
+    define('vtArray', 8);
+    define('vtObject', 9);
 }
 
 // normalized MowerStatus
 if (!defined('AUTOMOWER_ACTIVITY_ERROR')) {
     define('AUTOMOWER_ACTIVITY_ERROR', -1);
-}
-if (!defined('AUTOMOWER_ACTIVITY_DISABLED')) {
     define('AUTOMOWER_ACTIVITY_DISABLED', 0);
-}
-if (!defined('AUTOMOWER_ACTIVITY_PARKED')) {
     define('AUTOMOWER_ACTIVITY_PARKED', 1);
-}
-if (!defined('AUTOMOWER_ACTIVITY_CHARGING')) {
     define('AUTOMOWER_ACTIVITY_CHARGING', 2);
-}
-if (!defined('AUTOMOWER_ACTIVITY_PAUSED')) {
     define('AUTOMOWER_ACTIVITY_PAUSED', 3);
-}
-if (!defined('AUTOMOWER_ACTIVITY_MOVING')) {
     define('AUTOMOWER_ACTIVITY_MOVING', 4);
-}
-if (!defined('AUTOMOWER_ACTIVITY_CUTTING')) {
     define('AUTOMOWER_ACTIVITY_CUTTING', 5);
 }
 
 if (!defined('AUTOMOWER_ACTION_PARK')) {
     define('AUTOMOWER_ACTION_PARK', 0);
-}
-if (!defined('AUTOMOWER_ACTION_START')) {
     define('AUTOMOWER_ACTION_START', 1);
-}
-if (!defined('AUTOMOWER_ACTION_STOP')) {
     define('AUTOMOWER_ACTION_STOP', 2);
 }
 
@@ -98,7 +78,7 @@ class AutomowerDevice extends IPSModule
         $associations[] = ['Wert' => AUTOMOWER_ACTION_PARK, 'Name' => $this->Translate('park'), 'Farbe' => -1];
         $associations[] = ['Wert' => AUTOMOWER_ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
         $associations[] = ['Wert' => AUTOMOWER_ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
-        $this->CreateVarProfile('Automower.Action', IPS_INTEGER, '', 0, 0, 0, 0, '', $associations);
+        $this->CreateVarProfile('Automower.Action', vtInteger, '', 0, 0, 0, 0, '', $associations);
 
         $associations = [];
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_ERROR, 'Name' => $this->Translate('error'), 'Farbe' => -1];
@@ -108,7 +88,7 @@ class AutomowerDevice extends IPSModule
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_PAUSED, 'Name' => $this->Translate('paused'), 'Farbe' => -1];
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_MOVING, 'Name' => $this->Translate('moving'), 'Farbe' => -1];
         $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_CUTTING, 'Name' => $this->Translate('cutting'), 'Farbe' => -1];
-        $this->CreateVarProfile('Automower.Activity', IPS_INTEGER, '', 0, 0, 0, 0, '', $associations);
+        $this->CreateVarProfile('Automower.Activity', vtInteger, '', 0, 0, 0, 0, '', $associations);
 
         $associations = [];
         $associations[] = ['Wert' =>  0, 'Name' => '-', 'Farbe' => -1];
@@ -118,11 +98,11 @@ class AutomowerDevice extends IPSModule
         $associations[] = ['Wert' => 15, 'Name' => $this->Translate('lifted'), 'Farbe' => -1];
         $associations[] = ['Wert' => 18, 'Name' => $this->Translate('problem with rear bumper'), 'Farbe' => -1];
         $associations[] = ['Wert' => 19, 'Name' => $this->Translate('problem with front bumper'), 'Farbe' => -1];
-        $this->CreateVarProfile('Automower.Error', IPS_INTEGER, '', 0, 0, 0, 0, '', $associations);
+        $this->CreateVarProfile('Automower.Error', vtInteger, '', 0, 0, 0, 0, '', $associations);
 
-        $this->CreateVarProfile('Automower.Battery', IPS_INTEGER, ' %', 0, 0, 0, 0, 'Battery');
-        $this->CreateVarProfile('Automower.Location', IPS_FLOAT, ' °', 0, 0, 0, 5, '');
-        $this->CreateVarProfile('Automower.Duration', IPS_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass');
+        $this->CreateVarProfile('Automower.Battery', vtInteger, ' %', 0, 0, 0, 0, 'Battery');
+        $this->CreateVarProfile('Automower.Location', vtFloat, ' °', 0, 0, 0, 5, '');
+        $this->CreateVarProfile('Automower.Duration', vtInteger, ' min', 0, 0, 0, 0, 'Hourglass');
     }
 
     public function ApplyChanges()
@@ -137,21 +117,21 @@ class AutomowerDevice extends IPSModule
         $save_position = $this->ReadPropertyBoolean('save_position');
 
         $vpos = 0;
-        $this->MaintainVariable('Connected', $this->Translate('Connected'), IPS_BOOLEAN, '~Alert.Reversed', $vpos++, true);
-        $this->MaintainVariable('Battery', $this->Translate('Battery capacity'), IPS_INTEGER, 'Automower.Battery', $vpos++, true);
-        $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), IPS_STRING, '', $vpos++, true);
-        $this->MaintainVariable('MowerStatus', $this->Translate('Mower status'), IPS_STRING, '', $vpos++, true);
-        $this->MaintainVariable('MowerActivity', $this->Translate('Mower activity'), IPS_INTEGER, 'Automower.Activity', $vpos++, true);
-        $this->MaintainVariable('MowerAction', $this->Translate('Mower action'), IPS_INTEGER, 'Automower.Action', $vpos++, true);
-        $this->MaintainVariable('NextStart', $this->Translate('Next start'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
-        $this->MaintainVariable('DailyReference', $this->Translate('Day of cumulation'), IPS_INTEGER, '~UnixTimestampDate', $vpos++, true);
-        $this->MaintainVariable('DailyWorking', $this->Translate('Working time (day)'), IPS_INTEGER, 'Automower.Duration', $vpos++, true);
-        $this->MaintainVariable('LastErrorCode', $this->Translate('Last error'), IPS_INTEGER, 'Automower.Error', $vpos++, true);
-        $this->MaintainVariable('LastErrorTimestamp', $this->Translate('Timestamp of last error'), IPS_INTEGER, '~UnixTimestampDate', $vpos++, true);
-        $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $with_gps);
-        $this->MaintainVariable('LastLatitude', $this->Translate('Last position (latitude)'), IPS_FLOAT, 'Automower.Location', $vpos++, $with_gps);
-        $this->MaintainVariable('LastStatus', $this->Translate('Last status'), IPS_INTEGER, '~UnixTimestamp', $vpos++, true);
-        $this->MaintainVariable('Position', $this->Translate('Position'), IPS_STRING, '', $vpos++, $save_position);
+        $this->MaintainVariable('Connected', $this->Translate('Connected'), vtBoolean, '~Alert.Reversed', $vpos++, true);
+        $this->MaintainVariable('Battery', $this->Translate('Battery capacity'), vtInteger, 'Automower.Battery', $vpos++, true);
+        $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), vtString, '', $vpos++, true);
+        $this->MaintainVariable('MowerStatus', $this->Translate('Mower status'), vtString, '', $vpos++, true);
+        $this->MaintainVariable('MowerActivity', $this->Translate('Mower activity'), vtInteger, 'Automower.Activity', $vpos++, true);
+        $this->MaintainVariable('MowerAction', $this->Translate('Mower action'), vtInteger, 'Automower.Action', $vpos++, true);
+        $this->MaintainVariable('NextStart', $this->Translate('Next start'), vtInteger, '~UnixTimestamp', $vpos++, true);
+        $this->MaintainVariable('DailyReference', $this->Translate('Day of cumulation'), vtInteger, '~UnixTimestampDate', $vpos++, true);
+        $this->MaintainVariable('DailyWorking', $this->Translate('Working time (day)'), vtInteger, 'Automower.Duration', $vpos++, true);
+        $this->MaintainVariable('LastErrorCode', $this->Translate('Last error'), vtInteger, 'Automower.Error', $vpos++, true);
+        $this->MaintainVariable('LastErrorTimestamp', $this->Translate('Timestamp of last error'), vtInteger, '~UnixTimestampDate', $vpos++, true);
+        $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), vtFloat, 'Automower.Location', $vpos++, $with_gps);
+        $this->MaintainVariable('LastLatitude', $this->Translate('Last position (latitude)'), vtFloat, 'Automower.Location', $vpos++, $with_gps);
+        $this->MaintainVariable('LastStatus', $this->Translate('Last status'), vtInteger, '~UnixTimestamp', $vpos++, true);
+        $this->MaintainVariable('Position', $this->Translate('Position'), vtString, '', $vpos++, $save_position);
 
         $this->MaintainAction('MowerAction', true);
 
