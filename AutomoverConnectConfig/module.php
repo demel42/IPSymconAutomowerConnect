@@ -58,7 +58,7 @@ class AutomowerConfig extends IPSModule
         $formActions[] = [
                             'type'    => 'Button',
                             'caption' => 'Module description',
-                            'onClick' => 'echo "https://github.com/demel42/IPSymconAutomoverConnect/blob/master/README.md";'
+                            'onClick' => 'echo "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md";'
                         ];
 
         $formStatus = [];
