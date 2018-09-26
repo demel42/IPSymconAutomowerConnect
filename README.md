@@ -165,7 +165,7 @@ Quellen:
 ## 7. Versions-Historie
 
 - 1.2 @ 26.09.2018 18:54<br>
-  - Fix zu v1.1
+  - Fix zu v1.1 (Fehlermeldung bei Aufruf von ApplyChanges())
   - (alle) Fehlercodes als Text hinterlegt<br>
     Hinweis: damit das Profil _Automower.Error_ ergänzt wird, das Profil vor dem Update löschen
 
