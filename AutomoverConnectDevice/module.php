@@ -92,12 +92,46 @@ class AutomowerDevice extends IPSModule
 
         $associations = [];
         $associations[] = ['Wert' =>  0, 'Name' => '-', 'Farbe' => -1];
-        $associations[] = ['Wert' =>  1, 'Name' => $this->Translate('outside mowing area'), 'Farbe' => -1];
-        $associations[] = ['Wert' =>  2, 'Name' => $this->Translate('empty battery'), 'Farbe' => -1];
-        $associations[] = ['Wert' => 10, 'Name' => $this->Translate('upside down'), 'Farbe' => -1];
-        $associations[] = ['Wert' => 15, 'Name' => $this->Translate('lifted'), 'Farbe' => -1];
-        $associations[] = ['Wert' => 18, 'Name' => $this->Translate('problem with rear bumper'), 'Farbe' => -1];
-        $associations[] = ['Wert' => 19, 'Name' => $this->Translate('problem with front bumper'), 'Farbe' => -1];
+		$associations[] = ['Wert' =>  1, 'Name' => $this->Translate('outside mowing area'), 'Farbe' => 0xFFA500];
+		$associations[] = ['Wert' =>  2, 'Name' => $this->Translate('no loop signal'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' =>  4, 'Name' => $this->Translate('Problem loop sensor front'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' =>  5, 'Name' => $this->Translate('Problem loop sensor rear'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' =>  6, 'Name' => $this->Translate('Problem loop sensor'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' =>  7, 'Name' => $this->Translate('Problem loop sensor'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' =>  8, 'Name' => $this->Translate('wrong PIN-code'), 'Farbe' => 0x9932CC];
+		$associations[] = ['Wert' =>  9, 'Name' => $this->Translate('locked in'), 'Farbe' => 0x1874CD];
+		$associations[] = ['Wert' => 10, 'Name' => $this->Translate('upside down'), 'Farbe' => 0x1874CD];
+		$associations[] = ['Wert' => 11, 'Name' => $this->Translate('low battery'), 'Farbe' => 0x1874CD];
+		$associations[] = ['Wert' => 12, 'Name' => $this->Translate('battery empty'), 'Farbe' => 0xFFA500];
+		$associations[] = ['Wert' => 13, 'Name' => $this->Translate('no drive'), 'Farbe' => 0x1874CD];
+		$associations[] = ['Wert' => 15, 'Name' => $this->Translate('Mower raised'), 'Farbe' => 0x1874CD];
+		$associations[] = ['Wert' => 16, 'Name' => $this->Translate('trapped in charging station'), 'Farbe' => 0xFFA500];
+		$associations[] = ['Wert' => 17, 'Name' => $this->Translate('charging station blocked'), 'Farbe' => 0xFFA500];
+		$associations[] = ['Wert' => 18, 'Name' => $this->Translate('Problem shock sensor rear'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 19, 'Name' => $this->Translate('Problem shock sensor front'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 20, 'Name' => $this->Translate('Wheel motor blocked on the right'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 21, 'Name' => $this->Translate('Wheel motor blocked on the left'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 22, 'Name' => $this->Translate('Drive problem left'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 23, 'Name' => $this->Translate('Drive problem right'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 24, 'Name' => $this->Translate('Problem mower engine'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 25, 'Name' => $this->Translate('Cutting system blocked'), 'Farbe' => 0xFFA500];
+		$associations[] = ['Wert' => 26, 'Name' => $this->Translate('Faulty component connection'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 27, 'Name' => $this->Translate('default settings'), 'Farbe' => -1];
+		$associations[] = ['Wert' => 28, 'Name' => $this->Translate('Memory defective'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 30, 'Name' => $this->Translate('battery problem'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 31, 'Name' => $this->Translate('STOP-button problem'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 32, 'Name' => $this->Translate('tilt sensor problem'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 33, 'Name' => $this->Translate('Mower tilted'), 'Farbe' => 0x1874CD];
+		$associations[] = ['Wert' => 35, 'Name' => $this->Translate('Wheel motor overloaded right'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 36, 'Name' => $this->Translate('Wheel motor overloaded left'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 37, 'Name' => $this->Translate('Charging current too high'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 38, 'Name' => $this->Translate('Temporary problem'), 'Farbe' => -1];
+		$associations[] = ['Wert' => 42, 'Name' => $this->Translate('limited cutting height range'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 43, 'Name' => $this->Translate('unexpected cutting height adjustment'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 44, 'Name' => $this->Translate('unexpected cutting height adjustment'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 45, 'Name' => $this->Translate('Problem drive cutting height'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 46, 'Name' => $this->Translate('limited cutting height range'), 'Farbe' => 0xFF0000];
+		$associations[] = ['Wert' => 47, 'Name' => $this->Translate('Problem drive cutting height'), 'Farbe' => 0xFF0000];
         $this->CreateVarProfile('Automower.Error', vtInteger, '', 0, 0, 0, 0, '', $associations);
 
         $this->CreateVarProfile('Automower.Battery', vtInteger, ' %', 0, 0, 0, 0, 'Battery');
@@ -140,7 +174,7 @@ class AutomowerDevice extends IPSModule
             // Inspired by module SymconTest/HookServe
             // We need to call the RegisterHook function on Kernel READY
             if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UpdateData();
+                $this->UpdateStatus();
             }
             $this->SetStatus(102);
         } else {
