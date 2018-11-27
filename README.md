@@ -1,7 +1,7 @@
 # IPSymconAutomowerConnect
 
 [![Version](https://img.shields.io/badge/Symcon_Version-4.4+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Version](https://img.shields.io/badge/Modul_Version-1.2-blue.svg)
+![Version](https://img.shields.io/badge/Modul_Version-1.3-blue.svg)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/136723075/shield?branch=master)](https://github.styleci.io/repos/136723075)
@@ -163,6 +163,9 @@ Quellen:
   - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
 
 ## 7. Versions-Historie
+
+- 1.3 @ 27.11.2018 16:40<br>
+  - OperatingMode _Home_ darstellen
 
 - 1.2 @ 26.09.2018 18:54<br>
   - Fix zu v1.1 (Fehlermeldung bei Aufruf von ApplyChanges())

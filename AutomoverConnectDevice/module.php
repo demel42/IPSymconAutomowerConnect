@@ -421,6 +421,7 @@ class AutomowerDevice extends IPSModule
     private function decode_operatingMode($val)
     {
         $val2txt = [
+                'HOME'               => 'remain in base',
                 'AUTO'               => 'automatic',
                 'MAIN_AREA'          => 'main area',
                 'SECONDARY_AREA'     => 'secondary area',
