@@ -134,6 +134,11 @@ class AutomowerDevice extends IPSModule
         $associations[] = ['Wert' => 47, 'Name' => $this->Translate('Problem drive cutting height'), 'Farbe' => 0xFF0000];
         $this->CreateVarProfile('Automower.Error', vtInteger, '', 0, 0, 0, 0, '', $associations);
 
+		$associations = [];
+		$associations[] = ['Wert' => false, 'Name' => $this->Translate('Disconnected'), 'Farbe' => 0xEE0000];
+		$associations[] = ['Wert' => true, 'Name' => $this->Translate('Connected'), 'Farbe' => -1];
+		$this->CreateVarProfile('Automower.Connection', vtBoolean, '', 0, 0, 0, 1, 'Alarm', $associations);
+
         $this->CreateVarProfile('Automower.Battery', vtInteger, ' %', 0, 0, 0, 0, 'Battery');
         $this->CreateVarProfile('Automower.Location', vtFloat, ' °', 0, 0, 0, 5, '');
         $this->CreateVarProfile('Automower.Duration', vtInteger, ' min', 0, 0, 0, 0, 'Hourglass');
@@ -151,7 +156,7 @@ class AutomowerDevice extends IPSModule
         $save_position = $this->ReadPropertyBoolean('save_position');
 
         $vpos = 0;
-        $this->MaintainVariable('Connected', $this->Translate('Connected'), vtBoolean, '~Alert.Reversed', $vpos++, true);
+        $this->MaintainVariable('Connected', $this->Translate('Connected'), vtBoolean, 'Automower.Connection', $vpos++, true);
         $this->MaintainVariable('Battery', $this->Translate('Battery capacity'), vtInteger, 'Automower.Battery', $vpos++, true);
         $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), vtString, '', $vpos++, true);
         $this->MaintainVariable('MowerStatus', $this->Translate('Mower status'), vtString, '', $vpos++, true);
