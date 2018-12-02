@@ -134,10 +134,10 @@ class AutomowerDevice extends IPSModule
         $associations[] = ['Wert' => 47, 'Name' => $this->Translate('Problem drive cutting height'), 'Farbe' => 0xFF0000];
         $this->CreateVarProfile('Automower.Error', vtInteger, '', 0, 0, 0, 0, '', $associations);
 
-		$associations = [];
-		$associations[] = ['Wert' => false, 'Name' => $this->Translate('Disconnected'), 'Farbe' => 0xEE0000];
-		$associations[] = ['Wert' => true, 'Name' => $this->Translate('Connected'), 'Farbe' => -1];
-		$this->CreateVarProfile('Automower.Connection', vtBoolean, '', 0, 0, 0, 1, 'Alarm', $associations);
+        $associations = [];
+        $associations[] = ['Wert' => false, 'Name' => $this->Translate('Disconnected'), 'Farbe' => 0xEE0000];
+        $associations[] = ['Wert' => true, 'Name' => $this->Translate('Connected'), 'Farbe' => -1];
+        $this->CreateVarProfile('Automower.Connection', vtBoolean, '', 0, 0, 0, 1, 'Alarm', $associations);
 
         $this->CreateVarProfile('Automower.Battery', vtInteger, ' %', 0, 0, 0, 0, 'Battery');
         $this->CreateVarProfile('Automower.Location', vtFloat, ' °', 0, 0, 0, 5, '');
