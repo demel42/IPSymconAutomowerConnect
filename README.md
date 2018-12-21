@@ -1,7 +1,7 @@
 # IPSymconAutomowerConnect
 
 [![Version](https://img.shields.io/badge/Symcon_Version-4.4+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Version](https://img.shields.io/badge/Modul_Version-1.4-blue.svg)
+![Version](https://img.shields.io/badge/Modul_Version-1.5-blue.svg)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/136723075/shield?branch=master)](https://github.styleci.io/repos/136723075)
@@ -166,6 +166,9 @@ Quellen:
   - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
 
 ## 7. Versions-Historie
+
+- 1.5 @ 21.12.2018 13:10<br>
+  - Standard-Konstanten verwenden
 
 - 1.4 @ 02.12.2018 11:07<br>
   - Variablenprofil _Automower.Connection_ für _Connected_
