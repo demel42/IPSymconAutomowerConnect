@@ -150,7 +150,7 @@ trait AutomowerLibrary
         }
 
         if ($statuscode) {
-			$this->LogMessage('url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err, KL_WARNING);
+            $this->LogMessage('url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err, KL_WARNING);
             $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err, 0);
             $this->SetStatus($statuscode);
         }
