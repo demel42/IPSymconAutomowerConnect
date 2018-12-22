@@ -3,36 +3,6 @@
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
 require_once __DIR__ . '/../libs/library.php';  // modul-bezogene Funktionen
 
-if (@constant('IPS_BASE') == null) {
-    // --- BASE MESSAGE
-    define('IPS_BASE', 10000);							// Base Message
-    define('IPS_KERNELSHUTDOWN', IPS_BASE + 1);			// Pre Shutdown Message, Runlevel UNINIT Follows
-    define('IPS_KERNELSTARTED', IPS_BASE + 2);			// Post Ready Message
-    // --- KERNEL
-    define('IPS_KERNELMESSAGE', IPS_BASE + 100);		// Kernel Message
-    define('KR_CREATE', IPS_KERNELMESSAGE + 1);			// Kernel is beeing created
-    define('KR_INIT', IPS_KERNELMESSAGE + 2);			// Kernel Components are beeing initialised, Modules loaded, Settings read
-    define('KR_READY', IPS_KERNELMESSAGE + 3);			// Kernel is ready and running
-    define('KR_UNINIT', IPS_KERNELMESSAGE + 4);			// Got Shutdown Message, unloading all stuff
-    define('KR_SHUTDOWN', IPS_KERNELMESSAGE + 5);		// Uninit Complete, Destroying Kernel Inteface
-    // --- KERNEL LOGMESSAGE
-    define('IPS_LOGMESSAGE', IPS_BASE + 200);			// Logmessage Message
-    define('KL_MESSAGE', IPS_LOGMESSAGE + 1);			// Normal Message
-    define('KL_SUCCESS', IPS_LOGMESSAGE + 2);			// Success Message
-    define('KL_NOTIFY', IPS_LOGMESSAGE + 3);			// Notiy about Changes
-    define('KL_WARNING', IPS_LOGMESSAGE + 4);			// Warnings
-    define('KL_ERROR', IPS_LOGMESSAGE + 5);				// Error Message
-    define('KL_DEBUG', IPS_LOGMESSAGE + 6);				// Debug Informations + Script Results
-    define('KL_CUSTOM', IPS_LOGMESSAGE + 7);			// User Message
-}
-
-if (!defined('VARIABLETYPE_BOOLEAN')) {
-    define('VARIABLETYPE_BOOLEAN', 0);
-    define('VARIABLETYPE_INTEGER', 1);
-    define('VARIABLETYPE_FLOAT', 2);
-    define('VARIABLETYPE_STRING', 3);
-}
-
 // normalized MowerStatus
 if (!defined('AUTOMOWER_ACTIVITY_ERROR')) {
     define('AUTOMOWER_ACTIVITY_ERROR', -1);
