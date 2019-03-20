@@ -30,7 +30,7 @@ Ich habe die unten angegebenen Quellen verwendet.
 
  - IP-Symcon ab Version 5<br>
    Version 4.4 mit Branch _ips_4.4_ (nur noch Fehlerkorrekturen)
- - Huysvarna Automower mit Connect-Modul
+ - Husqvarna Automower mit Connect-Modul
 
 ## 3. Installation
 
