@@ -81,6 +81,8 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 
 | Eigenschaft               | Typ      | Standardwert | Beschreibung |
 | :-----------------------: | :-----:  | :----------: | :-------------------------------------------: |
+| Modul ist deaktiviert     | boolean  | false        | Modul temporär deaktivieren |
+|                           |          |              | |
 | Benutzer                  | string   |              | Husqvarna-Benutzer |
 | Passwort                  | string   |              | Passwort des Benutzers |
 |                           |          |              | |
