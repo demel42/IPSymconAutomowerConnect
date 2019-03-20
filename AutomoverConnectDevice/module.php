@@ -29,7 +29,7 @@ class AutomowerDevice extends IPSModule
     {
         parent::Create();
 
-		$this->RegisterPropertyBoolean('module_disable', false);
+        $this->RegisterPropertyBoolean('module_disable', false);
 
         $this->RegisterPropertyString('user', '');
         $this->RegisterPropertyString('password', '');
@@ -144,12 +144,12 @@ class AutomowerDevice extends IPSModule
 
         $this->MaintainAction('MowerAction', true);
 
-		$module_disable = $this->ReadPropertyBoolean('module_disable');
-		if ($module_disable) {
-		    $this->SetTimerInterval('UpdateStatus', 0);
-			$this->SetStatus(IS_INACTIVE);
-			return;
-		}
+        $module_disable = $this->ReadPropertyBoolean('module_disable');
+        if ($module_disable) {
+            $this->SetTimerInterval('UpdateStatus', 0);
+            $this->SetStatus(IS_INACTIVE);
+            return;
+        }
 
         if ($user != '' || $password != '' || $device_id != '') {
             $this->SetUpdateInterval();
@@ -166,10 +166,10 @@ class AutomowerDevice extends IPSModule
         $this->SetSummary($device_id);
     }
 
-	public function GetConfigurationForm()
+    public function GetConfigurationForm()
     {
         $formElements = [];
-		$formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Module is disabled'];
+        $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Module is disabled'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'device_id', 'caption' => 'Device-ID'];
@@ -380,11 +380,11 @@ class AutomowerDevice extends IPSModule
 
     public function TestAccount()
     {
-		$inst = IPS_GetInstance($this->InstanceID);
-		if ($inst['InstanceStatus'] == IS_INACTIVE) {
-			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-			return;
-		}
+        $inst = IPS_GetInstance($this->InstanceID);
+        if ($inst['InstanceStatus'] == IS_INACTIVE) {
+            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            return;
+        }
 
         $device_id = $this->ReadPropertyString('device_id');
 
