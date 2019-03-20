@@ -4,9 +4,9 @@
 	"name": "IPSymconAutomowerConnect",
 	"url": "https://github.com/demel42/IPSymconAutomowerConnect",
 	"compatibility": {
-		"version": "4.4"
+		"version": "5.0"
 	},
-	"version": "1.7",
+	"version": "1.8",
 	"build": 0,
-	"date": 1548263914
+	"date": 1553090201
 }
