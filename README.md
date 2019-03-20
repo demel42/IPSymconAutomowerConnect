@@ -29,7 +29,7 @@ Ich habe die unten angegebenen Quellen verwendet.
 ## 2. Voraussetzungen
 
  - IP-Symcon ab Version 5<br>
-   Version 4.4 mit Branch ips_4.4 (nur noch Fehlerkorrekturen)
+   Version 4.4 mit Branch _ips_4.4_ (nur noch Fehlerkorrekturen)
  - Huysvarna Automower mit Connect-Modul
 
 ## 3. Installation
@@ -169,7 +169,7 @@ Quellen:
 ## 7. Versions-Historie
 
 - 1.8 @ 20.03.2019 14:56<br>
-  - Anpassungen IPS 5, Abspaltung Branch ips_4.4
+  - Anpassungen IPS 5, Abspaltung von Branch _ips_4.4_
 
 - 1.7 @ 23.01.2019 18:18<br>
   - curl_errno() abfragen
