@@ -29,7 +29,7 @@ Ich habe die unten angegebenen Quellen verwendet.
 ## 2. Voraussetzungen
 
  - IP-Symcon ab Version 4.4
- - Huysvarna Automower mit Connect-Modul
+ - Husqvarna Automower mit Connect-Modul
 
 ## 3. Installation
 
