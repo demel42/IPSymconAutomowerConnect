@@ -168,7 +168,7 @@ Quellen:
 ## 7. Versions-Historie
 
 - 1.7.1 @ 20.03.2019 14:56<br>
-  - Abspaltung Branch ips_4.4
+  - Abspaltung von Branch _ips_4.4_
 
 - 1.7 @ 23.01.2019 18:18<br>
   - curl_errno() abfragen
