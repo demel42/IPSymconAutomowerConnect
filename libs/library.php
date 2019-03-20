@@ -1,5 +1,13 @@
 <?php
 
+if (!defined('IS_UNAUTHORIZED')) {
+    define('IS_UNAUTHORIZED', IS_EBASE + 1);
+    define('IS_SERVERERROR', IS_EBASE + 2);
+    define('IS_HTTPERROR', IS_EBASE + 3);
+    define('IS_INVALIDDATA', IS_EBASE + 4);
+    define('IS_DEVICE_MISSING', IS_EBASE + 5);
+}
+
 trait AutomowerLibrary
 {
     private $url_im = 'https://iam-api.dss.husqvarnagroup.net/api/v3/';
@@ -69,6 +77,12 @@ trait AutomowerLibrary
 
     private function do_ApiCall($url, $postdata = '')
     {
+		$inst = IPS_GetInstance($this->InstanceID);
+		if ($inst['InstanceStatus'] == IS_INACTIVE) {
+			$this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+			return;
+		}
+
         $jtoken = $this->getToken();
         if ($jtoken == '') {
             return false;
@@ -85,7 +99,7 @@ trait AutomowerLibrary
         $cdata = $this->do_HttpRequest($url, $header, $postdata);
         $this->SendDebug(__FUNCTION__, 'cdata=' . print_r($cdata, true), 0);
 
-        $this->SetStatus(102);
+        $this->SetStatus(IS_ACTIVE);
         return $cdata;
     }
 
@@ -124,30 +138,30 @@ trait AutomowerLibrary
         $err = '';
         $data = '';
         if ($cerrno) {
-            $statuscode = 204;
+            $statuscode = IS_HTTPERROR;
             $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
         } elseif ($httpcode != 200 && $httpcode != 201) {
             if ($httpcode == 401) {
-                $statuscode = 201;
+                $statuscode = IS_UNAUTHORIZED;
                 $err = 'got http-code ' . $httpcode . ' (unauthorized)';
             } elseif ($httpcode >= 500 && $httpcode <= 599) {
-                $statuscode = 202;
+                $statuscode = IS_SERVERERROR;
                 $err = 'got http-code ' . $httpcode . ' (server error)';
             } elseif ($httpcode == 204) {
                 // 204 = No Content	= Die Anfrage wurde erfolgreich durchgeführt, die Antwort enthält jedoch bewusst keine Daten.
                 // kommt zB bei senden von SMS
                 $data = json_encode(['status' => 'ok']);
             } else {
-                $statuscode = 203;
+                $statuscode = IS_HTTPERROR;
                 $err = 'got http-code ' . $httpcode;
             }
         } elseif ($cdata == '') {
-            $statuscode = 204;
+            $statuscode = IS_INVALIDDATA;
             $err = 'no data';
         } else {
             $jdata = json_decode($cdata, true);
             if ($jdata == '') {
-                $statuscode = 204;
+                $statuscode = IS_INVALIDDATA;
                 $err = 'malformed response';
             } else {
                 $data = $cdata;

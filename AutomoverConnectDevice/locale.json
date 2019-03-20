@@ -1,6 +1,8 @@
 {
 	"translations": {
 		"de": {
+			"Module is disabled": "Modul ist deaktiviert",
+
 			"User": "Benutzer",
 			"Password": "Passwort",
 			"Device-ID": "Geräte-ID",
