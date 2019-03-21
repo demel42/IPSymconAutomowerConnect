@@ -383,7 +383,7 @@ class AutomowerDevice extends IPSModule
         $inst = IPS_GetInstance($this->InstanceID);
         if ($inst['InstanceStatus'] == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-			echo $this->translate('Instance is inactive') . PHP_EOL;
+            echo $this->translate('Instance is inactive') . PHP_EOL;
             return;
         }
 
