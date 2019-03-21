@@ -169,7 +169,7 @@ class AutomowerDevice extends IPSModule
     public function GetConfigurationForm()
     {
         $formElements = [];
-        $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Module is disabled'];
+        $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'device_id', 'caption' => 'Device-ID'];
@@ -383,6 +383,7 @@ class AutomowerDevice extends IPSModule
         $inst = IPS_GetInstance($this->InstanceID);
         if ($inst['InstanceStatus'] == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+			echo $this->translate('Instance is inactive') . PHP_EOL;
             return;
         }
 

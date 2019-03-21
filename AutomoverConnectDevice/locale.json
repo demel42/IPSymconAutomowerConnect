@@ -1,7 +1,8 @@
 {
 	"translations": {
 		"de": {
-			"Module is disabled": "Modul ist deaktiviert",
+			"Instance is disabled": "Instanz ist deaktiviert",
+			"Instance is inactive": "Instanz ist inaktiv",
 
 			"User": "Benutzer",
 			"Password": "Passwort",
