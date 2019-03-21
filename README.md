@@ -81,7 +81,7 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 
 | Eigenschaft               | Typ      | Standardwert | Beschreibung |
 | :-----------------------: | :-----:  | :----------: | :-------------------------------------------: |
-| Modul ist deaktiviert     | boolean  | false        | Modul temporär deaktivieren |
+| Instanz ist deaktiviert   | boolean  | false        | Instanz temporär deaktivieren |
 |                           |          |              | |
 | Benutzer                  | string   |              | Husqvarna-Benutzer |
 | Passwort                  | string   |              | Passwort des Benutzers |
@@ -172,7 +172,7 @@ Quellen:
 
 - 1.8 @ 20.03.2019 14:56<br>
   - Anpassungen IPS 5, Abspaltung von Branch _ips_4.4_
-  - Schalter, um das Modul (temporär) zu deaktivieren
+  - Schalter, um eine Instanz (temporär) zu deaktivieren
 
 - 1.7 @ 23.01.2019 18:18<br>
   - curl_errno() abfragen
