@@ -25,7 +25,7 @@ trait AutomowerCommon
             return;
         }
 
-		$ret = parent::SetValue($Ident, $Value);
+        $ret = parent::SetValue($Ident, $Value);
         if ($ret == false) {
             $this->SendDebug(__FUNCTION__, 'mismatch of value "' . $Value . '" for variable ' . $Ident, 0);
         }
@@ -39,7 +39,7 @@ trait AutomowerCommon
             return false;
         }
 
-		$ret = parent::GetValue($Ident);
+        $ret = parent::GetValue($Ident);
         return $ret;
     }
 
