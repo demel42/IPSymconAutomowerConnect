@@ -1,7 +1,7 @@
 # IPSymconAutomowerConnect
 
 [![Version](https://img.shields.io/badge/Symcon_Version-5.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Version](https://img.shields.io/badge/Modul_Version-1.8-blue.svg)
+![Version](https://img.shields.io/badge/Modul_Version-1.9-blue.svg)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/136723075/shield?branch=master)](https://github.styleci.io/repos/136723075)
@@ -169,6 +169,9 @@ Quellen:
   - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
 
 ## 7. Versions-Historie
+
+- 1.9 @ 29.03.2019 16:19<br>
+  - SetValue() abgesichert
 
 - 1.8 @ 20.03.2019 14:56<br>
   - Anpassungen IPS 5, Abspaltung von Branch _ips_4.4_
