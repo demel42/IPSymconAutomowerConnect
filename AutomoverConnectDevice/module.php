@@ -519,7 +519,7 @@ class AutomowerDevice extends IPSModule
                 'OFF_DISABLED'                => AUTOMOWER_ACTIVITY_DISABLED,
                 'OFF_HATCH_OPEN'              => AUTOMOWER_ACTIVITY_DISABLED,
                 'OFF_HATCH_CLOSED'            => AUTOMOWER_ACTIVITY_DISABLED,
-				'OFF_HATCH_CLOSED_DISABLED'   => AUTOMOWER_ACTIVITY_DISABLED,
+                'OFF_HATCH_CLOSED_DISABLED'   => AUTOMOWER_ACTIVITY_DISABLED,
 
                 'OK_SEARCHING'                => AUTOMOWER_ACTIVITY_MOVING,
                 'OK_LEAVING'                  => AUTOMOWER_ACTIVITY_MOVING,
