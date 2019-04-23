@@ -71,70 +71,70 @@ Stoppen der Aktivität der Mähers
 `AutomoverDevice_GetRawData(integer $InstanceID, string $Name)`<br>
 Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2GoogelMaps.php`.
 
-| Name                          | Beschreibung                                                  |
-| :---------------------------: | :-----------------------------------------------------------: |
-| LastLocations                 | mit dem Status werden die letzten 50 GPS-Positionen geliefert |
+| Name          | Beschreibung |
+| :------------ | :----------- |
+| LastLocations | mit dem Status werden die letzten 50 GPS-Positionen geliefert |
 
 ## 5. Konfiguration:
 
 ### Variablen
 
-| Eigenschaft               | Typ      | Standardwert | Beschreibung |
-| :-----------------------: | :-----:  | :----------: | :-------------------------------------------: |
-| Instanz ist deaktiviert   | boolean  | false        | Instanz temporär deaktivieren |
-|                           |          |              | |
-| Benutzer                  | string   |              | Husqvarna-Benutzer |
-| Passwort                  | string   |              | Passwort des Benutzers |
-|                           |          |              | |
-| nur _*AutomowerDevice*_   |          |              | |
-| Geräte-ID                 | string   |              | interne Geräte-ID |
-| Modell                    | string   |              | Modell |
-|                           |          |              | |
-| mit GPS-Daten             | boolean  | false        | Gerät schickt GPS-Daten |
-| Position speichern        | boolean  | false        | Position in der Variablen 'Position' speichern |
-|                           |          |              | |
-| Aktualisiere Daten ...    | integer  | 1            | Aktualisierungsintervall, Angabe in Minuten |
+| Eigenschaft              | Typ     | Standardwert | Beschreibung |
+| :----------------------- | :-----  | :----------- | :----------- |
+| Instanz ist deaktiviert  | boolean | false        | Instanz temporär deaktivieren |
+|                          |         |              | |
+| Benutzer                 | string  |              | Husqvarna-Benutzer |
+| Passwort                 | string  |              | Passwort des Benutzers |
+|                          |         |              | |
+| nur _*AutomowerDevice*_  |         |              | |
+| Geräte-ID                | string  |              | interne Geräte-ID |
+| Modell                   | string  |              | Modell |
+|                          |         |              | |
+| mit GPS-Daten            | boolean | false        | Gerät schickt GPS-Daten |
+| Position speichern       | boolean | false        | Position in der Variablen 'Position' speichern |
+|                          |         |              | |
+| Aktualisiere Daten ...   | integer | 1            | Aktualisierungsintervall, Angabe in Minuten |
 
 
 ##
 
-| Bezeichnung                  | Beschreibung |
-| :--------------------------: | :-------------------------------------------------: |
-| Zugangsdaten überprüfen      | Testet die Zugangsdaten und gibt ggfs Accout-Details aus |
-| nur _*AutomowerConfig*_      | |
-| Import des Rasenmähers       | Anlage einer _AutomowerDevice_-Instanz |
-| nur _*AutomowerDevice*_      | |
-| Aktualisiere Status          | Status des Rasenmähers abrufen |
+| Bezeichnung              | Beschreibung |
+| :----------------------- | :----------- |
+| Zugangsdaten überprüfen  | Testet die Zugangsdaten und gibt ggfs Accout-Details aus |
+| nur _*AutomowerConfig*_  | |
+| Import des Rasenmähers   | Anlage einer _AutomowerDevice_-Instanz |
+| nur _*AutomowerDevice*_  | |
+| Aktualisiere Status      | Status des Rasenmähers abrufen |
 
 ### Statusvariablen
 
 folgende Variable werden angelegt, zum Teil optional
 
-| Name                    | Typ            | Beschreibung                                    |
-| :---------------------: | :------------: | :---------------------------------------------: |
-| Connected               | boolean        | Verbindungsstatus des Mähers mit Husqvarna      |
-| Battery                 | integer        | Ladekapazität der Batterie                      |
-| OperationMode           | string         | Betriebsart                                     |
-| MowerStatus             | string         | Status des Mähers                               |
-| MowerActivity           | integer        | aktuelle Aktivität des Mähers                   |
-| MowerAction             | integer        | Start einer Aktivität                           |
-| NextStart               | UNIX-Timestamp | nächster geplanter Start                        |
-| LastLongitude           | integer        | letzter Längengrad                              |
-| LastLatitude            | integer        | letzter Breitengrad                             |
-| LastStatus              | UNIX-Timestamp | letzte Status-Abfrage                           |
-| Position                | string         | letzte Position (Longitude, Latitude)           |
+| Name          | Typ            | Beschreibung |
+| :------------ | :------------- | :----------- |
+| Connected     | boolean        | Verbindungsstatus des Mähers mit Husqvarna |
+| Battery       | integer        | Ladekapazität der Batterie |
+| OperationMode | string         | Betriebsart |
+| MowerStatus   | string         | Status des Mähers |
+| MowerActivity | integer        | aktuelle Aktivität des Mähers |
+| MowerAction   | integer        | Start einer Aktivität |
+| NextStart     | UNIX-Timestamp | nächster geplanter Start |
+| LastLongitude | integer        | letzter Längengrad |
+| LastLatitude  | integer        | letzter Breitengrad |
+| LastStatus    | UNIX-Timestamp | letzte Status-Abfrage |
+| Position      | string         | letzte Position (Longitude, Latitude) |
 
 In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten gruppiert und als Integer abgelegt:
 
-| Wert | Beschreibung                                    |
-| :--: | :---------------------------------------------: |
-| -1   | Fehler                                          |
-|  0   | ausser Betrieb                                  |
-|  1   | geparkt                                         |
-|  2   | lädt                                            |
-|  3   | pausiert                                        |
-|  4   | fährt                                           |
-|  5   | mäht                                            |
+| Wert | Beschreibung |
+| :--- | :----------- |
+| -1   | Fehler |
+|  0   | ausser Betrieb |
+|  1   | geparkt |
+|  2   | lädt |
+|  3   | pausiert |
+|  4   | fährt |
+|  5   | mäht |
 
 Es ist damit z.B. egal, ob der Mähvorgang vom Timer ausgelöst wurde oder manuell.
 Das kann man dann leicht in einem Diagramm darstellen bzw. als Basis für Berechnungen verwenden.
