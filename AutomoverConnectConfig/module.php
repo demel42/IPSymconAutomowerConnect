@@ -53,7 +53,12 @@ class AutomowerConfig extends IPSModule
 
         $formActions = [];
         $formActions[] = ['type' => 'Select', 'name' => 'mower_name', 'caption' => 'Mower-Name', 'options' => $options];
-        $formActions[] = ['type' => 'Button', 'label' => 'Import of mower', 'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'];
+        $formActions[] = [
+							'type'    => 'Button',
+							'caption' => 'Import of mower',
+							'confirm' => 'Triggering the function creates the instances for the selected Automower-device. Are you sure?',
+							'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'
+						];
         $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
         $formActions[] = [
                             'type'    => 'Button',

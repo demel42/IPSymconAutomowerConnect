@@ -6,6 +6,8 @@
 			"Mower-Name": "Bezeichnung",
 
 			"Import of mower": "Importieren des Rasenmähers",
+			"Triggering the function creates the instances for the selected Automower-device. Are you sure?":
+				"Durch Auslösen der Funktion werden für den ausgewählten Automower die Instanzen angelegt. Sind Sie sich sicher?",
 			"Module description": "Modulbeschreibung",
 
 			"Instance getting created": "Instanz wird erstellt",
