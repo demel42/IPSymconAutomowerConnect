@@ -35,6 +35,7 @@
 			"Disconnected": "Getrennt",
 			"error": "Fehler",
 			"hatch closed": "Abdeckung ist geschlossen",
+			"hatch closed and disabled": "Abdeckung ist geschlossen und ausser Betrieb",
 			"hatch open": "Abdeckung ist offen",
 			"Last error": "letzter Fehler",
 			"Last position (latitude)": "letzter Breitengrad",
