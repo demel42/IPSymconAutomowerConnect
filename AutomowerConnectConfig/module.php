@@ -124,14 +124,14 @@ class AutomowerConfig extends IPSModule
         return $instID;
     }
 
-    public function Doit(string $mower_name)
+    public function Doit(string $mower_name = null)
     {
         $err = '';
         $statuscode = 0;
         $do_abort = false;
 
         $mowers = $this->GetMowerList();
-        if ($mowers != '') {
+        if ($mower_name != null && $mowers != '') {
             $mower_found = false;
             foreach ($mowers as $mower) {
                 if ($mower_name == $mower['name']) {
@@ -140,7 +140,7 @@ class AutomowerConfig extends IPSModule
                 }
             }
             if (!$mower_found) {
-                $err = "mower \"$name\" don't exists";
+                $err = "mower \"$mower_name\" don't exists";
                 $statuscode = 202;
                 $do_abort = true;
             }
