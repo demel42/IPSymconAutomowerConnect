@@ -1,7 +1,7 @@
 # IPSymconAutomowerConnect
 
 [![Version](https://img.shields.io/badge/Symcon_Version-5.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Version](https://img.shields.io/badge/Modul_Version-1.10-blue.svg)
+![Version](https://img.shields.io/badge/Modul_Version-1.11-blue.svg)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/136723075/shield?branch=master)](https://github.styleci.io/repos/136723075)
@@ -59,16 +59,16 @@ Die so erzeugte Instanz enthält neben den Zugangsdaten die interne Geräte-ID.
 
 ### zentrale Funktion
 
-`boolean AutomoverDevice_ParkMower(integer $InstanzID)`<br>
+`boolean AutomowerDevice_ParkMower(integer $InstanzID)`<br>
 Parken des Mähers in der Ladestation
 
-`boolean AutomoverDevice_StartMower(integer $InstanzID)`<br>
+`boolean AutomowerDevice_StartMower(integer $InstanzID)`<br>
 Starten eines manuellen Mähvorgangs
 
-`boolean AutomoverDevice_StopMower(integer $InstanzID)`<br>
+`boolean AutomowerDevice_StopMower(integer $InstanzID)`<br>
 Stoppen der Aktivität der Mähers
 
-`AutomoverDevice_GetRawData(integer $InstanceID, string $Name)`<br>
+`string AutomowerDevice_GetRawData(integer $InstanceID, string $Name)`<br>
 Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2GoogelMaps.php`.
 
 | Name          | Beschreibung |
@@ -169,6 +169,9 @@ Quellen:
   - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
 
 ## 7. Versions-Historie
+
+- 1.13 @ @ 25.04.2019 10:32<br>
+  - Schreibfehler korrigiert
 
 - 1.10 @ @ 23.04.2019 17:08<br>
   - Konfigurator um Sicherheitsabfrage ergänzt
