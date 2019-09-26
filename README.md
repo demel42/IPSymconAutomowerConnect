@@ -1,7 +1,7 @@
 # IPSymconAutomowerConnect
 
 [![Version](https://img.shields.io/badge/Symcon_Version-5.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Version](https://img.shields.io/badge/Modul_Version-1.12-blue.svg)
+![Version](https://img.shields.io/badge/Modul_Version-1.13-blue.svg)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![StyleCI](https://github.styleci.io/repos/136723075/shield?branch=master)](https://github.styleci.io/repos/136723075)
@@ -169,6 +169,11 @@ Quellen:
   - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
 
 ## 7. Versions-Historie
+
+- 1.13 @ 26.09.2019 18:24<br>
+  - Anpassungen an IPS 5.2
+    - IPS_SetVariableProfileValues(), IPS_SetVariableProfileDigits() nur bei INTEGER, FLOAT
+    - Dokumentation-URL in module.json
 
 - 1.12 @ 25.04.2019 16:20<br>
   - Konfigurator-Dialog abgesichert

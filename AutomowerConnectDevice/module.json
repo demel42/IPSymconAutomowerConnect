@@ -9,5 +9,6 @@
 	"parentRequirements": [],
 	"childRequirements": [],
 	"implemented": [],
-	"prefix": "AutomowerDevice"
+	"prefix": "AutomowerDevice",
+	"url": "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md"
 }
