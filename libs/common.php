@@ -48,10 +48,10 @@ trait AutomowerCommon
         if (!IPS_VariableProfileExists($Name)) {
             IPS_CreateVariableProfile($Name, $ProfileType);
             IPS_SetVariableProfileText($Name, '', $Suffix);
-			if (in_array($ProfileType, [VARIABLETYPE_INTEGER, VARIABLETYPE_FLOAT])) {
-				IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);
-				IPS_SetVariableProfileDigits($Name, $Digits);
-			}
+            if (in_array($ProfileType, [VARIABLETYPE_INTEGER, VARIABLETYPE_FLOAT])) {
+                IPS_SetVariableProfileValues($Name, $MinValue, $MaxValue, $StepSize);
+                IPS_SetVariableProfileDigits($Name, $Digits);
+            }
             IPS_SetVariableProfileIcon($Name, $Icon);
             if ($Associations != '') {
                 foreach ($Associations as $a) {
@@ -66,21 +66,21 @@ trait AutomowerCommon
     }
 
     private function CheckVarProfile4Value($Name, $Value)
-	{
-		$found = false;
-		if (IPS_VariableProfileExists($Name)) {
-			$VarProfil = IPS_GetVariableProfile($Name);
-			$Associations = $VarProfil['Associations'];
-			foreach ($Associations as $Association) {
-				if ($Value == $Association['Value']) {
-					$found = true;
-					break;
-    			}
-			}
-		}
+    {
+        $found = false;
+        if (IPS_VariableProfileExists($Name)) {
+            $VarProfil = IPS_GetVariableProfile($Name);
+            $Associations = $VarProfil['Associations'];
+            foreach ($Associations as $Association) {
+                if ($Value == $Association['Value']) {
+                    $found = true;
+                    break;
+                }
+            }
+        }
 
-		return $found;
-	}
+        return $found;
+    }
 
     // Inspired from module SymconTest/HookServe
     private function RegisterHook($WebHook)

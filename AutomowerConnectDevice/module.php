@@ -184,10 +184,10 @@ class AutomowerDevice extends IPSModule
         $formActions = [];
         $formActions[] = ['type' => 'Button', 'label' => 'Test account', 'onClick' => 'AutomowerDevice_TestAccount($id);'];
         $formActions[] = ['type' => 'Button', 'label' => 'Update status', 'onClick' => 'AutomowerDevice_UpdateStatus($id);'];
-		if (IPS_GetKernelVersion() < 5.2) {
-			$formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
-			$formActions[] = ['type' => 'Button', 'label' => 'Module description', 'onClick' => 'echo \'https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md\';'];
-		}
+        if (IPS_GetKernelVersion() < 5.2) {
+            $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
+            $formActions[] = ['type' => 'Button', 'label' => 'Module description', 'onClick' => 'echo \'https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md\';'];
+        }
 
         $formStatus = [];
         $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
@@ -312,10 +312,10 @@ class AutomowerDevice extends IPSModule
         $lastErrorCode = $status['lastErrorCode'];
         $lastErrorCodeTimestamp = $status['lastErrorCodeTimestamp'];
         if ($lastErrorCode) {
-			if (!$this->CheckVarProfile4Value('Automower.Error', $lastErrorCode)) {
-				$msg = __FUNCTION__ . ': unknown error-code=' . $lastErrorCode . ' @' . date('d-m-Y H:i:s', $lastErrorCodeTimestamp);
-				$this->LogMessage($msg, KL_WARNING);
-			}
+            if (!$this->CheckVarProfile4Value('Automower.Error', $lastErrorCode)) {
+                $msg = __FUNCTION__ . ': unknown error-code=' . $lastErrorCode . ' @' . date('d-m-Y H:i:s', $lastErrorCodeTimestamp);
+                $this->LogMessage($msg, KL_WARNING);
+            }
         } else {
             $lastErrorCodeTimestamp = 0;
         }
