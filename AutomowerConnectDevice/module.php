@@ -323,7 +323,7 @@ class AutomowerDevice extends IPSModule
         $this->SetValue('LastErrorTimestamp', $lastErrorCodeTimestamp);
 
         $dt = new DateTime(date('d.m.Y 00:00:00'));
-        $ts_today = $dt->format('U');
+        $ts_today = (int) $dt->format('U');
         $ts_watch = $this->GetValue('DailyReference');
         if ($ts_today != $ts_watch) {
             $this->SetValue('DailyReference', $ts_today);
