@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
 require_once __DIR__ . '/../libs/library.php';  // modul-bezogene Funktionen
 
@@ -54,18 +56,18 @@ class AutomowerConfig extends IPSModule
         $formActions = [];
         $formActions[] = ['type' => 'Select', 'name' => 'mower_name', 'caption' => 'Mower-Name', 'options' => $options];
         $formActions[] = [
-                            'type'    => 'Button',
-                            'caption' => 'Import of mower',
-                            'confirm' => 'Triggering the function creates the instances for the selected Automower-device. Are you sure?',
-                            'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'
-                        ];
+            'type'    => 'Button',
+            'caption' => 'Import of mower',
+            'confirm' => 'Triggering the function creates the instances for the selected Automower-device. Are you sure?',
+            'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'
+        ];
         if (IPS_GetKernelVersion() < 5.2) {
             $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
             $formActions[] = [
-                                'type'    => 'Button',
-                                'caption' => 'Module description',
-                                'onClick' => 'echo "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md";'
-                            ];
+                'type'    => 'Button',
+                'caption' => 'Module description',
+                'onClick' => 'echo "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md";'
+            ];
         }
 
         $formStatus = [];
@@ -176,9 +178,9 @@ class AutomowerConfig extends IPSModule
 
         $info = 'Automower  ' . $model;
         $properties = [
-                'model'       => $model,
-                'with_gps'    => $with_gps
-            ];
+            'model'       => $model,
+            'with_gps'    => $with_gps
+        ];
         $pos = 1000;
         $instID = $this->FindOrCreateInstance($device_id, $name, $info, $properties, $pos++);
     }

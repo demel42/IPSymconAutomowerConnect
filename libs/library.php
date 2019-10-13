@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 if (!defined('IS_UNAUTHORIZED')) {
     define('IS_UNAUTHORIZED', IS_EBASE + 1);
     define('IS_SERVERERROR', IS_EBASE + 2);
@@ -36,19 +38,19 @@ trait AutomowerLibrary
 
         if ($expiration < time()) {
             $postdata = [
-                    'data' => [
-                        'attributes' => [
-                            'username' => $user,
-                            'password' => $password
-                        ],
-                        'type' => 'token'
-                    ]
-                ];
+                'data' => [
+                    'attributes' => [
+                        'username' => $user,
+                        'password' => $password
+                    ],
+                    'type' => 'token'
+                ]
+            ];
 
             $header = [
-                    'Accept: application/json',
-                    'Content-Type: application/json'
-                ];
+                'Accept: application/json',
+                'Content-Type: application/json'
+            ];
 
             $ctoken = $this->do_HttpRequest($this->url_im . 'token', $header, $postdata, true);
             $this->SendDebug(__FUNCTION__, 'ctoken=' . print_r($ctoken, true), 0);
@@ -64,11 +66,11 @@ trait AutomowerLibrary
             $user_id = $jtoken['data']['attributes']['user_id'];
 
             $jtoken = [
-                    'token'            => $token,
-                    'provider'         => $provider,
-                    'user_id'          => $user_id,
-                    'expiration'       => time() + $expires_in
-                ];
+                'token'            => $token,
+                'provider'         => $provider,
+                'user_id'          => $user_id,
+                'expiration'       => time() + $expires_in
+            ];
             $this->SetBuffer('Token', json_encode($jtoken));
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
 require_once __DIR__ . '/../libs/library.php';  // modul-bezogene Funktionen
 
@@ -451,13 +453,13 @@ class AutomowerDevice extends IPSModule
     private function decode_operatingMode($val)
     {
         $val2txt = [
-                'HOME'               => 'remain in base',
-                'AUTO'               => 'automatic',
-                'MAIN_AREA'          => 'main area',
-                'SECONDARY_AREA'     => 'secondary area',
-                'OVERRIDE_TIMER'     => 'override timer',
-                'SPOT_CUTTING'       => 'spot cutting',
-            ];
+            'HOME'               => 'remain in base',
+            'AUTO'               => 'automatic',
+            'MAIN_AREA'          => 'main area',
+            'SECONDARY_AREA'     => 'secondary area',
+            'OVERRIDE_TIMER'     => 'override timer',
+            'SPOT_CUTTING'       => 'spot cutting',
+        ];
 
         if (isset($val2txt[$val])) {
             $txt = $this->Translate($val2txt[$val]);
@@ -473,27 +475,27 @@ class AutomowerDevice extends IPSModule
     private function decode_mowerStatus($val)
     {
         $val2txt = [
-                'ERROR'                       => 'error',
+            'ERROR'                       => 'error',
 
-                'OK_CUTTING'                  => 'cutting',
-                'OK_CUTTING_NOT_AUTO'         => 'manual cutting',
-                'OK_CUTTING_TIMER_OVERRIDDEN' => 'manual cutting',
+            'OK_CUTTING'                  => 'cutting',
+            'OK_CUTTING_NOT_AUTO'         => 'manual cutting',
+            'OK_CUTTING_TIMER_OVERRIDDEN' => 'manual cutting',
 
-                'PARKED_TIMER'                => 'parked',
-                'PARKED_PARKED_SELECTED'      => 'manual parked',
+            'PARKED_TIMER'                => 'parked',
+            'PARKED_PARKED_SELECTED'      => 'manual parked',
 
-                'PAUSED'                      => 'paused',
+            'PAUSED'                      => 'paused',
 
-                'OFF_DISABLED'                => 'disabled',
-                'OFF_HATCH_OPEN'              => 'hatch open',
-                'OFF_HATCH_CLOSED'            => 'hatch closed',
-                'OFF_HATCH_CLOSED_DISABLED'   => 'hatch closed and disabled',
+            'OFF_DISABLED'                => 'disabled',
+            'OFF_HATCH_OPEN'              => 'hatch open',
+            'OFF_HATCH_CLOSED'            => 'hatch closed',
+            'OFF_HATCH_CLOSED_DISABLED'   => 'hatch closed and disabled',
 
-                'OK_SEARCHING'                => 'searching base',
-                'OK_LEAVING'                  => 'leaving base',
+            'OK_SEARCHING'                => 'searching base',
+            'OK_LEAVING'                  => 'leaving base',
 
-                'OK_CHARGING'                 => 'charging',
-            ];
+            'OK_CHARGING'                 => 'charging',
+        ];
 
         if (isset($val2txt[$val])) {
             $txt = $this->Translate($val2txt[$val]);
@@ -509,27 +511,27 @@ class AutomowerDevice extends IPSModule
     private function normalize_mowerStatus($val)
     {
         $val2code = [
-                'ERROR'                       => AUTOMOWER_ACTIVITY_ERROR,
+            'ERROR'                       => AUTOMOWER_ACTIVITY_ERROR,
 
-                'OK_CUTTING'                  => AUTOMOWER_ACTIVITY_CUTTING,
-                'OK_CUTTING_NOT_AUTO'         => AUTOMOWER_ACTIVITY_CUTTING,
-                'OK_CUTTING_TIMER_OVERRIDDEN' => AUTOMOWER_ACTIVITY_CUTTING,
+            'OK_CUTTING'                  => AUTOMOWER_ACTIVITY_CUTTING,
+            'OK_CUTTING_NOT_AUTO'         => AUTOMOWER_ACTIVITY_CUTTING,
+            'OK_CUTTING_TIMER_OVERRIDDEN' => AUTOMOWER_ACTIVITY_CUTTING,
 
-                'PARKED_TIMER'                => AUTOMOWER_ACTIVITY_PARKED,
-                'PARKED_PARKED_SELECTED'      => AUTOMOWER_ACTIVITY_PARKED,
+            'PARKED_TIMER'                => AUTOMOWER_ACTIVITY_PARKED,
+            'PARKED_PARKED_SELECTED'      => AUTOMOWER_ACTIVITY_PARKED,
 
-                'PAUSED'                      => AUTOMOWER_ACTIVITY_PAUSED,
+            'PAUSED'                      => AUTOMOWER_ACTIVITY_PAUSED,
 
-                'OFF_DISABLED'                => AUTOMOWER_ACTIVITY_DISABLED,
-                'OFF_HATCH_OPEN'              => AUTOMOWER_ACTIVITY_DISABLED,
-                'OFF_HATCH_CLOSED'            => AUTOMOWER_ACTIVITY_DISABLED,
-                'OFF_HATCH_CLOSED_DISABLED'   => AUTOMOWER_ACTIVITY_DISABLED,
+            'OFF_DISABLED'                => AUTOMOWER_ACTIVITY_DISABLED,
+            'OFF_HATCH_OPEN'              => AUTOMOWER_ACTIVITY_DISABLED,
+            'OFF_HATCH_CLOSED'            => AUTOMOWER_ACTIVITY_DISABLED,
+            'OFF_HATCH_CLOSED_DISABLED'   => AUTOMOWER_ACTIVITY_DISABLED,
 
-                'OK_SEARCHING'                => AUTOMOWER_ACTIVITY_MOVING,
-                'OK_LEAVING'                  => AUTOMOWER_ACTIVITY_MOVING,
+            'OK_SEARCHING'                => AUTOMOWER_ACTIVITY_MOVING,
+            'OK_LEAVING'                  => AUTOMOWER_ACTIVITY_MOVING,
 
-                'OK_CHARGING'                 => AUTOMOWER_ACTIVITY_CHARGING,
-            ];
+            'OK_CHARGING'                 => AUTOMOWER_ACTIVITY_CHARGING,
+        ];
 
         if (isset($val2code[$val])) {
             $code = $val2code[$val];
@@ -562,8 +564,8 @@ class AutomowerDevice extends IPSModule
         $device_id = $this->ReadPropertyString('device_id');
 
         $postdata = [
-                'action' => $cmd
-            ];
+            'action' => $cmd
+        ];
 
         $cdata = $this->do_ApiCall($this->url_track . 'mowers/' . $device_id . '/control', $postdata);
         if ($cdata == '') {
