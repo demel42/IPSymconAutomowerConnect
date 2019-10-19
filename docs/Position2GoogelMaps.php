@@ -43,7 +43,7 @@ $paths = [];
 $paths_color = ['0xFF4040', '0x7B68EE', '0x00FF00'];
 
 $dt = new DateTime(date('d.m.Y 00:00:00', time()));
-$now = $dt->format('U');
+$now = (int) $dt->format('U');
 
 for ($i = 2; $i >= 0; $i--) {
     $from = $now - ($i * 24 * 60 * 60);
