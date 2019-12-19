@@ -62,7 +62,7 @@ class AutomowerConfig extends IPSModule
             'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'
         ];
         if (IPS_GetKernelVersion() < 5.2) {
-            $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
+            $formActions[] = ['type' => 'Label', 'caption' => '____________________________________________________________________________________________________'];
             $formActions[] = [
                 'type'    => 'Button',
                 'caption' => 'Module description',

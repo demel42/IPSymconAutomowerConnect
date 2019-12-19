@@ -1,7 +1,7 @@
 # IPSymconAutomowerConnect
 
 [![Version](https://img.shields.io/badge/Symcon_Version-5.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Version](https://img.shields.io/badge/Modul_Version-1.13-blue.svg)
+![Version](https://img.shields.io/badge/Modul_Version-1.14-blue.svg)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -169,53 +169,57 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 1.13 @ 13.10.2019 13:18<br>
+- 1.14 @ 19.12.2019 14:09
+  - Anpassungen an IPS 5.3
+    - Formular-Elemente: 'label' in 'caption' geändert
+
+- 1.13 @ 13.10.2019 13:18
   - Anpassungen an IPS 5.2
     - IPS_SetVariableProfileValues(), IPS_SetVariableProfileDigits() nur bei INTEGER, FLOAT
     - Dokumentation-URL in module.json
   - Umstellung auf strict_types=1
   - Umstellung von StyleCI auf php-cs-fixer
 
-- 1.12 @ 25.04.2019 16:20<br>
+- 1.12 @ 25.04.2019 16:20
   - Konfigurator-Dialog abgesichert
 
-- 1.11 @ 25.04.2019 10:32<br>
+- 1.11 @ 25.04.2019 10:32
   - Schreibfehler korrigiert
 
-- 1.10 @ 23.04.2019 17:08<br>
+- 1.10 @ 23.04.2019 17:08
   - Konfigurator um Sicherheitsabfrage ergänzt
 
-- 1.9 @ 29.03.2019 16:19<br>
+- 1.9 @ 29.03.2019 16:19
   - SetValue() abgesichert
 
-- 1.8 @ 20.03.2019 14:56<br>
+- 1.8 @ 20.03.2019 14:56
   - Anpassungen IPS 5, Abspaltung von Branch _ips_4.4_
   - Schalter, um eine Instanz (temporär) zu deaktivieren
 
-- 1.7 @ 23.01.2019 18:18<br>
+- 1.7 @ 23.01.2019 18:18
   - curl_errno() abfragen
 
-- 1.6 @ 22.12.2018 11:19<br>
+- 1.6 @ 22.12.2018 11:19
   - Fehler in der http-Kommunikation nun nicht mehr mit _echo_ (also als **ERROR**) sondern mit _LogMessage_ als **NOTIFY**
 
-- 1.5 @ 21.12.2018 13:10<br>
+- 1.5 @ 21.12.2018 13:10
   - Standard-Konstanten verwenden
 
-- 1.4 @ 02.12.2018 11:07<br>
+- 1.4 @ 02.12.2018 11:07
   - Variablenprofil _Automower.Connection_ für _Connected_
 
-- 1.3 @ 27.11.2018 16:40<br>
+- 1.3 @ 27.11.2018 16:40
   - OperatingMode _Home_ darstellen
 
-- 1.2 @ 26.09.2018 18:54<br>
+- 1.2 @ 26.09.2018 18:54
   - Fix zu v1.1 (Fehlermeldung bei Aufruf von ApplyChanges())
   - (alle) Fehlercodes als Text hinterlegt<br>
     Hinweis: damit das Profil _Automower.Error_ ergänzt wird, das Profil vor dem Update löschen
 
-- 1.1 @ 17.09.2018 17:54<br>
-  - Versionshistorie dazu,
-  - define's der Variablentypen,
+- 1.1 @ 17.09.2018 17:54
+  - Versionshistorie dazu
+  - define's der Variablentypen
   - Schaltfläche mit Link zu README.md im Konfigurationsdialog
 
-- 1.0 @ 25.06.2018 16:59<br>
+- 1.0 @ 25.06.2018 16:59
   Initiale Version

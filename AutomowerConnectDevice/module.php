@@ -177,18 +177,18 @@ class AutomowerDevice extends IPSModule
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'device_id', 'caption' => 'Device-ID'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'model', 'caption' => 'Model'];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'with_gps', 'caption' => 'with GPS-Data'];
-        $formElements[] = ['type' => 'Label', 'label' => 'save position to (logged) variable \'Position\''];
+        $formElements[] = ['type' => 'Label', 'caption' => 'save position to (logged) variable \'Position\''];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'save_position', 'caption' => 'save position'];
-        $formElements[] = ['type' => 'Label', 'label' => ''];
-        $formElements[] = ['type' => 'Label', 'label' => 'Update status every X minutes'];
+        $formElements[] = ['type' => 'Label', 'caption' => ''];
+        $formElements[] = ['type' => 'Label', 'caption' => 'Update status every X minutes'];
         $formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Minutes'];
 
         $formActions = [];
-        $formActions[] = ['type' => 'Button', 'label' => 'Test account', 'onClick' => 'AutomowerDevice_TestAccount($id);'];
-        $formActions[] = ['type' => 'Button', 'label' => 'Update status', 'onClick' => 'AutomowerDevice_UpdateStatus($id);'];
+        $formActions[] = ['type' => 'Button', 'caption' => 'Test account', 'onClick' => 'AutomowerDevice_TestAccount($id);'];
+        $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'AutomowerDevice_UpdateStatus($id);'];
         if (IPS_GetKernelVersion() < 5.2) {
-            $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
-            $formActions[] = ['type' => 'Button', 'label' => 'Module description', 'onClick' => 'echo \'https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md\';'];
+            $formActions[] = ['type' => 'Label', 'caption' => '____________________________________________________________________________________________________'];
+            $formActions[] = ['type' => 'Button', 'caption' => 'Module description', 'onClick' => 'echo \'https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md\';'];
         }
 
         $formStatus = [];
