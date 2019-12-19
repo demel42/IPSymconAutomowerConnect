@@ -222,4 +222,4 @@ Quellen:
   - Schaltfläche mit Link zu README.md im Konfigurationsdialog
 
 - 1.0 @ 25.06.2018 16:59
-  Initiale Version
+  - Initiale Version
