@@ -48,7 +48,7 @@ class AutomowerConfig extends IPSModule
             if ($mowers != '') {
                 foreach ($mowers as $mower) {
                     $name = $mower['name'];
-                    $options[] = ['label' => $name, 'value' => $name];
+                    $options[] = ['caption' => $name, 'value' => $name];
                 }
             }
         }
