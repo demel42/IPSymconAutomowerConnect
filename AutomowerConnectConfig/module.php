@@ -61,14 +61,6 @@ class AutomowerConfig extends IPSModule
             'confirm' => 'Triggering the function creates the instances for the selected Automower-device. Are you sure?',
             'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'
         ];
-        if (IPS_GetKernelVersion() < 5.2) {
-            $formActions[] = ['type' => 'Label', 'caption' => '____________________________________________________________________________________________________'];
-            $formActions[] = [
-                'type'    => 'Button',
-                'caption' => 'Module description',
-                'onClick' => 'echo "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md";'
-            ];
-        }
 
         $formStatus = [];
         $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];

@@ -186,10 +186,6 @@ class AutomowerDevice extends IPSModule
         $formActions = [];
         $formActions[] = ['type' => 'Button', 'caption' => 'Test account', 'onClick' => 'AutomowerDevice_TestAccount($id);'];
         $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'AutomowerDevice_UpdateStatus($id);'];
-        if (IPS_GetKernelVersion() < 5.2) {
-            $formActions[] = ['type' => 'Label', 'caption' => '____________________________________________________________________________________________________'];
-            $formActions[] = ['type' => 'Button', 'caption' => 'Module description', 'onClick' => 'echo \'https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md\';'];
-        }
 
         $formStatus = [];
         $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
