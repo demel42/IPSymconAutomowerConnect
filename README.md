@@ -1,7 +1,6 @@
 # IPSymconAutomowerConnect
 
 [![Version](https://img.shields.io/badge/Symcon_Version-5.3+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-![Version](https://img.shields.io/badge/Modul_Version-1.14-blue.svg)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -168,6 +167,9 @@ Quellen:
   - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
 
 ## 7. Versions-Historie
+
+- 1.15 @ 08.04.2020 11:01
+  - define's durch statische Klassen-Variablen ersetzt
 
 - 1.14 @ 30.12.2019 10:56
   - Anpassungen an IPS 5.3

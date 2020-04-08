@@ -155,8 +155,6 @@ class AutomowerDevice extends IPSModule
 
         if ($user != '' || $password != '' || $device_id != '') {
             $this->SetUpdateInterval();
-            // Inspired by module SymconTest/HookServe
-            // We need to call the RegisterHook function on Kernel READY
             if (IPS_GetKernelRunlevel() == KR_READY) {
                 $this->UpdateStatus();
             }
@@ -168,7 +166,7 @@ class AutomowerDevice extends IPSModule
         $this->SetSummary($device_id);
     }
 
-    public function GetConfigurationForm()
+    protected function GetFormElements()
     {
         $formElements = [];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
@@ -183,27 +181,34 @@ class AutomowerDevice extends IPSModule
         $formElements[] = ['type' => 'Label', 'caption' => 'Update status every X minutes'];
         $formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Minutes'];
 
+        return $formElements;
+    }
+
+    protected function GetFormActions()
+    {
         $formActions = [];
         $formActions[] = ['type' => 'Button', 'caption' => 'Test account', 'onClick' => 'AutomowerDevice_TestAccount($id);'];
         $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'AutomowerDevice_UpdateStatus($id);'];
 
-        $formStatus = [];
-        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
-        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
-        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
-        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
-        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
-
-        $formStatus[] = ['code' => IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
-        $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
-        $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
-        $formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
-        $formStatus[] = ['code' => IS_DEVICE_MISSING, 'icon' => 'error', 'caption' => 'Instance is inactive (device missing)'];
-
-        return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
+        return $formActions;
     }
 
-    // Inspired by module SymconTest/HookServe
+    public function GetConfigurationForm()
+    {
+        $formElements = $this->GetFormElements();
+        $formActions = $this->GetFormActions();
+        $formStatus = $this->GetFormStatus();
+
+        $form = json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
+        if ($form == '') {
+            $this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
+            $this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
+        }
+        return $form;
+    }
+
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
     {
         parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
@@ -393,7 +398,7 @@ class AutomowerDevice extends IPSModule
 
         $mowers = $this->GetMowerList();
         if ($mowers == '') {
-            $this->SetStatus(IS_UNAUTHORIZED);
+            $this->SetStatus(self::$IS_UNAUTHORIZED);
             echo $this->Translate('invalid account-data');
             return;
         }
@@ -412,7 +417,7 @@ class AutomowerDevice extends IPSModule
         }
 
         if (!$mower_found) {
-            $this->SetStatus(IS_DEVICE_MISSING);
+            $this->SetStatus(self::$IS_DEVICE_MISSING);
             echo $this->Translate('device not found');
             return;
         }

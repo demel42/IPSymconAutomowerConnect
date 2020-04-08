@@ -2,23 +2,14 @@
 
 declare(strict_types=1);
 
-if (!defined('VARIABLETYPE_BOOLEAN')) {
-    define('VARIABLETYPE_BOOLEAN', 0);
-    define('VARIABLETYPE_INTEGER', 1);
-    define('VARIABLETYPE_FLOAT', 2);
-    define('VARIABLETYPE_STRING', 3);
-}
-
-if (!defined('IS_UNAUTHORIZED')) {
-    define('IS_UNAUTHORIZED', IS_EBASE + 1);
-    define('IS_SERVERERROR', IS_EBASE + 2);
-    define('IS_HTTPERROR', IS_EBASE + 3);
-    define('IS_INVALIDDATA', IS_EBASE + 4);
-    define('IS_DEVICE_MISSING', IS_EBASE + 5);
-}
-
 trait AutomowerCommon
 {
+    public static $IS_UNAUTHORIZED = IS_EBASE;
+    public static $IS_SERVERERROR = IS_EBASE;
+    public static $IS_HTTPERROR = IS_EBASE;
+    public static $IS_INVALIDDATA = IS_EBASE;
+    public static $IS_DEVICE_MISSING = IS_EBASE;
+
     protected function SetValue($Ident, $Value)
     {
         @$varID = $this->GetIDForIdent($Ident);
@@ -84,7 +75,6 @@ trait AutomowerCommon
         return $found;
     }
 
-    // Inspired from module SymconTest/HookServe
     private function RegisterHook($WebHook)
     {
         $ids = IPS_GetInstanceListByModuleID('{015A6EB8-D6E5-4B93-B496-0D3F77AE9FE1}');
@@ -108,7 +98,6 @@ trait AutomowerCommon
         }
     }
 
-    // Inspired from module SymconTest/HookServe
     private function GetMimeType($extension)
     {
         $lines = file(IPS_GetKernelDirEx() . 'mime.types');
@@ -128,7 +117,16 @@ trait AutomowerCommon
 
     private function GetArrayElem($data, $var, $dflt)
     {
-        return isset($data[$var]) ? $data[$var] : $dflt;
+        $ret = $data;
+        $vs = explode('.', $var);
+        foreach ($vs as $v) {
+            if (!isset($ret[$v])) {
+                $ret = $dflt;
+                break;
+            }
+            $ret = $ret[$v];
+        }
+        return $ret;
     }
 
     private function format_float($number, $dec_points = -1)
@@ -145,5 +143,23 @@ trait AutomowerCommon
             $result = false;
         }
         return $result;
+    }
+
+    private function GetFormStatus()
+    {
+        $formStatus = [];
+        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
+        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
+        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
+        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
+        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
+
+        $formStatus[] = ['code' => self::$IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
+        $formStatus[] = ['code' => self::$IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
+        $formStatus[] = ['code' => self::$IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
+        $formStatus[] = ['code' => self::$IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
+        $formStatus[] = ['code' => self::$IS_DEVICE_MISSING, 'icon' => 'error', 'caption' => 'Instance is inactive (device missing)'];
+
+        return $formStatus;
     }
 }

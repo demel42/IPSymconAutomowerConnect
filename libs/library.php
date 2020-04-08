@@ -2,14 +2,6 @@
 
 declare(strict_types=1);
 
-if (!defined('IS_UNAUTHORIZED')) {
-    define('IS_UNAUTHORIZED', IS_EBASE + 1);
-    define('IS_SERVERERROR', IS_EBASE + 2);
-    define('IS_HTTPERROR', IS_EBASE + 3);
-    define('IS_INVALIDDATA', IS_EBASE + 4);
-    define('IS_DEVICE_MISSING', IS_EBASE + 5);
-}
-
 trait AutomowerLibrary
 {
     private $url_im = 'https://iam-api.dss.husqvarnagroup.net/api/v3/';
@@ -140,30 +132,30 @@ trait AutomowerLibrary
         $err = '';
         $data = '';
         if ($cerrno) {
-            $statuscode = IS_SERVERERROR;
+            $statuscode = self::$IS_SERVERERROR;
             $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
         } elseif ($httpcode != 200 && $httpcode != 201) {
             if ($httpcode == 401) {
-                $statuscode = IS_UNAUTHORIZED;
+                $statuscode = self::$IS_UNAUTHORIZED;
                 $err = 'got http-code ' . $httpcode . ' (unauthorized)';
             } elseif ($httpcode >= 500 && $httpcode <= 599) {
-                $statuscode = IS_SERVERERROR;
+                $statuscode = self::$IS_SERVERERROR;
                 $err = 'got http-code ' . $httpcode . ' (server error)';
             } elseif ($httpcode == 204) {
                 // 204 = No Content	= Die Anfrage wurde erfolgreich durchgeführt, die Antwort enthält jedoch bewusst keine Daten.
                 // kommt zB bei senden von SMS
                 $data = json_encode(['status' => 'ok']);
             } else {
-                $statuscode = IS_HTTPERROR;
+                $statuscode = self::$IS_HTTPERROR;
                 $err = 'got http-code ' . $httpcode;
             }
         } elseif ($cdata == '') {
-            $statuscode = IS_INVALIDDATA;
+            $statuscode = self::$IS_INVALIDDATA;
             $err = 'no data';
         } else {
             $jdata = json_decode($cdata, true);
             if ($jdata == '') {
-                $statuscode = IS_INVALIDDATA;
+                $statuscode = self::$IS_INVALIDDATA;
                 $err = 'malformed response';
             } else {
                 $data = $cdata;
