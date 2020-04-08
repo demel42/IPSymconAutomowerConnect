@@ -49,7 +49,7 @@ Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Mod
 ### b. Einrichtung in IPS
 
 In IP-Symcon zuerst _Konfigurator Instanzen_ den Konfigurator _AutomowerConnect Konfigurator_ hinzufügen.
-Hier die Zugangsdaten eintragen, _Übernehmen_ und dann kann man in der Auswahlbox einen der mit diesem Account verknüpften Mäher auswählen und mit _Importiern_ eine Instanz anlegen.
+Hier die Zugangsdaten eintragen, _Übernehmen_ und dann kann man über den Konfigurator eine Instanz anlegen.
 
 Die so erzeugte Instanz enthält neben den Zugangsdaten die interne Geräte-ID.
 
@@ -94,14 +94,11 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 | Aktualisiere Daten ...   | integer | 1            | Aktualisierungsintervall, Angabe in Minuten |
 
 
-##
+## AutomowerDevice
 
 | Bezeichnung              | Beschreibung |
 | :----------------------- | :----------- |
 | Zugangsdaten überprüfen  | Testet die Zugangsdaten und gibt ggfs Accout-Details aus |
-| nur _*AutomowerConfig*_  | |
-| Import des Rasenmähers   | Anlage einer _AutomowerDevice_-Instanz |
-| nur _*AutomowerDevice*_  | |
 | Aktualisiere Status      | Status des Rasenmähers abrufen |
 
 ### Statusvariablen
@@ -168,8 +165,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 1.15 @ 08.04.2020 11:01
+- 1.15 @ 08.04.2020 16:29
   - define's durch statische Klassen-Variablen ersetzt
+  - Einsatz des Konfigurators
 
 - 1.14 @ 30.12.2019 10:56
   - Anpassungen an IPS 5.3

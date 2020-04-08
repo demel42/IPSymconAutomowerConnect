@@ -16,164 +16,184 @@ class AutomowerConfig extends IPSModule
 
         $this->RegisterPropertyString('user', '');
         $this->RegisterPropertyString('password', '');
+
+        $this->RegisterPropertyInteger('ImportCategoryID', 0);
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
 
+        $refs = $this->GetReferenceList();
+        foreach ($refs as $ref) {
+            $this->UnregisterReference($ref);
+        }
+        $propertyNames = ['ImportCategoryID'];
+        foreach ($propertyNames as $name) {
+            $oid = $this->ReadPropertyInteger($name);
+            if ($oid > 0) {
+                $this->RegisterReference($oid);
+            }
+        }
+
+        $user = $this->ReadPropertyString('user');
+        $password = $this->ReadPropertyString('password');
+        if ($user == '' || $password == '') {
+            $this->SetStatus(self::$IS_UNAUTHORIZED);
+            return;
+        }
+
+        $this->SetStatus(IS_ACTIVE);
+    }
+
+    private function SetLocation()
+    {
+        $category = $this->ReadPropertyInteger('ImportCategoryID');
+        $tree_position = [];
+        if ($category > 0 && IPS_ObjectExists($category)) {
+            $tree_position[] = IPS_GetName($category);
+            $parent = IPS_GetObject($category)['ParentID'];
+            while ($parent > 0) {
+                if ($parent > 0) {
+                    $tree_position[] = IPS_GetName($parent);
+                }
+                $parent = IPS_GetObject($parent)['ParentID'];
+            }
+            $tree_position = array_reverse($tree_position);
+        }
+        return $tree_position;
+    }
+
+    public function getConfiguratorValues()
+    {
         $user = $this->ReadPropertyString('user');
         $password = $this->ReadPropertyString('password');
 
-        $ok = true;
-        if ($user == '' || $password == '') {
-            $ok = false;
+        $config_list = [];
+
+        $mowers = $this->GetMowerList();
+        if ($mowers != '') {
+            $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}';
+            $instIDs = IPS_GetInstanceListByModuleID($guid);
+            foreach ($mowers as $mower) {
+                $device_id = $mower['id'];
+                $name = $mower['name'];
+                $model = $mower['model'];
+                switch ($model) {
+                    case 'G':
+                    case 'H':
+                        $with_gps = true;
+                        break;
+                    default:
+                        $with_gps = false;
+                        break;
+                }
+
+                $instanceID = 0;
+                foreach ($instIDs as $instID) {
+                    if (IPS_GetProperty($instID, 'device_id') == $device_id) {
+                        $this->SendDebug(__FUNCTION__, 'controller found: ' . utf8_decode(IPS_GetName($instID)) . ' (' . $instID . ')', 0);
+                        $instanceID = $instID;
+                        break;
+                    }
+                }
+
+                $create = [
+                    'moduleID'      => $guid,
+                    'location'      => $this->SetLocation(),
+                    'configuration' => [
+                        'user'        => $user,
+                        'password'    => $password,
+                        'device_id'   => "$device_id",
+                        'model'       => $model,
+                        'with_gps'    => $with_gps
+                    ]
+                ];
+                $create['info'] = 'Automower  ' . $model;
+
+                $entry = [
+                    'instanceID'    => $instanceID,
+                    'name'          => $name,
+                    'model'         => $model,
+                    'id'            => $device_id,
+                    'create'        => $create
+                ];
+
+                $config_list[] = $entry;
+                $this->SendDebug(__FUNCTION__, 'entry=' . print_r($entry, true), 0);
+            }
         }
-        $this->SetStatus($ok ? IS_ACTIVE : IS_UNAUTHORIZED);
+
+        return $config_list;
+    }
+
+    public function GetFormElements()
+    {
+        $formElements = [];
+
+        $formElements[] = ['type' => 'Label', 'caption' => 'Hydrawise Configurator'];
+
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
+        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
+
+        $formElements[] = ['type' => 'Label', 'caption' => ''];
+
+        $formElements[] = ['name' => 'ImportCategoryID', 'type' => 'SelectCategory', 'caption' => 'category'];
+
+        $entries = $this->getConfiguratorValues();
+        $configurator = [
+            'type'    => 'Configurator',
+            'name'    => 'Mower',
+            'caption' => 'Mower',
+
+            'rowCount' => count($entries),
+
+            'add'     => false,
+            'delete'  => false,
+            'columns' => [
+                [
+                    'caption' => 'Name',
+                    'name'    => 'name',
+                    'width'   => 'auto'
+                ],
+                [
+                    'caption' => 'Model',
+                    'name'    => 'model',
+                    'width'   => '200px'
+                ],
+                [
+                    'caption' => 'ID',
+                    'name'    => 'id',
+                    'width'   => '400px'
+                ]
+            ],
+            'values' => $entries
+        ];
+        $formElements[] = $configurator;
+
+        return $formElements;
+    }
+
+    protected function GetFormActions()
+    {
+        $formActions = [];
+
+        return $formActions;
     }
 
     public function GetConfigurationForm()
     {
-        $formElements = [];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
+        $formElements = $this->GetFormElements();
+        $formActions = $this->GetFormActions();
+        $formStatus = $this->GetFormStatus();
 
-        $options = [];
-
-        $user = $this->ReadPropertyString('user');
-        $password = $this->ReadPropertyString('password');
-
-        if ($user != '' || $password != '') {
-            $mowers = $this->GetMowerList();
-            if ($mowers != '') {
-                foreach ($mowers as $mower) {
-                    $name = $mower['name'];
-                    $options[] = ['caption' => $name, 'value' => $name];
-                }
-            }
+        $form = json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
+        if ($form == '') {
+            $this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
+            $this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
+            $this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
         }
-
-        $formActions = [];
-        $formActions[] = ['type' => 'Select', 'name' => 'mower_name', 'caption' => 'Mower-Name', 'options' => $options];
-        $formActions[] = [
-            'type'    => 'Button',
-            'caption' => 'Import of mower',
-            'confirm' => 'Triggering the function creates the instances for the selected Automower-device. Are you sure?',
-            'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'
-        ];
-
-        $formStatus = [];
-        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
-        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
-        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
-        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
-        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
-
-        $formStatus[] = ['code' => IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
-        $formStatus[] = ['code' => IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
-        $formStatus[] = ['code' => IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
-        $formStatus[] = ['code' => IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
-        $formStatus[] = ['code' => IS_DEVICE_MISSING, 'icon' => 'error', 'caption' => 'Instance is inactive (device missing)'];
-
-        return json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
-    }
-
-    private function FindOrCreateInstance($device_id, $name, $info, $properties, $pos)
-    {
-        $user = $this->ReadPropertyString('user');
-        $password = $this->ReadPropertyString('password');
-
-        $instID = '';
-
-        $instIDs = IPS_GetInstanceListByModuleID('{B64D5F1C-6F12-474B-8DBC-3B263E67954E}');
-        foreach ($instIDs as $id) {
-            $cfg = IPS_GetConfiguration($id);
-            $jcfg = json_decode($cfg, true);
-            if (!isset($jcfg['device_id'])) {
-                continue;
-            }
-            if ($jcfg['device_id'] == $device_id) {
-                $instID = $id;
-                break;
-            }
-        }
-
-        if ($instID == '') {
-            $instID = IPS_CreateInstance('{B64D5F1C-6F12-474B-8DBC-3B263E67954E}');
-            if ($instID == '') {
-                echo 'unable to create instance "' . $name . '"';
-                return $instID;
-            }
-            IPS_SetProperty($instID, 'user', $user);
-            IPS_SetProperty($instID, 'password', $password);
-            IPS_SetProperty($instID, 'device_id', $device_id);
-            foreach ($properties as $key => $property) {
-                IPS_SetProperty($instID, $key, $property);
-            }
-            IPS_SetName($instID, $name);
-            IPS_SetInfo($instID, $info);
-            IPS_SetPosition($instID, $pos);
-        }
-
-        IPS_ApplyChanges($instID);
-
-        return $instID;
-    }
-
-    public function Doit(string $mower_name = null)
-    {
-        $err = '';
-        $statuscode = 0;
-        $do_abort = false;
-
-        $mowers = $this->GetMowerList();
-        if ($mower_name != null && $mowers != '') {
-            $mower_found = false;
-            foreach ($mowers as $mower) {
-                if ($mower_name == $mower['name']) {
-                    $mower_found = true;
-                    break;
-                }
-            }
-            if (!$mower_found) {
-                $err = "mower \"$mower_name\" don't exists";
-                $statuscode = 202;
-                $do_abort = true;
-            }
-        } else {
-            $err = 'no data';
-            $statuscode = 204;
-            $do_abort = true;
-        }
-
-        if ($do_abort) {
-            echo "statuscode=$statuscode, err=$err";
-            $this->SendDebug(__FUNCTION__, $err, 0);
-            $this->SetStatus($statuscode);
-            return -1;
-        }
-
-        $this->SetStatus(102);
-
-        $device_id = $mower['id'];
-        $name = $mower['name'];
-        $model = $mower['model'];
-        switch ($model) {
-            case 'G':
-            case 'H':
-                $with_gps = true;
-                break;
-            default:
-                $with_gps = false;
-                break;
-        }
-
-        $info = 'Automower  ' . $model;
-        $properties = [
-            'model'       => $model,
-            'with_gps'    => $with_gps
-        ];
-        $pos = 1000;
-        $instID = $this->FindOrCreateInstance($device_id, $name, $info, $properties, $pos++);
+        return $form;
     }
 }
