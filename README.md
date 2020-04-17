@@ -165,6 +165,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 1.16 @ 17.04.2020 17:19
+  - Status PARKED_AUTOTIMER auswerten
+
 - 1.15 @ 08.04.2020 16:29
   - define's durch statische Klassen-Variablen ersetzt
   - Einsatz des Konfigurators

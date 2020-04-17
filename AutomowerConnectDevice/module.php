@@ -483,6 +483,7 @@ class AutomowerDevice extends IPSModule
             'OK_CUTTING_TIMER_OVERRIDDEN' => 'manual cutting',
 
             'PARKED_TIMER'                => 'parked',
+            'PARKED_AUTOTIMER'            => 'automatic parked',
             'PARKED_PARKED_SELECTED'      => 'manual parked',
 
             'PAUSED'                      => 'paused',
@@ -519,6 +520,7 @@ class AutomowerDevice extends IPSModule
             'OK_CUTTING_TIMER_OVERRIDDEN' => AUTOMOWER_ACTIVITY_CUTTING,
 
             'PARKED_TIMER'                => AUTOMOWER_ACTIVITY_PARKED,
+            'PARKED_AUTOTIMER'            => AUTOMOWER_ACTIVITY_PARKED,
             'PARKED_PARKED_SELECTED'      => AUTOMOWER_ACTIVITY_PARKED,
 
             'PAUSED'                      => AUTOMOWER_ACTIVITY_PAUSED,

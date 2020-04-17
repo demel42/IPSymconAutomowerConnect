@@ -138,6 +138,8 @@ trait AutomowerLibrary
             if ($httpcode == 401) {
                 $statuscode = self::$IS_UNAUTHORIZED;
                 $err = 'got http-code ' . $httpcode . ' (unauthorized)';
+                // force new Token
+                $this->SetBuffer('Token', '');
             } elseif ($httpcode >= 500 && $httpcode <= 599) {
                 $statuscode = self::$IS_SERVERERROR;
                 $err = 'got http-code ' . $httpcode . ' (server error)';
