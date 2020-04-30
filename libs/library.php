@@ -2,20 +2,10 @@
 
 declare(strict_types=1);
 
-trait AutomowerLibrary
+trait AutomowerConnectLibrary
 {
     private $url_im = 'https://iam-api.dss.husqvarnagroup.net/api/v3/';
     private $url_track = 'https://amc-api.dss.husqvarnagroup.net/v1/';
-
-    public function GetMowerList()
-    {
-        $cdata = $this->do_ApiCall($this->url_track . 'mowers');
-        if ($cdata == '') {
-            return false;
-        }
-        $mowers = json_decode($cdata, true);
-        return $mowers;
-    }
 
     private function getToken()
     {

@@ -2,13 +2,22 @@
 
 declare(strict_types=1);
 
-trait AutomowerCommon
+if (!defined('STATUS_INVALID')) {
+    define('STATUS_INVALID', 0);
+    define('STATUS_VALID', 1);
+    define('STATUS_RETRYABLE', 2);
+}
+
+trait AutomowerConnectCommon
 {
-    public static $IS_UNAUTHORIZED = IS_EBASE;
-    public static $IS_SERVERERROR = IS_EBASE;
-    public static $IS_HTTPERROR = IS_EBASE;
-    public static $IS_INVALIDDATA = IS_EBASE;
-    public static $IS_DEVICE_MISSING = IS_EBASE;
+    public static $IS_UNAUTHORIZED = IS_EBASE + 1;
+    public static $IS_SERVERERROR = IS_EBASE + 2;
+    public static $IS_HTTPERROR = IS_EBASE + 3;
+    public static $IS_INVALIDDATA = IS_EBASE + 4;
+    public static $IS_NOSYMCONCONNECT = IS_EBASE + 5;
+    public static $IS_NOLOGIN = IS_EBASE + 6;
+    public static $IS_FORBIDDEN = IS_EBASE + 7;
+    public static $IS_DEVICE_MISSING = IS_EBASE + 8;
 
     protected function SetValue($Ident, $Value)
     {
@@ -129,6 +138,75 @@ trait AutomowerCommon
         return $ret;
     }
 
+    // inspired by Nall-chan
+    //   https://github.com/Nall-chan/IPSSqueezeBox/blob/6bbdccc23a0de51bb3fbc114cefc3acf23c27a14/libs/SqueezeBoxTraits.php
+    public function __get($name)
+    {
+        $n = strpos($name, 'Multi_');
+        if (strpos($name, 'Multi_') === 0) {
+            $curCount = $this->GetBuffer('BufferCount_' . $name);
+            if ($curCount == false) {
+                $curCount = 0;
+            }
+            $data = '';
+            for ($i = 0; $i < $curCount; $i++) {
+                $data .= $this->GetBuffer('BufferPart' . $i . '_' . $name);
+            }
+        } else {
+            $data = $this->GetBuffer($name);
+        }
+        return unserialize($data);
+    }
+
+    public function __set($name, $value)
+    {
+        $data = serialize($value);
+        $n = strpos($name, 'Multi_');
+        if (strpos($name, 'Multi_') === 0) {
+            $oldCount = $this->GetBuffer('BufferCount_' . $name);
+            if ($oldCount == false) {
+                $oldCount = 0;
+            }
+            $parts = str_split($data, 8000);
+            $newCount = count($parts);
+            $this->SetBuffer('BufferCount_' . $name, $newCount);
+            for ($i = 0; $i < $newCount; $i++) {
+                $this->SetBuffer('BufferPart' . $i . '_' . $name, $parts[$i]);
+            }
+            for ($i = $newCount; $i < $oldCount; $i++) {
+                $this->SetBuffer('BufferPart' . $i . '_' . $name, '');
+            }
+        } else {
+            $this->SetBuffer($name, $data);
+        }
+    }
+
+    private function SetMultiBuffer($name, $value)
+    {
+        $this->{'Multi_' . $name} = $value;
+    }
+
+    private function GetMultiBuffer($name)
+    {
+        $value = $this->{'Multi_' . $name};
+        return $value;
+    }
+
+    private function bool2str($bval)
+    {
+        if (is_bool($bval)) {
+            return $bval ? 'true' : 'false';
+        }
+        return $bval;
+    }
+
+    private function GetConnectUrl()
+    {
+        $instID = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}')[0];
+        $url = CC_GetConnectURL($instID);
+        return $url;
+    }
+
     private function format_float($number, $dec_points = -1)
     {
         if (is_numeric((float) $number)) {
@@ -158,8 +236,48 @@ trait AutomowerCommon
         $formStatus[] = ['code' => self::$IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
         $formStatus[] = ['code' => self::$IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
         $formStatus[] = ['code' => self::$IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
+        $formStatus[] = ['code' => self::$IS_NOSYMCONCONNECT, 'icon' => 'error', 'caption' => 'Instance is inactive (no Symcon-Connect)'];
+        $formStatus[] = ['code' => self::$IS_NOLOGIN, 'icon' => 'error', 'caption' => 'Instance is inactive (not logged in)'];
+        $formStatus[] = ['code' => self::$IS_FORBIDDEN, 'icon' => 'error', 'caption' => 'Instance is inactive (forbidden)'];
         $formStatus[] = ['code' => self::$IS_DEVICE_MISSING, 'icon' => 'error', 'caption' => 'Instance is inactive (device missing)'];
 
         return $formStatus;
+    }
+
+    private function CheckStatus()
+    {
+        switch ($this->GetStatus()) {
+            case IS_ACTIVE:
+                $class = STATUS_VALID;
+                break;
+            case self::$IS_NODATA:
+            case self::$IS_UNAUTHORIZED:
+            case self::$IS_FORBIDDEN:
+            case self::$IS_SERVERERROR:
+            case self::$IS_HTTPERROR:
+            case self::$IS_INVALIDDATA:
+                $class = STATUS_RETRYABLE;
+                break;
+            default:
+                $class = STATUS_INVALID;
+                break;
+        }
+
+        return $class;
+    }
+
+    private function GetStatusText()
+    {
+        $txt = false;
+        $status = $this->GetStatus();
+        $formStatus = $this->GetFormStatus();
+        foreach ($formStatus as $item) {
+            if ($item['code'] == $status) {
+                $txt = $item['caption'];
+                break;
+            }
+        }
+
+        return $txt;
     }
 }
