@@ -1,0 +1,14 @@
+{
+	"id": "{AEEFAA3E-8802-086D-6620-E971C03CBEFC}",
+	"name": "AutomowerConnectIO",
+	"type": 1,
+	"vendor": "Husqvarna",
+	"aliases": [
+		"Automower I/O"
+	],
+	"parentRequirements": [],
+	"childRequirements": [],
+	"implemented": [],
+	"prefix": "AutomowerConnect",
+	"url": "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md"
+}
