@@ -1,6 +1,6 @@
 {
 	"id": "{B64D5F1C-6F12-474B-8DBC-3B263E67954E}",
-	"name": "AutomowerDevice",
+	"name": "AutomowerConnectDevice",
 	"type": 3,
 	"vendor": "Husqvarna",
 	"aliases": [
@@ -9,6 +9,6 @@
 	"parentRequirements": [],
 	"childRequirements": [],
 	"implemented": [],
-	"prefix": "AutomowerDevice",
+	"prefix": "AutomowerConnect",
 	"url": "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md"
 }

@@ -22,10 +22,10 @@ if (!defined('AUTOMOWER_ACTION_PARK')) {
     define('AUTOMOWER_ACTION_STOP', 2);
 }
 
-class AutomowerDevice extends IPSModule
+class AutomowerConnectDevice extends IPSModule
 {
-    use AutomowerCommon;
-    use AutomowerLibrary;
+    use AutomowerConnectCommon;
+    use AutomowerConnectLibrary;
 
     public function Create()
     {
@@ -43,7 +43,7 @@ class AutomowerDevice extends IPSModule
 
         $this->RegisterPropertyInteger('update_interval', '5');
 
-        $this->RegisterTimer('UpdateStatus', 0, 'AutomowerDevice_UpdateStatus(' . $this->InstanceID . ');');
+        $this->RegisterTimer('UpdateStatus', 0, 'AutomowerConnect_UpdateStatus(' . $this->InstanceID . ');');
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
 
         $associations = [];
@@ -237,8 +237,8 @@ class AutomowerDevice extends IPSModule
     protected function GetFormActions()
     {
         $formActions = [];
-        $formActions[] = ['type' => 'Button', 'caption' => 'Test account', 'onClick' => 'AutomowerDevice_TestAccount($id);'];
-        $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'AutomowerDevice_UpdateStatus($id);'];
+        $formActions[] = ['type' => 'Button', 'caption' => 'Test account', 'onClick' => 'AutomowerConnect_TestAccount($id);'];
+        $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'AutomowerConnect_UpdateStatus($id);'];
 
         return $formActions;
     }
