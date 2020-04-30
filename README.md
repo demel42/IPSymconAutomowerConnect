@@ -165,6 +165,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 1.17 @ 30.04.2020 13:55
+  - alle Errorcodes gemäß Tabelle von Husqvarna hinterlegt
+    Hinweis: vor dem Update das Variablenprofil _Automower.Error_ löschen, damit es neu angelegt wird
+
 - 1.16 @ 17.04.2020 17:19
   - Status PARKED_AUTOTIMER auswerten
 
