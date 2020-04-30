@@ -57,16 +57,16 @@ Die so erzeugte Instanz enthält neben den Zugangsdaten die interne Geräte-ID.
 
 ### zentrale Funktion
 
-`boolean AutomowerDevice_ParkMower(integer $InstanzID)`<br>
+`boolean AutomowerConnect_ParkMower(integer $InstanzID)`<br>
 Parken des Mähers in der Ladestation
 
-`boolean AutomowerDevice_StartMower(integer $InstanzID)`<br>
+`boolean AutomowerConnect_StartMower(integer $InstanzID)`<br>
 Starten eines manuellen Mähvorgangs
 
-`boolean AutomowerDevice_StopMower(integer $InstanzID)`<br>
+`boolean AutomowerConnect_StopMower(integer $InstanzID)`<br>
 Stoppen der Aktivität der Mähers
 
-`string AutomowerDevice_GetRawData(integer $InstanceID, string $Name)`<br>
+`string AutomowerConnect_GetRawData(integer $InstanceID, string $Name)`<br>
 Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2GoogelMaps.php`.
 
 | Name          | Beschreibung |
@@ -84,7 +84,7 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 | Benutzer                 | string  |              | Husqvarna-Benutzer |
 | Passwort                 | string  |              | Passwort des Benutzers |
 |                          |         |              | |
-| nur _*AutomowerDevice*_  |         |              | |
+| nur _*AutomowerConnect*_  |         |              | |
 | Geräte-ID                | string  |              | interne Geräte-ID |
 | Modell                   | string  |              | Modell |
 |                          |         |              | |
@@ -94,7 +94,7 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 | Aktualisiere Daten ...   | integer | 1            | Aktualisierungsintervall, Angabe in Minuten |
 
 
-## AutomowerDevice
+## AutomowerConnect
 
 | Bezeichnung              | Beschreibung |
 | :----------------------- | :----------- |
@@ -155,10 +155,12 @@ Es werden folgende Variableprofile angelegt:
 GUIDs
 - Modul: `{5D3A5F03-B872-4C4F-802C-65A654A7772C}`
 - Instanzen:
+  - AutomowerConnectIO: `{{AEEFAA3E-8802-086D-6620-E971C03CBEFC}
   - AutomowerConnectConfig: `{664A5A69-6171-481A-BCB7-1CACDE4BF50D}`
   - AutomowerConnectDevice: `{B64D5F1C-6F12-474B-8DBC-3B263E67954E}`
 
 Quellen:
+  - https://developer.1689.cloud/apis
   - https://github.com/chrisz/pyhusmow
   - https://github.com/krannich/dkFHEM/blob/master/FHEM/74_HusqvarnaAutomower.pm
   - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
