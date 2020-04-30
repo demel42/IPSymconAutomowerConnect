@@ -165,7 +165,7 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 1.17 @ 30.04.2020 13:55
+- 1.17 @ 30.04.2020 14:51
   - alle Errorcodes gemäß Tabelle von Husqvarna hinterlegt
     Hinweis: vor dem Update das Variablenprofil _Automower.Error_ löschen, damit es neu angelegt wird
 
