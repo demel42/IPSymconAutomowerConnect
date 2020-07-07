@@ -131,7 +131,7 @@ class AutomowerConfig extends IPSModule
     {
         $formElements = [];
 
-        $formElements[] = ['type' => 'Label', 'caption' => 'Hydrawise Configurator'];
+        $formElements[] = ['type' => 'Label', 'caption' => 'Husqvarna Automower Configurator'];
 
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
         $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
