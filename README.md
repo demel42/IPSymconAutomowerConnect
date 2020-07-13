@@ -165,6 +165,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 1.19 @ 13.07.2020 14:56
+  - LICENSE.md hinzugefügt
+
 - 1.18 @ 07.07.2020 11:41
   - Schreibfehler korrigiert
 
