@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 trait AutomowerCommon
 {
-    public static $IS_UNAUTHORIZED = IS_EBASE;
-    public static $IS_SERVERERROR = IS_EBASE;
-    public static $IS_HTTPERROR = IS_EBASE;
-    public static $IS_INVALIDDATA = IS_EBASE;
-    public static $IS_DEVICE_MISSING = IS_EBASE;
+    public static $IS_UNAUTHORIZED = IS_EBASE + 1;
+    public static $IS_SERVERERROR = IS_EBASE + 2;
+    public static $IS_HTTPERROR = IS_EBASE + 3;
+    public static $IS_INVALIDDATA = IS_EBASE + 4;
+    public static $IS_DEVICE_MISSING = IS_EBASE + 5;
 
     protected function SetValue($Ident, $Value)
     {

@@ -1,6 +1,8 @@
 {
 	"translations": {
 		"de": {
+			"Husqvarna Automower Configurator": "Husqvarna Automower Konfigurator",
+
 			"User": "Benutzer",
 			"Password": "Passwort",
 			"category": "Kategorie",
