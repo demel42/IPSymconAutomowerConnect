@@ -84,7 +84,7 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 | Benutzer                 | string  |              | Husqvarna-Benutzer |
 | Passwort                 | string  |              | Passwort des Benutzers |
 |                          |         |              | |
-| nur _*AutomowerConnect*_  |         |              | |
+| nur _*AutomowerConnect*_ |         |              | |
 | Geräte-ID                | string  |              | interne Geräte-ID |
 | Modell                   | string  |              | Modell |
 |                          |         |              | |
@@ -135,7 +135,7 @@ Es ist damit z.B. egal, ob der Mähvorgang vom Timer ausgelöst wurde oder manue
 Das kann man dann leicht in einem Diagramm darstellen bzw. als Basis für Berechnungen verwenden.
 
 in _Position_ wird die akuelle Positon gespeichert; es werden Longitude und Latitude als json-encodeded String abgelegt. Wenn die Variable protokolliert wird, können damit längerfristig die Weg des Mähers dargestellt werden.
-Beistpiel-Script siehe `docs/docs/Position2GoogelMaps.php`.
+Beispiel-Script siehe `docs/docs/Position2GoogelMaps.php`.
 
 ### Variablenprofile
 
@@ -155,11 +155,15 @@ Es werden folgende Variableprofile angelegt:
 GUIDs
 - Modul: `{5D3A5F03-B872-4C4F-802C-65A654A7772C}`
 - Instanzen:
-  - AutomowerConnectIO: `{{AEEFAA3E-8802-086D-6620-E971C03CBEFC}
+  - AutomowerConnectIO: `{AEEFAA3E-8802-086D-6620-E971C03CBEFC}`
   - AutomowerConnectConfig: `{664A5A69-6171-481A-BCB7-1CACDE4BF50D}`
   - AutomowerConnectDevice: `{B64D5F1C-6F12-474B-8DBC-3B263E67954E}`
+- Nachrichten
+  - `{4C746488-C0FD-A850-3532-8DEBC042C970}`: an AutomowerConnectIO
+  - `{277691A0-EF84-1883-2094-45C56419748A}`: an AutomowerConnectDevice
 
 Quellen:
+  - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
   - https://developer.1689.cloud/apis
   - https://github.com/chrisz/pyhusmow
   - https://github.com/krannich/dkFHEM/blob/master/FHEM/74_HusqvarnaAutomower.pm

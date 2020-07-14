@@ -3,8 +3,6 @@
 		"de": {
 			"Husqvarna Automower Configurator": "Husqvarna Automower Konfigurator",
 
-			"User": "Benutzer",
-			"Password": "Passwort",
 			"category": "Kategorie",
 			"Mower": "Rasenmäher",
 
@@ -22,6 +20,10 @@
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
 			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
+			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)",
+			"Instance is inactive (not logged in)": "Instanz ist inaktiv (nicht angemeldet)",
+			"Instance is inactive (forbidden)": "Instanz ist inaktiv (fehlende Berechtigung)",
+			"Instance is inactive (invalid account)": "Instanz ist inaktiv (ungültige Kontodaten)",
 			"Instance is inactive (device missing)": "Instanz ist inaktiv (Gerät fehlt)"
 		}
 	}

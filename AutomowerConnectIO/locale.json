@@ -3,8 +3,38 @@
 		"de": {
 			"Instance is disabled": "Instanz ist deaktiviert",
 
-			"User": "Benutzer",
+			"Status: Symcon Connect is OK!": "Status: Symcon Connect ist OK!",
+			"Error: Symcon Connect is not active!": "Fehler: Symcon Connect ist nicht aktiv!",
+
+			"Push \"Login at Husqvarna\" in the action part of this configuration form.":
+				"\"Anmelden bei Husqvarna\" in dem Aktionsbereich dieses Konfigurationsformulares drücken.",
+			"At the webpage from Husqvarna log in with your Husqvarna username and password.":
+				"Auf der Webseite von Husqvarna mit dem Husqvarna Benutzernamen und Passwort anmelden.",
+			"If the connection to IP-Symcon was successfull you get the message: \"Husqvarna successfully connected!\". Close the browser window.":
+				"Wenn die Verbindung zu IP-Symcon erfolgreich war erscheint die Meldung: \"Husqvarna successfully connected!\". Das Browserfenster kann nun geschlossen werden.",
+			"Return to this configuration form.":
+				"Danach zu diesem Konfigurationsformular zurückkehren und fortfahren.",
+
+			"Husqvarna Login": "Husqvarna Anmeldung",
+			"This information is only required if position data of the mowers are to be fetched and requires a model with a GPS module.":
+				"Diese Angabe ist nur erforderlich, wenn Positions-Daten des Rasenmäher eingeholt werden sollen und setzt ein Modell mit GPS-Modul voraus.",
+
+			"Username": "Benutzer",
 			"Password": "Passwort",
+			"Husqvarna Account-Details": "Husqvarna Konto-Details",
+
+			"Login at Husqvarna": "Anmelden bei Husqvarna",
+			"Test access": "Zugriff testen",
+			"Clear Token": "Token löschen",
+			"Instance is disabled": "Instanz ist deaktiviert",
+
+			"Mower": "Rasenmäher",
+			"Name": "Bezeichnung",
+			"Model": "Modell",
+
+			"Invalid login at Husqvarna": "Ungültige Anmeldung bei Husqvarna",
+			"Invalid login details": "Ungültige Zugangsdaten",
+			"valid account-data": "gültige Zugangsdaten",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
@@ -16,6 +46,10 @@
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
 			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
+			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)",
+			"Instance is inactive (not logged in)": "Instanz ist inaktiv (nicht angemeldet)",
+			"Instance is inactive (forbidden)": "Instanz ist inaktiv (fehlende Berechtigung)",
+			"Instance is inactive (invalid account)": "Instanz ist inaktiv (ungültige Kontodaten)",
 			"Instance is inactive (device missing)": "Instanz ist inaktiv (Gerät fehlt)"
 		}
 	}

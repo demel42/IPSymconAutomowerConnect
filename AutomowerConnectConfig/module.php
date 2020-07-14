@@ -14,10 +14,9 @@ class AutomowerConnectConfig extends IPSModule
     {
         parent::Create();
 
-        $this->RegisterPropertyString('user', '');
-        $this->RegisterPropertyString('password', '');
-
         $this->RegisterPropertyInteger('ImportCategoryID', 0);
+
+        $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
     }
 
     public function ApplyChanges()
@@ -34,13 +33,6 @@ class AutomowerConnectConfig extends IPSModule
             if ($oid > 0) {
                 $this->RegisterReference($oid);
             }
-        }
-
-        $user = $this->ReadPropertyString('user');
-        $password = $this->ReadPropertyString('password');
-        if ($user == '' || $password == '') {
-            $this->SetStatus(self::$IS_UNAUTHORIZED);
-            return;
         }
 
         $this->SetStatus(IS_ACTIVE);
@@ -66,28 +58,27 @@ class AutomowerConnectConfig extends IPSModule
 
     public function getConfiguratorValues()
     {
-        $user = $this->ReadPropertyString('user');
-        $password = $this->ReadPropertyString('password');
+        // an AutomowerConnectIO
+        $sdata = [
+            'DataID'   => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
+            'Function' => 'MowerList'
+        ];
+        $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
+        $data = $this->SendDataToParent(json_encode($sdata));
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $mowers = $data != '' ? json_decode($data, true) : '';
+        $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
 
         $config_list = [];
 
-        $mowers = $this->GetMowerList();
         if ($mowers != '') {
             $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}';
             $instIDs = IPS_GetInstanceListByModuleID($guid);
-            foreach ($mowers as $mower) {
-                $device_id = $mower['id'];
-                $name = $mower['name'];
-                $model = $mower['model'];
-                switch ($model) {
-                    case 'G':
-                    case 'H':
-                        $with_gps = true;
-                        break;
-                    default:
-                        $with_gps = false;
-                        break;
-                }
+            foreach ($mowers['data'] as $mower) {
+                $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
+                $device_id = $this->GetArrayElem($mower, 'id', '');
+                $name = $this->GetArrayElem($mower, 'attributes.system.name', '');
+                $model = $this->GetArrayElem($mower, 'attributes.system.model', '');
 
                 $instanceID = 0;
                 foreach ($instIDs as $instID) {
@@ -102,11 +93,8 @@ class AutomowerConnectConfig extends IPSModule
                     'moduleID'      => $guid,
                     'location'      => $this->SetLocation(),
                     'configuration' => [
-                        'user'        => $user,
-                        'password'    => $password,
                         'device_id'   => "$device_id",
                         'model'       => $model,
-                        'with_gps'    => $with_gps
                     ]
                 ];
                 $create['info'] = 'Automower  ' . $model;
@@ -132,11 +120,6 @@ class AutomowerConnectConfig extends IPSModule
         $formElements = [];
 
         $formElements[] = ['type' => 'Label', 'caption' => 'Husqvarna Automower Configurator'];
-
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
-
-        $formElements[] = ['type' => 'Label', 'caption' => ''];
 
         $formElements[] = ['name' => 'ImportCategoryID', 'type' => 'SelectCategory', 'caption' => 'category'];
 
