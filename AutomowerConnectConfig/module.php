@@ -65,7 +65,6 @@ class AutomowerConnectConfig extends IPSModule
         ];
         $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
         $data = $this->SendDataToParent(json_encode($sdata));
-        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
         $mowers = $data != '' ? json_decode($data, true) : '';
         $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
 
@@ -76,14 +75,14 @@ class AutomowerConnectConfig extends IPSModule
             $instIDs = IPS_GetInstanceListByModuleID($guid);
             foreach ($mowers['data'] as $mower) {
                 $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
-                $device_id = $this->GetArrayElem($mower, 'id', '');
                 $name = $this->GetArrayElem($mower, 'attributes.system.name', '');
                 $model = $this->GetArrayElem($mower, 'attributes.system.model', '');
+                $serial = $this->GetArrayElem($mower, 'attributes.system.serialNumber', '');
 
                 $instanceID = 0;
                 foreach ($instIDs as $instID) {
-                    if (IPS_GetProperty($instID, 'device_id') == $device_id) {
-                        $this->SendDebug(__FUNCTION__, 'controller found: ' . utf8_decode(IPS_GetName($instID)) . ' (' . $instID . ')', 0);
+                    if (IPS_GetProperty($instID, 'serial') == $serial) {
+                        $this->SendDebug(__FUNCTION__, 'device found: ' . utf8_decode(IPS_GetName($instID)) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
                         break;
                     }
@@ -93,8 +92,8 @@ class AutomowerConnectConfig extends IPSModule
                     'moduleID'      => $guid,
                     'location'      => $this->SetLocation(),
                     'configuration' => [
-                        'device_id'   => "$device_id",
                         'model'       => $model,
+                        'serial'      => (string) $serial
                     ]
                 ];
                 $create['info'] = 'Automower  ' . $model;
@@ -103,7 +102,7 @@ class AutomowerConnectConfig extends IPSModule
                     'instanceID'    => $instanceID,
                     'name'          => $name,
                     'model'         => $model,
-                    'id'            => $device_id,
+                    'serial'        => $serial,
                     'create'        => $create
                 ];
 
@@ -119,9 +118,16 @@ class AutomowerConnectConfig extends IPSModule
     {
         $formElements = [];
 
-        $formElements[] = ['type' => 'Label', 'caption' => 'Husqvarna Automower Configurator'];
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'Husqvarna Automower Configurator'
+        ];
 
-        $formElements[] = ['name' => 'ImportCategoryID', 'type' => 'SelectCategory', 'caption' => 'category'];
+        $formElements[] = [
+            'type'    => 'SelectCategory',
+            'name'    => 'ImportCategoryID',
+            'caption' => 'category'
+        ];
 
         $entries = $this->getConfiguratorValues();
         $configurator = [
@@ -145,10 +151,10 @@ class AutomowerConnectConfig extends IPSModule
                     'width'   => '200px'
                 ],
                 [
-                    'caption' => 'ID',
-                    'name'    => 'id',
-                    'width'   => '400px'
-                ]
+                    'caption' => 'Serial',
+                    'name'    => 'serial',
+                    'width'   => '200px'
+                ],
             ],
             'values' => $entries
         ];

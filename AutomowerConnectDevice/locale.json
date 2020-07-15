@@ -3,21 +3,19 @@
 		"de": {
 			"Instance is disabled": "Instanz ist deaktiviert",
 
-			"User": "Benutzer",
-			"Password": "Passwort",
+			"Basic configuration (don't change)": "Basis-Konfiguration (nicht ändern)",
 			"Device-ID": "Geräte-ID",
 			"Model": "Modell",
-			"with GPS-Data": "mit GPS-Daten",
+			"Serial": "Seriennummer",
 
+			"with GPS-Data": "mit GPS-Daten",
 			"save position to (logged) variable 'Position'": "Position in der (protokollierten) Variablen 'Position' speichern",
 			"save position": "Position speichern",
 
             "Update status every X minutes": "Aktualisiere Status alle X Minuten",
 			"Minutes": "Minuten",
 
-			"Test account": "Zugangsdaten überprüfen",
 			"Update status": "Aktualisiere Status",
-			"Module description": "Modulbeschreibung",
 
 			"device not found": "Gerät nicht gefunden",
 			"invalid account-data": "ungültige Zugangsdaten",

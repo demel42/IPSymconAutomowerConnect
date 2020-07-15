@@ -8,7 +8,14 @@
 
 			"Name": "Bezeichnung",
 			"Model": "Modell",
-			"ID": "ID",
+			"Serial": "Seriennummer",
+			"API-ID": "API-ID",
+			"APP-ID": "APP-ID",
+
+			"Patch Device-Instances": "Geräte-Instanzen korrigieren",
+			"Instance": "Instanz",
+			"patched": "korrigiert",
+			"No (more) instance to patch": "Keine (weiteren) Instanzen zu korrigieren",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",

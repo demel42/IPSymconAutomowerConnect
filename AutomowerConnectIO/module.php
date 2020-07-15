@@ -386,6 +386,15 @@ class AutomowerConnectIO extends IPSModule
                 case 'MowerList':
                     $ret = $this->GetMowerList();
                     break;
+                case 'MowerStatus':
+                    $ret = $this->GetMowerStatus($jdata['api_id']);
+                    break;
+                case 'MowerList4App':
+                    $ret = $this->GetMowerList4App();
+                    break;
+                case 'MowerStatus4App':
+                    $ret = $this->GetMowerStatus4App($jdata['app_id']);
+                    break;
                 default:
                     $this->SendDebug(__FUNCTION__, 'unknown function "' . $jdata['Function'] . '"', 0);
                     break;
@@ -466,9 +475,33 @@ class AutomowerConnectIO extends IPSModule
         $this->SetBuffer('ApiAccessToken', '');
     }
 
-    public function GetMowerList()
+    private function GetMowerList()
     {
         return $this->do_ApiCall('mowers');
+    }
+
+    private function GetMowerStatus($api_id)
+    {
+        return $this->do_ApiCall('mowers/' . $api_id);
+    }
+
+    private function GetMowerList4App()
+    {
+        $user = $this->ReadPropertyString('user');
+        if ($user == '') {
+            return false;
+        }
+
+        return $this->do_AppCall('mowers');
+    }
+
+    private function GetMowerStatus4App($app_id)
+    {
+        $user = $this->ReadPropertyString('user');
+        if ($user == '') {
+            return false;
+        }
+        return $this->do_ApiCall('mowers/' . $app_id . '/status');
     }
 
     private function do_ApiCall($cmd, $postdata = '')
@@ -618,16 +651,6 @@ class AutomowerConnectIO extends IPSModule
             return;
         }
 
-        $user = $this->ReadPropertyString('user');
-        if ($user != '') {
-            $appAccessToken = $this->GetAppAccessToken();
-            if ($appAccessToken == false) {
-                $this->SetStatus(self::$IS_INVALIDACCOUNT);
-                echo $this->translate('Invalid login details') . PHP_EOL;
-                return;
-            }
-        }
-
         $cdata = $this->GetMowerList();
         $mowers = $cdata != '' ? json_decode($cdata, true) : '';
         $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
@@ -637,15 +660,40 @@ class AutomowerConnectIO extends IPSModule
             return;
         }
 
+        $app_mowers = [];
+        $user = $this->ReadPropertyString('user');
+        if ($user != '') {
+            $appAccessToken = $this->GetAppAccessToken();
+            if ($appAccessToken == false) {
+                $this->SetStatus(self::$IS_INVALIDACCOUNT);
+                echo $this->translate('Invalid login details') . PHP_EOL;
+                return;
+            }
+            $cdata = $this->GetMowerList4App();
+            $app_mowers = $cdata != '' ? json_decode($cdata, true) : '';
+        }
+
         $msg = '';
         foreach ($mowers['data'] as $mower) {
             $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
-            $device_id = $this->GetArrayElem($mower, 'id', '');
+            $api_id = $this->GetArrayElem($mower, 'id', '');
             $name = $this->GetArrayElem($mower, 'attributes.system.name', '');
             $model = $this->GetArrayElem($mower, 'attributes.system.model', '');
+            $serial = $this->GetArrayElem($mower, 'attributes.system.serialNumber', '');
 
-            $msg = $this->Translate('mower') . ' "' . $name . '", ' . $this->Translate('model') . '=' . $model;
-            $this->SendDebug(__FUNCTION__, 'device_id=' . $device_id . ', name=' . $name . ', model=' . $model, 0);
+            $msg = $this->Translate('Mower') . ' "' . $name . '", ' . $this->Translate('Model') . '=' . $model;
+            $app_id = false;
+            if ($app_mowers != '') {
+                foreach ($app_mowers as $app_mower) {
+                    $id = $app_mower['id'];
+                    $ids = explode('-', $id);
+                    if ($serial == $ids[0]) {
+                        $app_id = $id;
+                        break;
+                    }
+                }
+            }
+            $this->SendDebug(__FUNCTION__, 'api_id=' . $api_id . ', name=' . $name . ', model=' . $model . ', app_id=' . $app_id, 0);
         }
 
         echo $this->translate('valid account-data') . "\n" . $msg;
