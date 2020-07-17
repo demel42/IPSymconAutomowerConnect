@@ -501,7 +501,7 @@ class AutomowerConnectIO extends IPSModule
         if ($user == '') {
             return false;
         }
-        return $this->do_ApiCall('mowers/' . $app_id . '/status');
+        return $this->do_AppCall('mowers/' . $app_id . '/status');
     }
 
     private function do_ApiCall($cmd, $postdata = '')
