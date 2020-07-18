@@ -389,6 +389,9 @@ class AutomowerConnectIO extends IPSModule
                 case 'MowerStatus':
                     $ret = $this->GetMowerStatus($jdata['api_id']);
                     break;
+                case 'MowerCmd':
+                    $ret = $this->DoMowerCmd($jdata['api_id'], $jdata['data']);
+                    break;
                 case 'MowerList4App':
                     $ret = $this->GetMowerList4App();
                     break;
@@ -485,6 +488,14 @@ class AutomowerConnectIO extends IPSModule
         return $this->do_ApiCall('mowers/' . $api_id);
     }
 
+    private function DoMowerCmd($api_id, $data)
+    {
+        $postdata = [
+            'data'=> $data
+        ];
+        return $this->do_ApiCall('mowers/' . $api_id . '/actions', $postdata);
+    }
+
     private function GetMowerList4App()
     {
         $user = $this->ReadPropertyString('user');
@@ -576,9 +587,8 @@ class AutomowerConnectIO extends IPSModule
             } elseif ($httpcode >= 500 && $httpcode <= 599) {
                 $statuscode = self::$IS_SERVERERROR;
                 $err = 'got http-code ' . $httpcode . ' (server error)';
-            } elseif ($httpcode == 204) {
-                // 204 = No Content	= Die Anfrage wurde erfolgreich durchgeführt, die Antwort enthält jedoch bewusst keine Daten.
-                // kommt zB bei senden von SMS
+            } elseif ($httpcode == 202) {
+                // 202 = command queued
                 $data = json_encode(['status' => 'ok']);
             } else {
                 $statuscode = self::$IS_HTTPERROR;
