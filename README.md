@@ -171,6 +171,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.0 @ 18.07.2020 10:05
+  - Umstellung auf die offizielle OAuth-API
+
 - 1.19 @ 13.07.2020 14:56
   - LICENSE.md hinzugefügt
 

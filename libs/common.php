@@ -60,12 +60,11 @@ trait AutomowerConnectCommon
             $Associations = $VarProfil['Associations'];
             foreach ($Associations as $Association) {
                 if ($Value == $Association['Value']) {
-                    $found = true;
+                    $found = $Association['Name'];
                     break;
                 }
             }
         }
-
         return $found;
     }
 

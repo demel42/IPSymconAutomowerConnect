@@ -505,7 +505,8 @@ class AutomowerConnectDevice extends IPSModule
 
         $mower_activity = $this->GetArrayElem($attributes, 'mower.activity', '');
         $mowerActivity = $this->decode_mowerActivity($mower_activity);
-        $this->SendDebug(__FUNCTION__, 'mower_activity="' . $mower_activity . '" => ' . $mowerActivity, 0);
+        $s = $this->CheckVarProfile4Value('Automower.Activity', $mowerActivity);
+        $this->SendDebug(__FUNCTION__, 'mower_activity="' . $mower_activity . '" => ' . $mowerActivity . '(' . $s . ')', 0);
         $this->SetValue('MowerActivity', $mowerActivity);
 
         switch ($mowerActivity) {
@@ -529,15 +530,20 @@ class AutomowerConnectDevice extends IPSModule
 
         $lastErrorCode = $this->GetArrayElem($attributes, 'mower.errorCode', 0);
         $lastErrorCodeTimestamp = $this->calc_ts((string) $this->GetArrayElem($attributes, 'mower.errorCodeTimestamp', '0'));
-        $this->SendDebug(__FUNCTION__, 'lastErrorCode=' . $lastErrorCode . ', ts=' . ($lastErrorCodeTimestamp != 0 ? date('d.m.y H:i:s', $lastErrorCodeTimestamp) : ''), 0);
+        $err = '';
         if ($lastErrorCode) {
-            if (!$this->CheckVarProfile4Value('Automower.Error', $lastErrorCode)) {
+            $s = $this->CheckVarProfile4Value('Automower.Error', $lastErrorCode);
+            if ($s == false) {
                 $msg = __FUNCTION__ . ': unknown error-code=' . $lastErrorCode . ' @' . date('d-m-Y H:i:s', $lastErrorCodeTimestamp);
                 $this->LogMessage($msg, KL_WARNING);
+            } else {
+                $err = '(' . $s . ')';
             }
         } else {
             $lastErrorCodeTimestamp = 0;
         }
+        $ts = ($lastErrorCodeTimestamp != 0 ? date('d.m.y H:i:s', $lastErrorCodeTimestamp) : '');
+        $this->SendDebug(__FUNCTION__, 'lastErrorCode=' . $lastErrorCode . $err . ', lastErrorCodeTimestamp=' . $ts, 0);
         $this->SetValue('LastErrorCode', $lastErrorCode);
         $this->SetValue('LastErrorTimestamp', $lastErrorCodeTimestamp);
 
@@ -550,10 +556,14 @@ class AutomowerConnectDevice extends IPSModule
         $this->SendDebug(__FUNCTION__, 'planner_override=' . $planner_override, 0);
 
         $restricted_reason = $this->GetArrayElem($attributes, 'planner.restrictedReason', '');
-        if ($restricted_reason == 'NOT_APPLICABLE' && $nextStartTimestamp == 0) {
-            $restricted_reason = 'FOREVER';
+        if ($mower_state == 'RESTRICTED') {
+            if ($restricted_reason == 'NOT_APPLICABLE' && $mower_activity == 'PARKED_IN_CS' && $nextStartTimestamp == 0) {
+                $restricted_reason = 'UNTIL_FURTHER_NOTICE';
+            }
+            $restrictedReason = $this->decode_restrictedReason($restricted_reason);
+        } else {
+            $restrictedReason = '';
         }
-        $restrictedReason = $this->decode_restrictedReason($restricted_reason);
 
         $this->SendDebug(__FUNCTION__, 'restricted_reason="' . $restricted_reason . '" => ' . $restrictedReason, 0);
         $this->SetValue('RestrictedReason', $restrictedReason);
@@ -724,14 +734,14 @@ class AutomowerConnectDevice extends IPSModule
     private function decode_restrictedReason($val)
     {
         $val2txt = [
-            'NONE'           => 'none',
-            'UNKNOWN'        => 'unknown',
-            'NOT_APPLICABLE' => 'not applicable',
-            'WEEK_SCHEDULE'  => 'week schedule',
-            'PARK_OVERRIDE'  => 'park overwrite',
-            'SENSOR'         => 'sensor',
-            'DAILY_LIMIT'    => 'daily limit',
-            'FOREVER'        => 'until further notice',
+            'NONE'                 => 'none',
+            'UNKNOWN'              => 'unknown',
+            'NOT_APPLICABLE'       => 'not applicable',
+            'WEEK_SCHEDULE'        => 'week schedule',
+            'PARK_OVERRIDE'        => 'park overwrite',
+            'SENSOR'               => 'sensor',
+            'DAILY_LIMIT'          => 'daily limit',
+            'UNTIL_FURTHER_NOTICE' => 'until further notice',
         ];
 
         if (isset($val2txt[$val])) {
