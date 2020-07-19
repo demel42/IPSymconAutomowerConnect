@@ -19,7 +19,7 @@ class AutomowerConnectDevice extends IPSModule
     public static $ACTIVITY_CHARGING = 5;
     public static $ACTIVITY_PAUSED = 6;
     public static $ACTIVITY_LEAVING = 7;
-    public static $ACTIVITY_RETURNING = 8;
+    public static $ACTIVITY_GOING_HOME = 8;
     public static $ACTIVITY_CUTTING = 9;
     public static $ACTIVITY_STOPPED = 10;
 
@@ -58,7 +58,7 @@ class AutomowerConnectDevice extends IPSModule
         $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
 
         $associations = [];
-        $associations[] = ['Wert' => self::$ACTION_RESUME_SCHEDULE, 'Name' => $this->Translate('Next schedule'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTION_RESUME_SCHEDULE, 'Name' => $this->Translate('next schedule'), 'Farbe' => -1];
         $associations[] = ['Wert' =>   3, 'Name' => $this->Translate('3 hours'), 'Farbe' => -1];
         $associations[] = ['Wert' =>   6, 'Name' => $this->Translate('6 hours'), 'Farbe' => -1];
         $associations[] = ['Wert' =>  12, 'Name' => $this->Translate('12 hours'), 'Farbe' => -1];
@@ -72,8 +72,8 @@ class AutomowerConnectDevice extends IPSModule
         $this->CreateVarProfile('Automower.ActionStart', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
 
         $associations = [];
-        $associations[] = ['Wert' =>  self::$ACTION_PARK_UNTIL_FURTHER_NOTICE, 'Name' => $this->Translate('Until further notice'), 'Farbe' => -1];
-        $associations[] = ['Wert' =>  self::$ACTION_PARK_UNTIL_NEXT_SCHEDULE, 'Name' => $this->Translate('Until next schedule'), 'Farbe' => -1];
+        $associations[] = ['Wert' =>  self::$ACTION_PARK_UNTIL_FURTHER_NOTICE, 'Name' => $this->Translate('until further notice'), 'Farbe' => -1];
+        $associations[] = ['Wert' =>  self::$ACTION_PARK_UNTIL_NEXT_SCHEDULE, 'Name' => $this->Translate('until next schedule'), 'Farbe' => -1];
         $associations[] = ['Wert' =>   3, 'Name' => $this->Translate('3 hours'), 'Farbe' => -1];
         $associations[] = ['Wert' =>   6, 'Name' => $this->Translate('6 hours'), 'Farbe' => -1];
         $associations[] = ['Wert' =>  12, 'Name' => $this->Translate('12 hours'), 'Farbe' => -1];
@@ -92,14 +92,14 @@ class AutomowerConnectDevice extends IPSModule
 
         $associations = [];
         $associations[] = ['Wert' => self::$ACTIVITY_UNKNOWN, 'Name' => $this->Translate('unknown'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$ACTIVITY_NOT_APPLICABLE, 'Name' => $this->Translate('not applicable'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTIVITY_NOT_APPLICABLE, 'Name' => $this->Translate('manual intervention required'), 'Farbe' => -1];
         $associations[] = ['Wert' => self::$ACTIVITY_ERROR, 'Name' => $this->Translate('error'), 'Farbe' => -1];
         $associations[] = ['Wert' => self::$ACTIVITY_DISABLED, 'Name' => $this->Translate('disabled'), 'Farbe' => -1];
         $associations[] = ['Wert' => self::$ACTIVITY_PARKED, 'Name' => $this->Translate('parked'), 'Farbe' => -1];
         $associations[] = ['Wert' => self::$ACTIVITY_CHARGING, 'Name' => $this->Translate('charging'), 'Farbe' => -1];
         $associations[] = ['Wert' => self::$ACTIVITY_PAUSED, 'Name' => $this->Translate('paused'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$ACTIVITY_RETURNING, 'Name' => $this->Translate('returning to base'), 'Farbe' => -1];
         $associations[] = ['Wert' => self::$ACTIVITY_LEAVING, 'Name' => $this->Translate('leaving base'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$ACTIVITY_GOING_HOME, 'Name' => $this->Translate('going home'), 'Farbe' => -1];
         $associations[] = ['Wert' => self::$ACTIVITY_CUTTING, 'Name' => $this->Translate('cutting'), 'Farbe' => -1];
         $associations[] = ['Wert' => self::$ACTIVITY_STOPPED, 'Name' => $this->Translate('stopped'), 'Farbe' => -1];
         $this->CreateVarProfile('Automower.Activity', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
@@ -531,7 +531,7 @@ class AutomowerConnectDevice extends IPSModule
 
         $oldActivity = $this->GetValue('MowerActivity');
         switch ($oldActivity) {
-            case self::$ACTIVITY_RETURNING:
+            case self::$ACTIVITY_GOING_HOME:
             case self::$ACTIVITY_CUTTING:
                 $wasWorking = true;
                 break;
@@ -550,22 +550,33 @@ class AutomowerConnectDevice extends IPSModule
         $enableStart = false;
         $enablePause = false;
         $enablePark = false;
+
         switch ($mowerActivity) {
+            case self::$ACTIVITY_NOT_APPLICABLE:
+                if ($mower_state == 'PAUSED') {
+                    $enableStart = true;
+                    $enablePark = true;
+                }
+                break;
             case self::$ACTIVITY_DISABLED:
-            case self::$ACTIVITY_PAUSED:
-            case self::$ACTIVITY_PARKED:
             case self::$ACTIVITY_CHARGING:
             case self::$ACTIVITY_STOPPED:
                 $enableStart = true;
                 break;
             case self::$ACTIVITY_LEAVING:
-            case self::$ACTIVITY_RETURNING:
+            case self::$ACTIVITY_GOING_HOME:
             case self::$ACTIVITY_CUTTING:
                 $enablePause = true;
                 $enablePark = true;
                 break;
+            case self::$ACTIVITY_PARKED:
+            case self::$ACTIVITY_PAUSED:
+                $enableStart = true;
+                $enablePark = true;
+                break;
             default:
-                $action = $enablePark = true;
+                $enableStart = true;
+                $enablePark = true;
                 break;
         }
 
@@ -623,7 +634,7 @@ class AutomowerConnectDevice extends IPSModule
             $this->SetValue('DailyWorking', 0);
         }
         switch ($mowerActivity) {
-            case self::$ACTIVITY_RETURNING:
+            case self::$ACTIVITY_GOING_HOME:
             case self::$ACTIVITY_CUTTING:
                 $isWorking = true;
                 break;
@@ -698,6 +709,8 @@ class AutomowerConnectDevice extends IPSModule
         }
 
         $this->SetValue('LastStatus', time());
+
+        $this->SetUpdateInterval();
     }
 
     public function RequestAction($Ident, $Value)
@@ -812,7 +825,7 @@ class AutomowerConnectDevice extends IPSModule
             'UNKNOWN'           => self::$ACTIVITY_UNKNOWN,
             'NOT_APPLICABLE'    => self::$ACTIVITY_NOT_APPLICABLE,
             'MOWING'            => self::$ACTIVITY_CUTTING,
-            'GOING_HOME'        => self::$ACTIVITY_RETURNING,
+            'GOING_HOME'        => self::$ACTIVITY_GOING_HOME,
             'CHARGING'          => self::$ACTIVITY_CHARGING,
             'LEAVING'           => self::$ACTIVITY_LEAVING,
             'PARKED_IN_CS'      => self::$ACTIVITY_PARKED,
@@ -931,7 +944,12 @@ class AutomowerConnectDevice extends IPSModule
         }
         $jdata = json_decode($cdata, true);
         $status = $jdata['status'];
-        return $status == 'ok';
+
+        if ($status != 'ok') {
+            return false;
+        }
+        $this->SetTimerInterval('UpdateStatus', 15 * 1000);
+        return true;
     }
 
     public function GetRawData(string $name)
