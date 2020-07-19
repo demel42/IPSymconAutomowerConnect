@@ -580,11 +580,15 @@ class AutomowerConnectDevice extends IPSModule
                 break;
         }
 
-        $this->MaintainAction('MowerActionStart', $enableStart);
-        $this->MaintainAction('MowerActionPause', $enablePause);
-        $this->MaintainAction('MowerActionPark', $enablePark);
-
         $this->SendDebug(__FUNCTION__, 'enable ActionStart=' . $this->bool2str($enableStart) . ',  ActionPause=' . $this->bool2str($enablePause) . ', ActionPark=' . $this->bool2str($enablePark), 0);
+
+        $chg = $this->AdjustAction('MowerActionStart', $enableStart);
+        $chg |= $this->AdjustAction('MowerActionPause', $enablePause);
+        $chg |= $this->AdjustAction('MowerActionPark', $enablePark);
+
+        if ($chg) {
+            $this->ReloadForm();
+        }
 
         $lastErrorCode = $this->GetArrayElem($attributes, 'mower.errorCode', 0);
         $lastErrorCodeTimestamp = $this->calc_ts((string) $this->GetArrayElem($attributes, 'mower.errorCodeTimestamp', '0'));
