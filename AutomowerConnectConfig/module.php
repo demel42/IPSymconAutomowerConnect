@@ -56,7 +56,7 @@ class AutomowerConnectConfig extends IPSModule
         return $tree_position;
     }
 
-    public function getConfiguratorValues()
+    private function getConfiguratorValues()
     {
         $config_list = [];
 
