@@ -7,8 +7,8 @@ require_once __DIR__ . '/../libs/local.php';   // lokale Funktionen
 
 class AutomowerConnectDevice extends IPSModule
 {
-    use AutomowerConnectCommon;
-    use AutomowerConnectLocal;
+    use AutomowerConnectCommonLib;
+    use AutomowerConnectLocalLib;
 
     // MowerStatus
     public static $ACTIVITY_UNKNOWN = 0;

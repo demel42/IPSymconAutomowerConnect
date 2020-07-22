@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-trait AutomowerConnectCommon
+trait AutomowerConnectCommonLib
 {
     protected function SetValue($Ident, $Value)
     {
@@ -221,5 +221,20 @@ trait AutomowerConnectCommon
         $this->MaintainAction($Ident, $Mode);
 
         return $oldMode != $Mode;
+    }
+
+    private function GetStatusText()
+    {
+        $txt = false;
+        $status = $this->GetStatus();
+        $formStatus = $this->GetFormStatus();
+        foreach ($formStatus as $item) {
+            if ($item['code'] == $status) {
+                $txt = $item['caption'];
+                break;
+            }
+        }
+
+        return $txt;
     }
 }

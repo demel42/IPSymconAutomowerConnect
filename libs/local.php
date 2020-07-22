@@ -8,7 +8,7 @@ if (!defined('STATUS_INVALID')) {
     define('STATUS_RETRYABLE', 2);
 }
 
-trait AutomowerConnectLocal
+trait AutomowerConnectLocalLib
 {
     public static $IS_UNAUTHORIZED = IS_EBASE + 1;
     public static $IS_SERVERERROR = IS_EBASE + 2;
@@ -63,20 +63,5 @@ trait AutomowerConnectLocal
         }
 
         return $class;
-    }
-
-    private function GetStatusText()
-    {
-        $txt = false;
-        $status = $this->GetStatus();
-        $formStatus = $this->GetFormStatus();
-        foreach ($formStatus as $item) {
-            if ($item['code'] == $status) {
-                $txt = $item['caption'];
-                break;
-            }
-        }
-
-        return $txt;
     }
 }
