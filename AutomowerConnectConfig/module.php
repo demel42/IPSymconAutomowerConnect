@@ -120,7 +120,7 @@ class AutomowerConnectConfig extends IPSModule
         return $config_list;
     }
 
-    public function GetFormElements()
+    private function GetFormElements()
     {
         $formElements = [];
 
@@ -175,7 +175,7 @@ class AutomowerConnectConfig extends IPSModule
         return $formElements;
     }
 
-    protected function GetFormActions()
+    private function GetFormActions()
     {
         $formActions = [];
 
