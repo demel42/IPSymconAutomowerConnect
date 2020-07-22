@@ -174,6 +174,7 @@ Quellen:
 - 2.0 @ 22.07.2020 10:06
   - Umstellung auf die offizielle OAuth-API
   - Nutzung von HasActiveParent(): Anzeige im Konfigurationsformular sowie entsprechende Absicherung von SendDataToParent()
+  - library.php in local.php umbenannt
 
 - 1.19 @ 13.07.2020 14:56
   - LICENSE.md hinzugefügt
