@@ -58,6 +58,14 @@ class AutomowerConnectConfig extends IPSModule
 
     public function getConfiguratorValues()
     {
+        $config_list = [];
+
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
+            return $config_list;
+        }
+
         // an AutomowerConnectIO
         $sdata = [
             'DataID'   => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
@@ -67,8 +75,6 @@ class AutomowerConnectConfig extends IPSModule
         $data = $this->SendDataToParent(json_encode($sdata));
         $mowers = $data != '' ? json_decode($data, true) : '';
         $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
-
-        $config_list = [];
 
         if ($mowers != '') {
             $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}';
@@ -117,6 +123,13 @@ class AutomowerConnectConfig extends IPSModule
     public function GetFormElements()
     {
         $formElements = [];
+
+        if ($this->HasActiveParent() == false) {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => 'Instance has no active parent instance',
+            ];
+        }
 
         $formElements[] = [
             'type'    => 'Label',

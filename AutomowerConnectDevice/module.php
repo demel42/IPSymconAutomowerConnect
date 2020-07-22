@@ -261,17 +261,25 @@ class AutomowerConnectDevice extends IPSModule
 
     protected function GetFormElements()
     {
-        $api_id = $this->ReadAttributeString('api_id');
-        $app_id = $this->ReadAttributeString('app_id');
-
         $formElements = [];
+
+        if ($this->HasActiveParent() == false) {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => 'Instance has no active parent instance',
+            ];
+        }
+
         $formElements[] = [
             'type'    => 'CheckBox',
             'name'    => 'module_disable',
             'caption' => 'Instance is disabled'
         ];
 
-        #$items = [];
+        $api_id = $this->ReadAttributeString('api_id');
+        $app_id = $this->ReadAttributeString('app_id');
+
+        $items = [];
         $items[] = [
             'type'    => 'ValidationTextBox',
             'name'    => 'serial',
@@ -409,7 +417,11 @@ class AutomowerConnectDevice extends IPSModule
 
     private function DetermineIDs()
     {
-        $serial = $this->ReadPropertyString('serial');
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
+            return;
+        }
 
         $api_id = $this->ReadAttributeString('api_id');
         if ($api_id != '') {
@@ -426,6 +438,9 @@ class AutomowerConnectDevice extends IPSModule
         if ($cdata == '') {
             return;
         }
+
+        $serial = $this->ReadPropertyString('serial');
+
         $mowers = json_decode($cdata, true);
         foreach ($mowers['data'] as $mower) {
             $api_id = $this->GetArrayElem($mower, 'id', '');
@@ -487,6 +502,12 @@ class AutomowerConnectDevice extends IPSModule
 
     public function UpdateStatus()
     {
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
+            return;
+        }
+
         $this->DetermineIDs();
 
         $api_id = $this->ReadAttributeString('api_id');
@@ -928,6 +949,12 @@ class AutomowerConnectDevice extends IPSModule
 
     private function MowerCmd($data)
     {
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
+            return false;
+        }
+
         $api_id = $this->ReadAttributeString('api_id');
         if ($api_id == '') {
             return false;
