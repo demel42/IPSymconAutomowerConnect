@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
-require_once __DIR__ . '/../libs/library.php';
+require_once __DIR__ . '/../libs/common.php'; // globale Funktionen
+require_once __DIR__ . '/../libs/local.php';  // lokale Funktionen
 
 class AutomowerConnectIO extends IPSModule
 {
     use AutomowerConnectCommon;
-    use AutomowerConnectLibrary;
+    use AutomowerConnectLocal;
 
     private $oauthIdentifer = 'husqvarna';
 

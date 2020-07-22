@@ -8,7 +8,7 @@ if (!defined('STATUS_INVALID')) {
     define('STATUS_RETRYABLE', 2);
 }
 
-trait AutomowerConnectLibrary
+trait AutomowerConnectLocal
 {
     public static $IS_UNAUTHORIZED = IS_EBASE + 1;
     public static $IS_SERVERERROR = IS_EBASE + 2;
