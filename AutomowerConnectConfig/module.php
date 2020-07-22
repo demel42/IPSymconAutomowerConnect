@@ -143,7 +143,7 @@ class AutomowerConnectConfig extends IPSModule
         ];
 
         $entries = $this->getConfiguratorValues();
-        $configurator = [
+        $formElements[] = [
             'type'    => 'Configurator',
             'name'    => 'Mower',
             'caption' => 'Mower',
@@ -171,7 +171,6 @@ class AutomowerConnectConfig extends IPSModule
             ],
             'values' => $entries
         ];
-        $formElements[] = $configurator;
 
         return $formElements;
     }
