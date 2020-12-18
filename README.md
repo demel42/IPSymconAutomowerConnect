@@ -165,7 +165,8 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 1.19 @ 13.07.2020 14:56
+- 1.19 @ 18.12.2020 14:57
+  - PHP_CS_FIXER_IGNORE_ENV=1 in github/workflows/style.yml eingefügt
   - LICENSE.md hinzugefügt
 
 - 1.18 @ 07.07.2020 11:41
