@@ -79,6 +79,9 @@ class AutomowerConfig extends IPSModule
                 $device_id = $mower['id'];
                 $name = $mower['name'];
                 $model = $mower['model'];
+                if (is_null($model)) {
+                    $model = $this->Translate('unknown');
+                }
                 switch ($model) {
                     case 'G':
                     case 'H':

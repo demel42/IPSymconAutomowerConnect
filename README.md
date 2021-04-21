@@ -165,6 +165,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 1.20 21.04.2021 17:09 (beta)
+  - Absicherung von Geräten ohne Modellbezeichnung
+
 - 1.19 @ 18.12.2020 14:57 (beta)
   - PHP_CS_FIXER_IGNORE_ENV=1 in github/workflows/style.yml eingefügt
   - LICENSE.md hinzugefügt
