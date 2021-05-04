@@ -173,7 +173,7 @@ Quellen:
   - lokale Funktionen aus common.php in locale.php verlagert
   - define's durch statische Klassen-Variablen ersetzt
   - Funktions-Prefix ist nun einheitlich __Automower__
-    Achtung: das z.¦. im Script zur Kartendarstellung verwendete __AutomowerDevice_GetRawData__
+    Achtung: das z.B. im Script zur Kartendarstellung verwendete __AutomowerDevice_GetRawData__
 	heisst nun __Automower_GetRawData__
   - interne Funktionen sind nun "private"
 
