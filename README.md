@@ -168,7 +168,7 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 1.21 @ 04.05.2021 08:50 (beta)
+- 1.21 @ 04.05.2021 08:50
   - neue Funktion __SetUpdateInterval__
   - lokale Funktionen aus common.php in locale.php verlagert
   - define's durch statische Klassen-Variablen ersetzt
