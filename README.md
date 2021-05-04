@@ -57,16 +57,19 @@ Die so erzeugte Instanz enthält neben den Zugangsdaten die interne Geräte-ID.
 
 ### zentrale Funktion
 
-`boolean AutomowerDevice_ParkMower(integer $InstanzID)`<br>
+`boolean Automower_ParkMower(integer $InstanzID)`<br>
 Parken des Mähers in der Ladestation
 
-`boolean AutomowerDevice_StartMower(integer $InstanzID)`<br>
+`boolean Automower_StartMower(integer $InstanzID)`<br>
 Starten eines manuellen Mähvorgangs
 
-`boolean AutomowerDevice_StopMower(integer $InstanzID)`<br>
+`boolean Automower_StopMower(integer $InstanzID)`<br>
 Stoppen der Aktivität der Mähers
 
-`string AutomowerDevice_GetRawData(integer $InstanceID, string $Name)`<br>
+`boolean Automower_SetUpdateInterval(integer $InstanzID, integer seconds)`<br>
+Ändert temporär das Update-Intervall, ein Wert von *0* bedeutet, das wieder das im Konfigurationsformular angegebene Intervall verwendet wird
+
+`string Automower_GetRawData(integer $InstanceID, string $Name)`<br>
 Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2GoogelMaps.php`.
 
 | Name          | Beschreibung |
@@ -165,7 +168,16 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 1.20 21.04.2021 17:09 
+- 1.21 @ 04.05.2021 08:50 (beta)
+  - neue Funktion __SetUpdateInterval__
+  - lokale Funktionen aus common.php in locale.php verlagert
+  - define's durch statische Klassen-Variablen ersetzt
+  - Funktions-Prefix ist nun einheitlich __Automower__
+    Achtung: das z.¦. im Script zur Kartendarstellung verwendete __AutomowerDevice_GetRawData__
+	heisst nun __Automower_GetRawData__
+  - interne Funktionen sind nun "private"
+
+- 1.20 @ 21.04.2021 17:09 
   - Absicherung von Geräten ohne Modellbezeichnung
 
 - 1.19 @ 18.12.2020 14:57

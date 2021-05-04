@@ -2,30 +2,13 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
-require_once __DIR__ . '/../libs/library.php';  // modul-bezogene Funktionen
-
-// normalized MowerStatus
-if (!defined('AUTOMOWER_ACTIVITY_ERROR')) {
-    define('AUTOMOWER_ACTIVITY_ERROR', -1);
-    define('AUTOMOWER_ACTIVITY_DISABLED', 0);
-    define('AUTOMOWER_ACTIVITY_PARKED', 1);
-    define('AUTOMOWER_ACTIVITY_CHARGING', 2);
-    define('AUTOMOWER_ACTIVITY_PAUSED', 3);
-    define('AUTOMOWER_ACTIVITY_MOVING', 4);
-    define('AUTOMOWER_ACTIVITY_CUTTING', 5);
-}
-
-if (!defined('AUTOMOWER_ACTION_PARK')) {
-    define('AUTOMOWER_ACTION_PARK', 0);
-    define('AUTOMOWER_ACTION_START', 1);
-    define('AUTOMOWER_ACTION_STOP', 2);
-}
+require_once __DIR__ . '/../libs/common.php';	// globale Funktionen
+require_once __DIR__ . '/../libs/local.php';	// lokale Funktionen
 
 class AutomowerDevice extends IPSModule
 {
-    use AutomowerCommon;
-    use AutomowerLibrary;
+    use AutomowerCommonLib;
+    use AutomowerLocalLib;
 
     public function Create()
     {
@@ -43,23 +26,23 @@ class AutomowerDevice extends IPSModule
 
         $this->RegisterPropertyInteger('update_interval', '5');
 
-        $this->RegisterTimer('UpdateStatus', 0, 'AutomowerDevice_UpdateStatus(' . $this->InstanceID . ');');
+        $this->RegisterTimer('UpdateStatus', 0, 'Automower_UpdateStatus(' . $this->InstanceID . ');');
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
 
         $associations = [];
-        $associations[] = ['Wert' => AUTOMOWER_ACTION_PARK, 'Name' => $this->Translate('park'), 'Farbe' => -1];
-        $associations[] = ['Wert' => AUTOMOWER_ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => AUTOMOWER_ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTION_PARK, 'Name' => $this->Translate('park'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
         $this->CreateVarProfile('Automower.Action', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
 
         $associations = [];
-        $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_ERROR, 'Name' => $this->Translate('error'), 'Farbe' => -1];
-        $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_DISABLED, 'Name' => $this->Translate('disabled'), 'Farbe' => -1];
-        $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_PARKED, 'Name' => $this->Translate('parked'), 'Farbe' => -1];
-        $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_CHARGING, 'Name' => $this->Translate('charging'), 'Farbe' => -1];
-        $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_PAUSED, 'Name' => $this->Translate('paused'), 'Farbe' => -1];
-        $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_MOVING, 'Name' => $this->Translate('moving'), 'Farbe' => -1];
-        $associations[] = ['Wert' => AUTOMOWER_ACTIVITY_CUTTING, 'Name' => $this->Translate('cutting'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_ERROR, 'Name' => $this->Translate('error'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_DISABLED, 'Name' => $this->Translate('disabled'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_PARKED, 'Name' => $this->Translate('parked'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_CHARGING, 'Name' => $this->Translate('charging'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_PAUSED, 'Name' => $this->Translate('paused'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_MOVING, 'Name' => $this->Translate('moving'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_CUTTING, 'Name' => $this->Translate('cutting'), 'Farbe' => -1];
         $this->CreateVarProfile('Automower.Activity', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
 
         $associations = [];
@@ -216,7 +199,7 @@ class AutomowerDevice extends IPSModule
         $this->SetSummary($device_id);
     }
 
-    protected function GetFormElements()
+    private function GetFormElements()
     {
         $formElements = [];
         $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Instance is disabled'];
@@ -234,11 +217,11 @@ class AutomowerDevice extends IPSModule
         return $formElements;
     }
 
-    protected function GetFormActions()
+    private function GetFormActions()
     {
         $formActions = [];
-        $formActions[] = ['type' => 'Button', 'caption' => 'Test account', 'onClick' => 'AutomowerDevice_TestAccount($id);'];
-        $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'AutomowerDevice_UpdateStatus($id);'];
+        $formActions[] = ['type' => 'Button', 'caption' => 'Test account', 'onClick' => 'Automower_TestAccount($id);'];
+        $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'Automower_UpdateStatus($id);'];
 
         return $formActions;
     }
@@ -268,10 +251,16 @@ class AutomowerDevice extends IPSModule
         }
     }
 
-    protected function SetUpdateInterval()
+    public function SetUpdateInterval(int $sec = null)
     {
-        $min = $this->ReadPropertyInteger('update_interval');
-        $msec = $min > 0 ? $min * 1000 * 60 : 0;
+        if ($sec > 0) {
+            $this->SendDebug(__FUNCTION__, 'override interval with sec=' . $sec, 0);
+            $msec = $sec * 1000;
+        } else {
+            $min = $this->ReadPropertyInteger('update_interval');
+            $this->SendDebug(__FUNCTION__, 'default interval with min=' . $min, 0);
+            $msec = $min * 60 * 1000;
+        }
         $this->SetTimerInterval('UpdateStatus', $msec);
     }
 
@@ -302,8 +291,8 @@ class AutomowerDevice extends IPSModule
 
         $oldActivity = $this->GetValue('MowerActivity');
         switch ($oldActivity) {
-            case AUTOMOWER_ACTIVITY_MOVING:
-            case AUTOMOWER_ACTIVITY_CUTTING:
+            case self::$AUTOMOWER_ACTIVITY_MOVING:
+            case self::$AUTOMOWER_ACTIVITY_CUTTING:
                 $wasWorking = true;
                 break;
             default:
@@ -317,18 +306,18 @@ class AutomowerDevice extends IPSModule
         $this->SetValue('MowerActivity', $mowerActivity);
 
         switch ($mowerActivity) {
-            case AUTOMOWER_ACTIVITY_DISABLED:
-            case AUTOMOWER_ACTIVITY_PAUSED:
-            case AUTOMOWER_ACTIVITY_PARKED:
-            case AUTOMOWER_ACTIVITY_CHARGING:
-                $action = AUTOMOWER_ACTION_START;
+            case self::$AUTOMOWER_ACTIVITY_DISABLED:
+            case self::$AUTOMOWER_ACTIVITY_PAUSED:
+            case self::$AUTOMOWER_ACTIVITY_PARKED:
+            case self::$AUTOMOWER_ACTIVITY_CHARGING:
+                $action = self::$AUTOMOWER_ACTION_START;
                 break;
-            case AUTOMOWER_ACTIVITY_MOVING:
-            case AUTOMOWER_ACTIVITY_CUTTING:
-                $action = AUTOMOWER_ACTION_PARK;
+            case self::$AUTOMOWER_ACTIVITY_MOVING:
+            case self::$AUTOMOWER_ACTIVITY_CUTTING:
+                $action = self::$AUTOMOWER_ACTION_PARK;
                 break;
             default:
-                $action = AUTOMOWER_ACTION_STOP;
+                $action = self::$AUTOMOWER_ACTION_STOP;
                 break;
         }
         $this->SendDebug(__FUNCTION__, 'MowerAction=' . $action, 0);
@@ -383,8 +372,8 @@ class AutomowerDevice extends IPSModule
             $this->SetValue('DailyWorking', 0);
         }
         switch ($mowerActivity) {
-            case AUTOMOWER_ACTIVITY_MOVING:
-            case AUTOMOWER_ACTIVITY_CUTTING:
+            case self::$AUTOMOWER_ACTIVITY_MOVING:
+            case self::$AUTOMOWER_ACTIVITY_CUTTING:
                 $isWorking = true;
                 break;
             default:
@@ -481,13 +470,13 @@ class AutomowerDevice extends IPSModule
             case 'MowerAction':
                 $this->SendDebug(__FUNCTION__, "$Ident=$Value", 0);
                 switch ($Value) {
-                    case AUTOMOWER_ACTION_PARK:
+                    case self::$AUTOMOWER_ACTION_PARK:
                         $this->ParkMower();
                         break;
-                    case AUTOMOWER_ACTION_START:
+                    case self::$AUTOMOWER_ACTION_START:
                         $this->StartMower();
                         break;
-                    case AUTOMOWER_ACTION_STOP:
+                    case self::$AUTOMOWER_ACTION_STOP:
                         $this->StopMower();
                         break;
                     default:
@@ -563,27 +552,27 @@ class AutomowerDevice extends IPSModule
     private function normalize_mowerStatus($val)
     {
         $val2code = [
-            'ERROR'                       => AUTOMOWER_ACTIVITY_ERROR,
+            'ERROR'                       => self::$AUTOMOWER_ACTIVITY_ERROR,
 
-            'OK_CUTTING'                  => AUTOMOWER_ACTIVITY_CUTTING,
-            'OK_CUTTING_NOT_AUTO'         => AUTOMOWER_ACTIVITY_CUTTING,
-            'OK_CUTTING_TIMER_OVERRIDDEN' => AUTOMOWER_ACTIVITY_CUTTING,
+            'OK_CUTTING'                  => self::$AUTOMOWER_ACTIVITY_CUTTING,
+            'OK_CUTTING_NOT_AUTO'         => self::$AUTOMOWER_ACTIVITY_CUTTING,
+            'OK_CUTTING_TIMER_OVERRIDDEN' => self::$AUTOMOWER_ACTIVITY_CUTTING,
 
-            'PARKED_TIMER'                => AUTOMOWER_ACTIVITY_PARKED,
-            'PARKED_AUTOTIMER'            => AUTOMOWER_ACTIVITY_PARKED,
-            'PARKED_PARKED_SELECTED'      => AUTOMOWER_ACTIVITY_PARKED,
+            'PARKED_TIMER'                => self::$AUTOMOWER_ACTIVITY_PARKED,
+            'PARKED_AUTOTIMER'            => self::$AUTOMOWER_ACTIVITY_PARKED,
+            'PARKED_PARKED_SELECTED'      => self::$AUTOMOWER_ACTIVITY_PARKED,
 
-            'PAUSED'                      => AUTOMOWER_ACTIVITY_PAUSED,
+            'PAUSED'                      => self::$AUTOMOWER_ACTIVITY_PAUSED,
 
-            'OFF_DISABLED'                => AUTOMOWER_ACTIVITY_DISABLED,
-            'OFF_HATCH_OPEN'              => AUTOMOWER_ACTIVITY_DISABLED,
-            'OFF_HATCH_CLOSED'            => AUTOMOWER_ACTIVITY_DISABLED,
-            'OFF_HATCH_CLOSED_DISABLED'   => AUTOMOWER_ACTIVITY_DISABLED,
+            'OFF_DISABLED'                => self::$AUTOMOWER_ACTIVITY_DISABLED,
+            'OFF_HATCH_OPEN'              => self::$AUTOMOWER_ACTIVITY_DISABLED,
+            'OFF_HATCH_CLOSED'            => self::$AUTOMOWER_ACTIVITY_DISABLED,
+            'OFF_HATCH_CLOSED_DISABLED'   => self::$AUTOMOWER_ACTIVITY_DISABLED,
 
-            'OK_SEARCHING'                => AUTOMOWER_ACTIVITY_MOVING,
-            'OK_LEAVING'                  => AUTOMOWER_ACTIVITY_MOVING,
+            'OK_SEARCHING'                => self::$AUTOMOWER_ACTIVITY_MOVING,
+            'OK_LEAVING'                  => self::$AUTOMOWER_ACTIVITY_MOVING,
 
-            'OK_CHARGING'                 => AUTOMOWER_ACTIVITY_CHARGING,
+            'OK_CHARGING'                 => self::$AUTOMOWER_ACTIVITY_CHARGING,
         ];
 
         if (isset($val2code[$val])) {
@@ -592,7 +581,7 @@ class AutomowerDevice extends IPSModule
             $msg = 'unknown value "' . $val . '"';
             $this->LogMessage(__FUNCTION__ . ': ' . $msg, KL_WARNING);
             $this->SendDebug(__FUNCTION__, $msg, 0);
-            $code = AUTOMOWER_ACTIVITY_ERROR;
+            $code = self::$AUTOMOWER_ACTIVITY_ERROR;
         }
         return $code;
     }

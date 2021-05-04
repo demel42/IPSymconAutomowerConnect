@@ -2,12 +2,30 @@
 
 declare(strict_types=1);
 
-trait AutomowerLibrary
+trait AutomowerLocalLib
 {
+    public static $IS_UNAUTHORIZED = IS_EBASE + 1;
+    public static $IS_SERVERERROR = IS_EBASE + 2;
+    public static $IS_HTTPERROR = IS_EBASE + 3;
+    public static $IS_INVALIDDATA = IS_EBASE + 4;
+    public static $IS_DEVICE_MISSING = IS_EBASE + 5;
+
+    public static $AUTOMOWER_ACTIVITY_ERROR = -1;
+    public static $AUTOMOWER_ACTIVITY_DISABLED = 0;
+    public static $AUTOMOWER_ACTIVITY_PARKED = 1;
+    public static $AUTOMOWER_ACTIVITY_CHARGING = 2;
+    public static $AUTOMOWER_ACTIVITY_PAUSED = 3;
+    public static $AUTOMOWER_ACTIVITY_MOVING = 4;
+    public static $AUTOMOWER_ACTIVITY_CUTTING = 5;
+
+    public static $AUTOMOWER_ACTION_PARK = 0;
+    public static $AUTOMOWER_ACTION_START = 1;
+    public static $AUTOMOWER_ACTION_STOP = 2;
+
     private $url_im = 'https://iam-api.dss.husqvarnagroup.net/api/v3/';
     private $url_track = 'https://amc-api.dss.husqvarnagroup.net/v1/';
 
-    public function GetMowerList()
+    private function GetMowerList()
     {
         $cdata = $this->do_ApiCall($this->url_track . 'mowers');
         if ($cdata == '') {
@@ -171,5 +189,23 @@ trait AutomowerLibrary
         }
 
         return $data;
+    }
+
+    private function GetFormStatus()
+    {
+        $formStatus = [];
+        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
+        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
+        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
+        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
+        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
+
+        $formStatus[] = ['code' => self::$IS_UNAUTHORIZED, 'icon' => 'error', 'caption' => 'Instance is inactive (unauthorized)'];
+        $formStatus[] = ['code' => self::$IS_SERVERERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (server error)'];
+        $formStatus[] = ['code' => self::$IS_HTTPERROR, 'icon' => 'error', 'caption' => 'Instance is inactive (http error)'];
+        $formStatus[] = ['code' => self::$IS_INVALIDDATA, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid data)'];
+        $formStatus[] = ['code' => self::$IS_DEVICE_MISSING, 'icon' => 'error', 'caption' => 'Instance is inactive (device missing)'];
+
+        return $formStatus;
     }
 }

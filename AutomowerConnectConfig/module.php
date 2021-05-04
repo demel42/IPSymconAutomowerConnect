@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
-require_once __DIR__ . '/../libs/library.php';  // modul-bezogene Funktionen
+require_once __DIR__ . '/../libs/common.php';	// globale Funktionen
+require_once __DIR__ . '/../libs/local.php';	// lokale Funktionen
 
 class AutomowerConfig extends IPSModule
 {
-    use AutomowerCommon;
-    use AutomowerLibrary;
+    use AutomowerCommonLib;
+    use AutomowerLocalLib;
 
     public function Create()
     {
@@ -64,7 +64,7 @@ class AutomowerConfig extends IPSModule
         return $tree_position;
     }
 
-    public function getConfiguratorValues()
+    private function GetConfiguratorValues()
     {
         $user = $this->ReadPropertyString('user');
         $password = $this->ReadPropertyString('password');
@@ -130,7 +130,7 @@ class AutomowerConfig extends IPSModule
         return $config_list;
     }
 
-    public function GetFormElements()
+    private function GetFormElements()
     {
         $formElements = [];
 
@@ -143,7 +143,7 @@ class AutomowerConfig extends IPSModule
 
         $formElements[] = ['name' => 'ImportCategoryID', 'type' => 'SelectCategory', 'caption' => 'category'];
 
-        $entries = $this->getConfiguratorValues();
+        $entries = $this->GetConfiguratorValues();
         $configurator = [
             'type'    => 'Configurator',
             'name'    => 'Mower',
@@ -177,7 +177,7 @@ class AutomowerConfig extends IPSModule
         return $formElements;
     }
 
-    protected function GetFormActions()
+    private function GetFormActions()
     {
         $formActions = [];
 
