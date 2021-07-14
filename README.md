@@ -168,6 +168,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 1.22 @ 14.07.2021 18:31
+  - Schalter "Instanz ist deaktiviert" umbenannt in "Instanz deaktivieren"
+
 - 1.21 @ 04.05.2021 08:50
   - neue Funktion __SetUpdateInterval__
   - lokale Funktionen aus common.php in locale.php verlagert
