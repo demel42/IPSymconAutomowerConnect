@@ -82,7 +82,7 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 
 | Eigenschaft              | Typ     | Standardwert | Beschreibung |
 | :----------------------- | :-----  | :----------- | :----------- |
-| Instanz ist deaktiviert  | boolean | false        | Instanz temporär deaktivieren |
+| Instanz deaktivieren     | boolean | false        | Instanz temporär deaktivieren |
 |                          |         |              | |
 | Benutzer                 | string  |              | Husqvarna-Benutzer |
 | Passwort                 | string  |              | Passwort des Benutzers |
