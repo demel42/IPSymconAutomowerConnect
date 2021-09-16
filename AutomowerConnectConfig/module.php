@@ -76,10 +76,11 @@ class AutomowerConfig extends IPSModule
             $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}';
             $instIDs = IPS_GetInstanceListByModuleID($guid);
             foreach ($mowers as $mower) {
+                $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
                 $device_id = $mower['id'];
                 $name = $mower['name'];
-                $model = $mower['model'];
-                if (is_null($model)) {
+                $model = isset($mower['model']) ? $mower['model'] : '';
+                if ($model == '' || is_null($model)) {
                     $model = $this->Translate('unknown');
                 }
                 switch ($model) {

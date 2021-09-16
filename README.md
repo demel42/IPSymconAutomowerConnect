@@ -168,6 +168,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 1.23 @ 16.09.2021 14:48 (beta)
+  - Feld 'model' scheint nicht mehr zu existieren
+
 - 1.22 @ 14.07.2021 18:31
   - Schalter "Instanz ist deaktiviert" umbenannt in "Instanz deaktivieren"
 
