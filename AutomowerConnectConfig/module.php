@@ -80,6 +80,7 @@ class AutomowerConfig extends IPSModule
                 $device_id = $mower['id'];
                 $name = $mower['name'];
                 $model = isset($mower['model']) ? $mower['model'] : '';
+                /*
                 if ($model == '' || is_null($model)) {
                     $model = $this->Translate('unknown');
                 }
@@ -92,6 +93,7 @@ class AutomowerConfig extends IPSModule
                         $with_gps = false;
                         break;
                 }
+                 */
 
                 $instanceID = 0;
                 foreach ($instIDs as $instID) {
@@ -109,8 +111,10 @@ class AutomowerConfig extends IPSModule
                         'user'        => $user,
                         'password'    => $password,
                         'device_id'   => "$device_id",
+                        /*
                         'model'       => $model,
                         'with_gps'    => $with_gps
+                         */
                     ]
                 ];
                 $create['info'] = 'Automower  ' . $model;

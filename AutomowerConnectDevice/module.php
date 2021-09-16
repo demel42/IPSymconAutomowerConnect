@@ -449,7 +449,7 @@ class AutomowerDevice extends IPSModule
                 $mower_found = true;
             }
             $name = $mower['name'];
-            $model = $mower['model'];
+            $model = isset($mower['model']) ? $mower['model'] : '';
 
             $msg = $this->Translate('mower') . ' "' . $name . '", ' . $this->Translate('model') . '=' . $model;
             $this->SendDebug(__FUNCTION__, 'device_id=' . $device_id . ', name=' . $name . ', model=' . $model, 0);
