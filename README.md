@@ -168,7 +168,7 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 1.23 @ 16.09.2021 14:48 (beta)
+- 1.23 @ 16.09.2021 14:48
   - Feld 'model' scheint nicht mehr zu existieren
 
 - 1.22 @ 14.07.2021 18:31
