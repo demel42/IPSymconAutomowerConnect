@@ -1,6 +1,6 @@
 # IPSymconAutomowerConnect
 
-[![Version](https://img.shields.io/badge/Symcon_Version-5.3+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![Version](https://img.shields.io/badge/Symcon_Version-6.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -21,55 +21,42 @@
  - Übernahme von eineigen Status-Informationen zu einem Husqvarna Automower mit Connect-Modul.
  - Senden von Befehlen zum Starten, Stoppen und Parken des Mährobotors.
 
-Es wird die REST-Schnittstelle des Husqvarna Connect-Moduls verwendet. Für diese liegt keine Dokumentation vor, sodaß nicht alle der Funktionen der APP abgebildet werden konnten.
-Ich habe die unten angegebenen Quellen verwendet.
-
 ## 2. Voraussetzungen
 
- - IP-Symcon ab Version 5.3<br>
-   Version 4.4 mit Branch _ips_4.4_ (nur noch Fehlerkorrekturen)
+ - IP-Symcon ab Version 6.0<br>
  - Husqvarna Automower mit Connect-Modul
+ - aktives IP-Symcon Connect
 
 ## 3. Installation
 
-### a. Laden des Moduls
+### a. Installation des Moduls
 
-Die Konsole von IP-Symcon öffnen. Im Objektbaum unter Kerninstanzen die Instanz __*Modules*__ durch einen doppelten Mausklick öffnen.
-
-In der _Modules_ Instanz rechts oben auf den Button __*Hinzufügen*__ drücken.
-
-In dem sich öffnenden Fenster folgende URL hinzufügen:
-
-`https://github.com/demel42/IPSymconAutomowerConnect.git`
-
-und mit _OK_ bestätigen.
-
-Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Modules_
+Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *Symcon Notice* zu finden.<br>
+Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconNotice.git` installiert werden.
 
 ### b. Einrichtung in IPS
 
-In IP-Symcon zuerst _Konfigurator Instanzen_ den Konfigurator _AutomowerConnect Konfigurator_ hinzufügen.
-Hier die Zugangsdaten eintragen, _Übernehmen_ und dann kann man über den Konfigurator eine Instanz anlegen.
+In IP-Symcon nun unterhalb von _I/O Instanzen_ die Funktion _Instanz hinzufügen_ auswählen und als Hersteller _Husqvarna_ angeben und _Automower I/O_ auswählen.
+Im Modul, _Anmelden bei Husqvarna_ auswählen und auf der Husqvarna Login-Seite Benutzernamen und Passwort eingeben.
 
-Die so erzeugte Instanz enthält neben den Zugangsdaten die interne Geräte-ID.
+Nun in IP-Symcon in _Konfigurator Instanzen_ den Konfigurator _AutomowerConnect Konfigurator_ hinzufügen; dann kann man über den Konfigurator eine Instanz anlegen.
+
+Die so erzeugte Geräte-Instanz enthält neben der Serienummer die interne Geräte-ID.
 
 ## 4. Funktionsreferenz
 
 ### zentrale Funktion
 
-`boolean Automower_ParkMower(integer $InstanzID)`<br>
+`boolean AutomowerConnect_ParkMower(integer $InstanzID)`<br>
 Parken des Mähers in der Ladestation
 
-`boolean Automower_StartMower(integer $InstanzID)`<br>
+`boolean AutomowerConnect_StartMower(integer $InstanzID)`<br>
 Starten eines manuellen Mähvorgangs
 
-`boolean Automower_StopMower(integer $InstanzID)`<br>
+`boolean AutomowerConnect_StopMower(integer $InstanzID)`<br>
 Stoppen der Aktivität der Mähers
 
-`boolean Automower_SetUpdateInterval(integer $InstanzID, integer seconds)`<br>
-Ändert temporär das Update-Intervall, ein Wert von *0* bedeutet, das wieder das im Konfigurationsformular angegebene Intervall verwendet wird
-
-`string Automower_GetRawData(integer $InstanceID, string $Name)`<br>
+`string AutomowerConnect_GetRawData(integer $InstanceID, string $Name)`<br>
 Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2GoogelMaps.php`.
 
 | Name          | Beschreibung |
@@ -82,14 +69,11 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 
 | Eigenschaft              | Typ     | Standardwert | Beschreibung |
 | :----------------------- | :-----  | :----------- | :----------- |
-| Instanz deaktivieren     | boolean | false        | Instanz temporär deaktivieren |
+| Instanz ist deaktiviert  | boolean | false        | Instanz temporär deaktivieren |
 |                          |         |              | |
-| Benutzer                 | string  |              | Husqvarna-Benutzer |
-| Passwort                 | string  |              | Passwort des Benutzers |
-|                          |         |              | |
-| nur _*AutomowerDevice*_  |         |              | |
-| Geräte-ID                | string  |              | interne Geräte-ID |
+| Seriennummer             | string  |              | Seriennummer |
 | Modell                   | string  |              | Modell |
+| Geräte-ID                | string  |              | interne Geräte-ID |
 |                          |         |              | |
 | mit GPS-Daten            | boolean | false        | Gerät schickt GPS-Daten |
 | Position speichern       | boolean | false        | Position in der Variablen 'Position' speichern |
@@ -97,7 +81,7 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 | Aktualisiere Daten ...   | integer | 1            | Aktualisierungsintervall, Angabe in Minuten |
 
 
-## AutomowerDevice
+## AutomowerConnect
 
 | Bezeichnung              | Beschreibung |
 | :----------------------- | :----------- |
@@ -126,19 +110,23 @@ In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten g
 
 | Wert | Beschreibung |
 | :--- | :----------- |
-| -1   | Fehler |
-|  0   | ausser Betrieb |
-|  1   | geparkt |
-|  2   | lädt |
-|  3   | pausiert |
-|  4   | fährt |
-|  5   | mäht |
+| 0    | unbekannter Status |
+| 1    | nicht anwendbar (?) |
+| 2    | Fehler |
+| 3    | ausser Betrieb |
+| 4    | geparkt |
+| 5    | lädt |
+| 6    | pausiert |
+| 7    | verlässt Ladestation |
+| 8    | fährt zur Ladestation |
+| 9    | mäht |
+| 10   | gestoppt |
 
 Es ist damit z.B. egal, ob der Mähvorgang vom Timer ausgelöst wurde oder manuell.
 Das kann man dann leicht in einem Diagramm darstellen bzw. als Basis für Berechnungen verwenden.
 
 in _Position_ wird die akuelle Positon gespeichert; es werden Longitude und Latitude als json-encodeded String abgelegt. Wenn die Variable protokolliert wird, können damit längerfristig die Weg des Mähers dargestellt werden.
-Beistpiel-Script siehe `docs/docs/Position2GoogelMaps.php`.
+Beispiel-Script siehe `docs/docs/Position2GoogelMaps.php`.
 
 ### Variablenprofile
 
@@ -158,36 +146,34 @@ Es werden folgende Variableprofile angelegt:
 GUIDs
 - Modul: `{5D3A5F03-B872-4C4F-802C-65A654A7772C}`
 - Instanzen:
+  - AutomowerConnectIO: `{AEEFAA3E-8802-086D-6620-E971C03CBEFC}`
   - AutomowerConnectConfig: `{664A5A69-6171-481A-BCB7-1CACDE4BF50D}`
   - AutomowerConnectDevice: `{B64D5F1C-6F12-474B-8DBC-3B263E67954E}`
+- Nachrichten
+  - `{4C746488-C0FD-A850-3532-8DEBC042C970}`: an AutomowerConnectIO
+  - `{277691A0-EF84-1883-2094-45C56419748A}`: an AutomowerConnectDevice
 
 Quellen:
-  - https://github.com/chrisz/pyhusmow
-  - https://github.com/krannich/dkFHEM/blob/master/FHEM/74_HusqvarnaAutomower.pm
-  - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
+  - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
 
 ## 7. Versions-Historie
 
-- 1.23 @ 16.09.2021 14:48
-  - Feld 'model' scheint nicht mehr zu existieren
+- 2.0 @ 28.03.2022 17:07
+  - Umstellung auf die offizielle Husqvarna-REST-API mit OAuth
+    Update-Hinweis:
+	- vor dem Update
+      - Löschen von Profil Automower.Action, Automower.Error und Variable MowerAction
+    - nach dem Update
+      - I/O-Instanz einrichten
+      - Konfigurator-Instanz  aufrufen, die Devises sollten alle erscheien, aber als "Prüfen" markiert sein; das durchführen
+	  - Script korrigieren (Änderung der Variable _$activity_label_, siehe _docs_)
+	  - Geräte-Instanz kontrollieren, Status aktualisieren ...
+  - Anpassungen an IPS 6.2 (Prüfung auf ungültige ID's)
+  - diverse interen Änderungen
+  - Anzeige der Modul/Bibliotheks-Informationen
+  - Möglichkeit der Anzeige der Instanz-Referenzen sowie referenzierte Statusvariablen
 
-- 1.22 @ 14.07.2021 18:31
-  - Schalter "Instanz ist deaktiviert" umbenannt in "Instanz deaktivieren"
-
-- 1.21 @ 04.05.2021 08:50
-  - neue Funktion __SetUpdateInterval__
-  - lokale Funktionen aus common.php in locale.php verlagert
-  - define's durch statische Klassen-Variablen ersetzt
-  - Funktions-Prefix ist nun einheitlich __Automower__
-    Achtung: das z.B. im Script zur Kartendarstellung verwendete __AutomowerDevice_GetRawData__
-	heisst nun __Automower_GetRawData__
-  - interne Funktionen sind nun "private"
-
-- 1.20 @ 21.04.2021 17:09 
-  - Absicherung von Geräten ohne Modellbezeichnung
-
-- 1.19 @ 18.12.2020 14:57
-  - PHP_CS_FIXER_IGNORE_ENV=1 in github/workflows/style.yml eingefügt
+- 1.19 @ 13.07.2020 14:56
   - LICENSE.md hinzugefügt
 
 - 1.18 @ 07.07.2020 11:41

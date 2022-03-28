@@ -1,73 +1,123 @@
 {
 	"translations": {
 		"de": {
+			"Instance has no active parent instance": "Instanz hat keine aktive übergeordnete Instanz",
+
 			"Disable instance": "Instanz deaktivieren",
 
-			"User": "Benutzer",
-			"Password": "Passwort",
-			"Device-ID": "Geräte-ID",
-			"Model": "Modell",
-			"with GPS-Data": "mit GPS-Daten",
+            "The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
 
+			"Basic configuration (don't change)": "Basis-Konfiguration (nicht ändern)",
+			"Serial": "Seriennummer",
+			"Model": "Modell",
+			"Device-ID": "Geräte-ID",
+
+			"with GPS-Data": "mit GPS-Daten",
 			"save position to (logged) variable 'Position'": "Position in der (protokollierten) Variablen 'Position' speichern",
 			"save position": "Position speichern",
 
-            "Update status every X minutes": "Aktualisiere Status alle X Minuten",
+			"Update interval": "Aktualisierungs-Intervall",
 			"Minutes": "Minuten",
 
-			"Test account": "Zugangsdaten überprüfen",
 			"Update status": "Aktualisiere Status",
-			"Module description": "Modulbeschreibung",
 
-			"device not found": "Gerät nicht gefunden",
-			"invalid account-data": "ungültige Zugangsdaten",
-			"model": "Modell",
-			"mower": "Rasenmäher",
-			"valid account-data": "gültige Zugangsdaten",
-
-			"automatic parked": "automatisch geparkt",
 			"Battery capacity": "Batteriekapazität",
-			"charging": "lädt",
-			"Connected": "Verbunden",
-			"cutting": "mäht",
 			"Day of cumulation": "Datum zu Tageswerten",
-			"disabled": "ausser Betrieb",
-			"Disconnected": "Getrennt",
-			"error": "Fehler",
-			"hatch closed": "Abdeckung ist geschlossen",
-			"hatch closed and disabled": "Abdeckung ist geschlossen und ausser Betrieb",
-			"hatch open": "Abdeckung ist offen",
 			"Last error": "letzter Fehler",
 			"Last position (latitude)": "letzter Breitengrad",
 			"Last position (longitude)": "letzter Längengrad",
 			"Last status": "letzter Status",
-			"leaving base": "verlässt Ladestation",
-			"manual cutting": "manuelles Mähen",
-			"manual parked": "manuell geparkt",
-			"moving": "fährt",
 			"Mower action": "Aktivität starten",
 			"Mower activity": "aktuelle Aktivität",
 			"Mower status": "Status",
 			"Next start": "nächster Start",
 			"Operation mode": "Betriebsart",
-			"parked": "geparkt",
-			"paused": "pausiert",
+			"Park action": "Park-Aktion",
+			"Pause action": "Pause-Aktion",
 			"Position": "Position",
-			"searching base": "sucht Ladestation",
+			"Restricted reason": "Grund für Inaktivität",
+			"Start action": "Start-Aktion",
 			"Timestamp of last error": "Zeitpunkt des letzten Fehlers",
 			"Working time (day)": "Arbeitszeit (Tag)",
 
-			"park": "Parken",
-			"start": "Starten",
-			"stop": "Stoppen",
+			"__comment__": "Automower.ActionStart / MowerActionStart",
+			"next schedule": "nächster Zeitplan",
+			"3 hours": "3 Stunden",
+			"6 hours": "6 Stunden",
+			"12 hours": "12 Stunden",
+			"1 day": "1 Tag",
+			"2 days": "2 Tage",
+			"3 days": "3 Tage",
+			"4 days": "4 Tage",
+			"5 days": "5 Tage",
+			"6 days": "6 Tage",
+			"7 days": "7 Tage",
 
+
+			"__comment__": "Automower.ActionPause / MowerActionPause",
+			"pause": "Pause",
+
+
+			"__comment__": "Automower.ActionPark / MowerActionPark",
+			"until further notice": "bis auf weiteres",
+			"until next schedule": "mit Zeitplan starten",
+
+
+			"__comment__": "Automower.Connection / Connected",
+			"Connected": "Verbunden",
+			"Disconnected": "Getrennt",
+
+
+			"__comment__": "Automower.Activity / MowerActivity",
+			"unknown": "unbekannt",
+			"manual intervention required": "manueller Eingriff erforderlich",
+			"error": "Fehler",
+			"disabled": "ausser Betrieb",
+			"parked": "geparkt",
+			"charging": "lädt",
+			"paused": "pausiert",
+			"going home": "kehrt zur Ladestation zurück",
+			"leaving base": "verlässt Ladestation",
+			"cutting": "mäht",
+			"stopped": "gestoppt",
+
+
+			"__comment__": "MowerStatus",
+			"unknown": "unbekannt",
+			"not applicable": "unzutreffend",
+			"__comment__": "paused",
+			"in operation": "in Betrieb",
+			"wait updating": "wird aktualisiert",
+			"wait power up": "startet",
+			"restricted": "inaktiv",
+			"off": "aus",
+			"__comment__": "error",
+			"fatal error": "fataler Fehler",
+			"error at power up": "Fehler beim Start",
+
+
+			"__comment__": "RestrictedReason",
+			"none": "kein",
+			"unknown": "unbekannt",
+			"__comment__": "not applicable",
+			"week schedule": "Wochenplan",
+			"park overwrite": "manuelles Parken",
+			"sensor": "Sensor",
+			"daily limit": "Tageslimit",
+			"__comment__": "until further notice",
+
+
+			"__comment__": "OperationMode",
 			"remain in base": "in Basis bleiben",
 			"automatic": "Automatikbetrieb",
 			"main area": "Hauptbereich",
 			"secondary area": "Nebenbereich",
 			"override timer": "Timer deaktiviert",
 			"spot cutting": "Spiralschnitt",
+			"__comment__": "unknown",
 
+
+			"__comment__": "Automower.Error",
 			"Unexpected error": "Unerwarteter Fehler",
 			"Outside working area": "Außerhalb des Arbeitsbereichs",
 			"No loop signal": "Kein Schleifensignal",
@@ -160,6 +210,36 @@
 			"Invalid system configuration": "Ungültige Systemkonfiguration",
 			"No power in charging station": "Kein Strom in der Ladestation",
 
+            "Expert area": "Experten-Bereich",
+			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
+
+			"Information": "Information",
+
+            "Test area": "Test-Bereich",
+
+            "References": "Referenzen",
+			"Category": "Kategorie",
+            "Instance": "Instanz",
+            "Variable": "Variable",
+            "Script": "Skript",
+            "Event": "Ereignis",
+            "Medium": "Medium",
+            "Link": "Verknüpfung",
+            "PHP script": "PHP-Skript",
+            "Flow plan": "Ablaufplan",
+            "Triggered event": "Ausgelöstes Ereignis",
+            "Cyclic event": "Zyklisches Ereignis",
+            "Scheduled event": "Geplantes Ereignis",
+            "by instance used objects": "durch die Instanz verwendete Objekte",
+            "Objects using the instance": "Objekte, die die Instanz verwenden",
+            "Referenced statusvariables": "referenzierte Statusvariablen",
+            "Ident": "Ident",
+            "Object": "Objekt",
+            "Area": "Bereich",
+            "Name": "Bezeichnung",
+            "Open object": "Objekt öffnen",
+
+
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
 			"Instance is deleted": "Instanz wird gelöscht",
@@ -170,7 +250,12 @@
 			"Instance is inactive (server error)": "Instanz ist inaktiv (Serverfehler)",
 			"Instance is inactive (http error)": "Instanz ist inaktiv (HTTP-Fehler)",
 			"Instance is inactive (invalid data)": "Instanz ist inaktiv (ungültige Daten)",
-			"Instance is inactive (device missing)": "Instanz ist inaktiv (Gerät fehlt)"
+			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)",
+			"Instance is inactive (not logged in)": "Instanz ist inaktiv (nicht angemeldet)",
+			"Instance is inactive (forbidden)": "Instanz ist inaktiv (fehlende Berechtigung)",
+			"Instance is inactive (invalid account)": "Instanz ist inaktiv (ungültige Kontodaten)",
+			"Instance is inactive (device missing)": "Instanz ist inaktiv (Gerät fehlt)",
+			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)"
 		}
 	}
 }

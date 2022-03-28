@@ -5,7 +5,7 @@ declare(strict_types=1);
 // Beispiel zur Datestellung der GPS-Ќoordinaten mit Hilfe von GooleMaps (siehe https://github.com/demel42/IPSymconGoogleMaps.git)
 // in dem Script verwendete Objekt-ID's durch die eigenen ID's ersetzen
 
-$cdata = Automower_GetRawData(24687 /*[Rasenmäher\Automower]*/, 'LastLocations');
+$cdata = AutomowerConnect_GetRawData(24687 /*[Rasenmäher\Automower]*/, 'LastLocations');
 $jdata = json_decode($cdata, true);
 
 $points = [];
@@ -39,7 +39,7 @@ $point = [
 $marker_points[0] = $point;
 
 $activity = GetValueInteger(30160 /*[Rasenmäher\Automower\Aktivität]*/);
-$activity_label = ['E', 'D', 'P', 'L', 'S', 'F', 'M'];
+$activity_label = ['', '', 'E', 'D', 'G', 'L', 'P', 'F', 'R', 'M', 'S'];
 $label = $activity_label[$activity + 1];
 
 $markers[] = [

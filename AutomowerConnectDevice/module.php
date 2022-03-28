@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/common.php';	// globale Funktionen
-require_once __DIR__ . '/../libs/local.php';	// lokale Funktionen
+require_once __DIR__ . '/../libs/CommonStubs/common.php'; // globale Funktionen
+require_once __DIR__ . '/../libs/local.php';   // lokale Funktionen
 
-class AutomowerDevice extends IPSModule
+class AutomowerConnectDevice extends IPSModule
 {
-    use AutomowerCommonLib;
-    use AutomowerLocalLib;
+    use StubsCommonLib;
+    use AutomowerConnectLocalLib;
 
     public function Create()
     {
@@ -16,147 +16,58 @@ class AutomowerDevice extends IPSModule
 
         $this->RegisterPropertyBoolean('module_disable', false);
 
-        $this->RegisterPropertyString('user', '');
-        $this->RegisterPropertyString('password', '');
-        $this->RegisterPropertyString('device_id', '');
         $this->RegisterPropertyString('model', '');
+        $this->RegisterPropertyString('serial', '');
+        $this->RegisterPropertyString('id', '');
+
+        $this->RegisterPropertyString('device_id', ''); // alt, nur noch für Update!
 
         $this->RegisterPropertyBoolean('with_gps', true);
         $this->RegisterPropertyBoolean('save_position', false);
 
         $this->RegisterPropertyInteger('update_interval', '5');
 
-        $this->RegisterTimer('UpdateStatus', 0, 'Automower_UpdateStatus(' . $this->InstanceID . ');');
+        $this->RegisterTimer('UpdateStatus', 0, 'AutomowerConnect_UpdateStatus(' . $this->InstanceID . ');');
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
 
-        $associations = [];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTION_PARK, 'Name' => $this->Translate('park'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTION_START, 'Name' => $this->Translate('start'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTION_STOP, 'Name' => $this->Translate('stop'), 'Farbe' => -1];
-        $this->CreateVarProfile('Automower.Action', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
+        $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
 
-        $associations = [];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_ERROR, 'Name' => $this->Translate('error'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_DISABLED, 'Name' => $this->Translate('disabled'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_PARKED, 'Name' => $this->Translate('parked'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_CHARGING, 'Name' => $this->Translate('charging'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_PAUSED, 'Name' => $this->Translate('paused'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_MOVING, 'Name' => $this->Translate('moving'), 'Farbe' => -1];
-        $associations[] = ['Wert' => self::$AUTOMOWER_ACTIVITY_CUTTING, 'Name' => $this->Translate('cutting'), 'Farbe' => -1];
-        $this->CreateVarProfile('Automower.Activity', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
+        $this->InstallVarProfiles(false);
 
-        $associations = [];
-        $associations[] = ['Wert' =>  0, 'Name' => '-', 'Farbe' => -1];
-        $associations[] = ['Wert' =>  1, 'Name' => $this->Translate('Outside working area'), 'Farbe' => 0xFFA500];
-        $associations[] = ['Wert' =>  2, 'Name' => $this->Translate('No loop signal'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' =>  3, 'Name' => $this->Translate('Wrong loop signal'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' =>  4, 'Name' => $this->Translate('Loop sensor problem, front'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' =>  5, 'Name' => $this->Translate('Loop sensor problem, rear'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' =>  6, 'Name' => $this->Translate('Loop sensor problem, left'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' =>  7, 'Name' => $this->Translate('Loop sensor problem, right'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' =>  8, 'Name' => $this->Translate('Wrong PIN code'), 'Farbe' => 0x9932CC];
-        $associations[] = ['Wert' =>  9, 'Name' => $this->Translate('Trapped'), 'Farbe' => 0x1874CD];
-        $associations[] = ['Wert' => 10, 'Name' => $this->Translate('Upside down'), 'Farbe' => 0x1874CD];
-        $associations[] = ['Wert' => 11, 'Name' => $this->Translate('Low battery'), 'Farbe' => 0x1874CD];
-        $associations[] = ['Wert' => 12, 'Name' => $this->Translate('Empty battery'), 'Farbe' => 0xFFA500];
-        $associations[] = ['Wert' => 13, 'Name' => $this->Translate('No drive'), 'Farbe' => 0x1874CD];
-        $associations[] = ['Wert' => 14, 'Name' => $this->Translate('Mower lifted'), 'Farbe' => 0x1874CD];
-        $associations[] = ['Wert' => 15, 'Name' => $this->Translate('Lifted'), 'Farbe' => 0x1874CD];
-        $associations[] = ['Wert' => 16, 'Name' => $this->Translate('Stuck in charging station'), 'Farbe' => 0xFFA500];
-        $associations[] = ['Wert' => 17, 'Name' => $this->Translate('Charging station blocked'), 'Farbe' => 0xFFA500];
-        $associations[] = ['Wert' => 18, 'Name' => $this->Translate('Collision sensor problem, rear'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 19, 'Name' => $this->Translate('Collision sensor problem, front'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 20, 'Name' => $this->Translate('Wheel motor blocked, right'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 21, 'Name' => $this->Translate('Wheel motor blocked, left'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 22, 'Name' => $this->Translate('Wheel drive problem, right'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 23, 'Name' => $this->Translate('Wheel drive problem, left'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 24, 'Name' => $this->Translate('Cutting system blocked'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 25, 'Name' => $this->Translate('Cutting system blocked'), 'Farbe' => 0xFFA500];
-        $associations[] = ['Wert' => 26, 'Name' => $this->Translate('Invalid sub-device combination'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 27, 'Name' => $this->Translate('Settings restored'), 'Farbe' => -1];
-        $associations[] = ['Wert' => 28, 'Name' => $this->Translate('Memory circuit problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 29, 'Name' => $this->Translate('Slope too steep'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 30, 'Name' => $this->Translate('Charging system problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 31, 'Name' => $this->Translate('STOP button problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 32, 'Name' => $this->Translate('Tilt sensor problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 33, 'Name' => $this->Translate('Mower tilted'), 'Farbe' => 0x1874CD];
-        $associations[] = ['Wert' => 34, 'Name' => $this->Translate('Cutting stopped - slope too steep'), 'Farbe' => 0x1874CD];
-        $associations[] = ['Wert' => 35, 'Name' => $this->Translate('Wheel motor overloaded, right'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 36, 'Name' => $this->Translate('Wheel motor overloaded, left'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 37, 'Name' => $this->Translate('Charging current too high'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 38, 'Name' => $this->Translate('Electronic problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 39, 'Name' => $this->Translate('Cutting motor problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 40, 'Name' => $this->Translate('Limited cutting height range'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 41, 'Name' => $this->Translate('Unexpected cutting height adj'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 42, 'Name' => $this->Translate('Limited cutting height range'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 43, 'Name' => $this->Translate('Cutting height problem, drive'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 44, 'Name' => $this->Translate('Cutting height problem, curr'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 45, 'Name' => $this->Translate('Cutting height problem, dir'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 46, 'Name' => $this->Translate('Cutting height blocked'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 47, 'Name' => $this->Translate('Cutting height problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 48, 'Name' => $this->Translate('No response from charger'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 49, 'Name' => $this->Translate('Ultrasonic problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 50, 'Name' => $this->Translate('Guide 1 not found'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 51, 'Name' => $this->Translate('Guide 2 not found'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 52, 'Name' => $this->Translate('Guide 3 not found'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 53, 'Name' => $this->Translate('GPS navigation problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 54, 'Name' => $this->Translate('Weak GPS signal'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 55, 'Name' => $this->Translate('Difficult finding home'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 56, 'Name' => $this->Translate('Guide calibration accomplished'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 57, 'Name' => $this->Translate('Guide calibration failed'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 58, 'Name' => $this->Translate('Temporary battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 59, 'Name' => $this->Translate('Temporary battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 60, 'Name' => $this->Translate('Temporary battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 61, 'Name' => $this->Translate('Temporary battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 62, 'Name' => $this->Translate('Temporary battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 63, 'Name' => $this->Translate('Temporary battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 64, 'Name' => $this->Translate('Temporary battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 65, 'Name' => $this->Translate('Temporary battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 66, 'Name' => $this->Translate('Battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 67, 'Name' => $this->Translate('Battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 68, 'Name' => $this->Translate('Temporary battery problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 69, 'Name' => $this->Translate('Alarm! Mower switched off'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 70, 'Name' => $this->Translate('Alarm! Mower stopped'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 71, 'Name' => $this->Translate('Alarm! Mower lifted'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 72, 'Name' => $this->Translate('Alarm! Mower tilted'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 73, 'Name' => $this->Translate('Alarm! Mower in motion'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 74, 'Name' => $this->Translate('Alarm! Outside geofence'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 75, 'Name' => $this->Translate('Connection changed'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 76, 'Name' => $this->Translate('Connection NOT changed'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 77, 'Name' => $this->Translate('Com board not available'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 78, 'Name' => $this->Translate('Mower has slipped'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 79, 'Name' => $this->Translate('Invalid battery combination'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 80, 'Name' => $this->Translate('Cutting system imbalance Warning'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 81, 'Name' => $this->Translate('Safety function faulty'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 82, 'Name' => $this->Translate('Wheel motor blocked, rear right'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 83, 'Name' => $this->Translate('Wheel motor blocked, rear left'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 84, 'Name' => $this->Translate('Wheel drive problem, rear right'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 85, 'Name' => $this->Translate('Wheel drive problem, rear left'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 86, 'Name' => $this->Translate('Wheel motor overloaded, rear right'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 87, 'Name' => $this->Translate('Wheel motor overloaded, rear left'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 88, 'Name' => $this->Translate('Angular sensor problem'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 89, 'Name' => $this->Translate('Invalid system configuration'), 'Farbe' => 0xFF0000];
-        $associations[] = ['Wert' => 90, 'Name' => $this->Translate('No power in charging station'), 'Farbe' => 0xFF0000];
-        $this->CreateVarProfile('Automower.Error', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations);
+        $this->SetBuffer('LastLocations', '');
+    }
 
-        $associations = [];
-        $associations[] = ['Wert' => false, 'Name' => $this->Translate('Disconnected'), 'Farbe' => 0xEE0000];
-        $associations[] = ['Wert' => true, 'Name' => $this->Translate('Connected'), 'Farbe' => -1];
-        $this->CreateVarProfile('Automower.Connection', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 1, 'Alarm', $associations);
+    private function CheckConfiguration()
+    {
+        $s = '';
+        $r = [];
 
-        $this->CreateVarProfile('Automower.Battery', VARIABLETYPE_INTEGER, ' %', 0, 0, 0, 0, 'Battery');
-        $this->CreateVarProfile('Automower.Location', VARIABLETYPE_FLOAT, ' °', 0, 0, 0, 5, '');
-        $this->CreateVarProfile('Automower.Duration', VARIABLETYPE_INTEGER, ' min', 0, 0, 0, 0, 'Hourglass');
+        $serial = $this->ReadPropertyString('serial');
+        if ($serial == '') {
+            $this->SendDebug(__FUNCTION__, '"serial" is empty', 0);
+            $r[] = $this->Translate('Field "Serial" is empty');
+        }
+
+        $id = $this->ReadPropertyString('id');
+        if ($id == '') {
+            $this->SendDebug(__FUNCTION__, '"id" is empty', 0);
+            $r[] = $this->Translate('Field "Device-ID" is empty');
+        }
+
+        if ($r != []) {
+            $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
+            foreach ($r as $p) {
+                $s .= '- ' . $p . PHP_EOL;
+            }
+        }
+
+        return $s;
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
 
-        $user = $this->ReadPropertyString('user');
-        $password = $this->ReadPropertyString('password');
-        $device_id = $this->ReadPropertyString('device_id');
-        $model = $this->ReadPropertyString('model');
         $with_gps = $this->ReadPropertyBoolean('with_gps');
         $save_position = $this->ReadPropertyBoolean('save_position');
 
@@ -166,10 +77,15 @@ class AutomowerDevice extends IPSModule
         $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('MowerStatus', $this->Translate('Mower status'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('MowerActivity', $this->Translate('Mower activity'), VARIABLETYPE_INTEGER, 'Automower.Activity', $vpos++, true);
-        $this->MaintainVariable('MowerAction', $this->Translate('Mower action'), VARIABLETYPE_INTEGER, 'Automower.Action', $vpos++, true);
+        $this->MaintainVariable('RestrictedReason', $this->Translate('Restricted reason'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('NextStart', $this->Translate('Next start'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
+        $this->MaintainVariable('MowerActionStart', $this->Translate('Start action'), VARIABLETYPE_INTEGER, 'Automower.ActionStart', $vpos++, true);
+        $this->MaintainVariable('MowerActionPause', $this->Translate('Pause action'), VARIABLETYPE_INTEGER, 'Automower.ActionPause', $vpos++, true);
+        $this->MaintainVariable('MowerActionPark', $this->Translate('Park action'), VARIABLETYPE_INTEGER, 'Automower.ActionPark', $vpos++, true);
+
         $this->MaintainVariable('DailyReference', $this->Translate('Day of cumulation'), VARIABLETYPE_INTEGER, '~UnixTimestampDate', $vpos++, true);
         $this->MaintainVariable('DailyWorking', $this->Translate('Working time (day)'), VARIABLETYPE_INTEGER, 'Automower.Duration', $vpos++, true);
+
         $this->MaintainVariable('LastErrorCode', $this->Translate('Last error'), VARIABLETYPE_INTEGER, 'Automower.Error', $vpos++, true);
         $this->MaintainVariable('LastErrorTimestamp', $this->Translate('Timestamp of last error'), VARIABLETYPE_INTEGER, '~UnixTimestampDate', $vpos++, true);
         $this->MaintainVariable('LastLongitude', $this->Translate('Last position (longitude)'), VARIABLETYPE_FLOAT, 'Automower.Location', $vpos++, $with_gps);
@@ -177,7 +93,21 @@ class AutomowerDevice extends IPSModule
         $this->MaintainVariable('LastStatus', $this->Translate('Last status'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
         $this->MaintainVariable('Position', $this->Translate('Position'), VARIABLETYPE_STRING, '', $vpos++, $save_position);
 
-        $this->MaintainAction('MowerAction', true);
+        $this->MaintainAction('MowerActionStart', true);
+        $this->MaintainAction('MowerActionPause', true);
+        $this->MaintainAction('MowerActionPark', true);
+
+        $refs = $this->GetReferenceList();
+        foreach ($refs as $ref) {
+            $this->UnregisterReference($ref);
+        }
+        $propertyNames = [];
+        foreach ($propertyNames as $name) {
+            $oid = $this->ReadPropertyInteger($name);
+            if ($oid >= 10000) {
+                $this->RegisterReference($oid);
+            }
+        }
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
@@ -186,60 +116,129 @@ class AutomowerDevice extends IPSModule
             return;
         }
 
-        if ($user != '' || $password != '' || $device_id != '') {
-            $this->SetUpdateInterval();
-            if (IPS_GetKernelRunlevel() == KR_READY) {
-                $this->UpdateStatus();
-            }
-            $this->SetStatus(IS_ACTIVE);
-        } else {
-            $this->SetStatus(IS_INACTIVE);
+        if ($this->CheckConfiguration() != false) {
+            $this->SetTimerInterval('UpdateStatus', 0);
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            return;
         }
 
-        $this->SetSummary($device_id);
+        $this->SetUpdateInterval();
+        $this->SetStatus(IS_ACTIVE);
+
+        $model = $this->ReadPropertyString('model');
+        $serial = $this->ReadPropertyString('serial');
+        $this->SetSummary($model . '(#' . $serial . ')');
     }
 
-    private function GetFormElements()
+    protected function GetFormElements()
     {
         $formElements = [];
-        $formElements[] = ['type' => 'CheckBox', 'name' => 'module_disable', 'caption' => 'Disable instance'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'device_id', 'caption' => 'Device-ID'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'model', 'caption' => 'Model'];
-        $formElements[] = ['type' => 'CheckBox', 'name' => 'with_gps', 'caption' => 'with GPS-Data'];
-        $formElements[] = ['type' => 'Label', 'caption' => 'save position to (logged) variable \'Position\''];
-        $formElements[] = ['type' => 'CheckBox', 'name' => 'save_position', 'caption' => 'save position'];
-        $formElements[] = ['type' => 'Label', 'caption' => ''];
-        $formElements[] = ['type' => 'Label', 'caption' => 'Update status every X minutes'];
-        $formElements[] = ['type' => 'NumberSpinner', 'name' => 'update_interval', 'caption' => 'Minutes'];
+
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'Husqvarna Automower Connect',
+        ];
+
+        if ($this->HasActiveParent() == false) {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => 'Instance has no active parent instance',
+            ];
+        }
+
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'module_disable',
+            'caption' => 'Disable instance'
+        ];
+
+        $formElements[] = [
+            'type'    => 'ExpansionPanel',
+            'caption' => 'Basic configuration (don\'t change)',
+            'items'   => [
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'serial',
+                    'caption' => 'Serial',
+                    'enabled' => false
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'model',
+                    'caption' => 'Model',
+                    'enabled' => false
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'id',
+                    'caption' => 'ID',
+                    'enabled' => false
+                ],
+            ],
+        ];
+
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'with_gps',
+            'caption' => 'with GPS-Data'
+        ];
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'save position to (logged) variable \'Position\''
+        ];
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'save_position',
+            'caption' => 'save position'
+        ];
+        $formElements[] = [
+            'type'    => 'NumberSpinner',
+            'name'    => 'update_interval',
+            'suffix'  => 'Minutes',
+            'caption' => 'Update interval',
+        ];
 
         return $formElements;
     }
 
-    private function GetFormActions()
+    protected function GetFormActions()
     {
         $formActions = [];
-        $formActions[] = ['type' => 'Button', 'caption' => 'Test account', 'onClick' => 'Automower_TestAccount($id);'];
-        $formActions[] = ['type' => 'Button', 'caption' => 'Update status', 'onClick' => 'Automower_UpdateStatus($id);'];
+
+        $formActions[] = [
+            'type'    => 'Button',
+            'caption' => 'Update status',
+            'onClick' => 'AutomowerConnect_UpdateStatus($id);'
+        ];
+
+        $formActions[] = [
+            'type'      => 'ExpansionPanel',
+            'caption'   => 'Test area',
+            'expanded ' => false,
+            'items'     => [
+                [
+                    'type'    => 'TestCenter',
+                ]
+            ]
+        ];
+
+        $formActions[] = [
+            'type'      => 'ExpansionPanel',
+            'caption'   => 'Expert area',
+            'expanded ' => false,
+            'items'     => [
+                [
+                    'type'    => 'Button',
+                    'caption' => 'Re-install variable-profiles',
+                    'onClick' => 'AutomowerConnect_InstallVarProfiles($id, true);'
+                ],
+            ]
+        ];
+
+        $formActions[] = $this->GetInformationForm();
+        $formActions[] = $this->GetReferencesForm();
 
         return $formActions;
-    }
-
-    public function GetConfigurationForm()
-    {
-        $formElements = $this->GetFormElements();
-        $formActions = $this->GetFormActions();
-        $formStatus = $this->GetFormStatus();
-
-        $form = json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
-        if ($form == '') {
-            $this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
-            $this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
-            $this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
-            $this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
-        }
-        return $form;
     }
 
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
@@ -251,48 +250,68 @@ class AutomowerDevice extends IPSModule
         }
     }
 
-    public function SetUpdateInterval(int $sec = null)
+    protected function SetUpdateInterval()
     {
-        if ($sec > 0) {
-            $this->SendDebug(__FUNCTION__, 'override interval with sec=' . $sec, 0);
-            $msec = $sec * 1000;
-        } else {
-            $min = $this->ReadPropertyInteger('update_interval');
-            $this->SendDebug(__FUNCTION__, 'default interval with min=' . $min, 0);
-            $msec = $min * 60 * 1000;
-        }
+        $min = $this->ReadPropertyInteger('update_interval');
+        $msec = $min > 0 ? $min * 1000 * 60 : 0;
         $this->SetTimerInterval('UpdateStatus', $msec);
     }
 
     public function UpdateStatus()
     {
-        $device_id = $this->ReadPropertyString('device_id');
-        $model = $this->ReadPropertyString('model');
-        $with_gps = $this->ReadPropertyBoolean('with_gps');
-        $save_position = $this->ReadPropertyBoolean('save_position');
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return;
+        }
 
-        $cdata = $this->do_ApiCall($this->url_track . 'mowers/' . $device_id . '/status');
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
+            return;
+        }
+
+        $id = $this->ReadPropertyString('id');
+        if ($id == '') {
+            return false;
+        }
+        $sdata = [
+            'DataID'    => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
+            'Function'  => 'MowerStatus',
+            'api_id'    => $id,
+        ];
+        $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
+        $cdata = $this->SendDataToParent(json_encode($sdata));
         if ($cdata == '') {
+            $this->SendDebug(__FUNCTION__, 'got no data', 0);
             $this->SetValue('Connected', false);
             return false;
         }
-        $status = json_decode($cdata, true);
-        $this->SendDebug(__FUNCTION__, 'status=' . print_r($status, true), 0);
 
-        $batteryPercent = $status['batteryPercent'];
+        $mower = json_decode($cdata, true);
+        $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
+
+        $attributes = $this->GetArrayElem($mower, 'data.attributes', '');
+
+        $batteryPercent = $this->GetArrayElem($attributes, 'battery.batteryPercent', 0);
         $this->SetValue('Battery', $batteryPercent);
 
-        $connected = $status['connected'];
+        $connected = (bool) $this->GetArrayElem($attributes, 'metadata.connected', false);
         $this->SetValue('Connected', $connected);
 
-        $mowerStatus = $this->decode_mowerStatus($status['mowerStatus']);
-        $this->SendDebug(__FUNCTION__, 'mowerStatus="' . $status['mowerStatus'] . '" => MowerStatus=' . $mowerStatus, 0);
+        $mower_mode = $this->GetArrayElem($attributes, 'mower.mode', '');
+        $operatingMode = $this->decode_operatingMode($mower_mode);
+        $this->SendDebug(__FUNCTION__, 'mower_mode="' . $mower_mode . '" => OperationMode=' . $operatingMode, 0);
+        $this->SetValue('OperationMode', $operatingMode);
+
+        $mower_state = $this->GetArrayElem($attributes, 'mower.state', '');
+        $mowerStatus = $this->decode_mowerStatus($mower_state);
+        $this->SendDebug(__FUNCTION__, 'mower_state="' . $mower_state . '" => MowerStatus=' . $mowerStatus, 0);
         $this->SetValue('MowerStatus', $mowerStatus);
 
         $oldActivity = $this->GetValue('MowerActivity');
         switch ($oldActivity) {
-            case self::$AUTOMOWER_ACTIVITY_MOVING:
-            case self::$AUTOMOWER_ACTIVITY_CUTTING:
+            case self::$ACTIVITY_GOING_HOME:
+            case self::$ACTIVITY_CUTTING:
                 $wasWorking = true;
                 break;
             default:
@@ -301,68 +320,94 @@ class AutomowerDevice extends IPSModule
         }
         $this->SendDebug(__FUNCTION__, 'wasWorking=' . $wasWorking, 0);
 
-        $mowerActivity = $this->normalize_mowerStatus($status['mowerStatus']);
-        $this->SendDebug(__FUNCTION__, 'MowerActivity=' . $mowerActivity, 0);
+        $mower_activity = $this->GetArrayElem($attributes, 'mower.activity', '');
+        $mowerActivity = $this->decode_mowerActivity($mower_activity);
+        $s = $this->CheckVarProfile4Value('Automower.Activity', $mowerActivity);
+        $this->SendDebug(__FUNCTION__, 'mower_activity="' . $mower_activity . '" => ' . $mowerActivity . '(' . $s . ')', 0);
         $this->SetValue('MowerActivity', $mowerActivity);
 
+        $enableStart = false;
+        $enablePause = false;
+        $enablePark = false;
+
         switch ($mowerActivity) {
-            case self::$AUTOMOWER_ACTIVITY_DISABLED:
-            case self::$AUTOMOWER_ACTIVITY_PAUSED:
-            case self::$AUTOMOWER_ACTIVITY_PARKED:
-            case self::$AUTOMOWER_ACTIVITY_CHARGING:
-                $action = self::$AUTOMOWER_ACTION_START;
+            case self::$ACTIVITY_NOT_APPLICABLE:
+                if ($mower_state == 'PAUSED') {
+                    $enableStart = true;
+                    $enablePark = true;
+                }
                 break;
-            case self::$AUTOMOWER_ACTIVITY_MOVING:
-            case self::$AUTOMOWER_ACTIVITY_CUTTING:
-                $action = self::$AUTOMOWER_ACTION_PARK;
+            case self::$ACTIVITY_DISABLED:
+            case self::$ACTIVITY_CHARGING:
+            case self::$ACTIVITY_STOPPED:
+                $enableStart = true;
+                break;
+            case self::$ACTIVITY_LEAVING:
+            case self::$ACTIVITY_GOING_HOME:
+            case self::$ACTIVITY_CUTTING:
+                $enablePause = true;
+                $enablePark = true;
+                break;
+            case self::$ACTIVITY_PARKED:
+            case self::$ACTIVITY_PAUSED:
+                $enableStart = true;
+                $enablePark = true;
                 break;
             default:
-                $action = self::$AUTOMOWER_ACTION_STOP;
+                $enableStart = true;
+                $enablePark = true;
                 break;
         }
-        $this->SendDebug(__FUNCTION__, 'MowerAction=' . $action, 0);
-        $this->SetValue('MowerAction', $action);
 
-        $nextStartSource = $status['nextStartSource'];
+        $this->SendDebug(__FUNCTION__, 'enable ActionStart=' . $this->bool2str($enableStart) . ',  ActionPause=' . $this->bool2str($enablePause) . ', ActionPark=' . $this->bool2str($enablePark), 0);
 
-        $nextStartTimestamp = $status['nextStartTimestamp'];
-        if ($nextStartTimestamp > 0) {
-            // 'nextStartTimestamp' ist nicht UTC sondern auf localtime umgerechnet.
-            $ts = strtotime(gmdate('Y-m-d H:i', $nextStartTimestamp));
-        } else {
-            $ts = 0;
-        }
-        $this->SetValue('NextStart', $ts);
+        $chg = $this->AdjustAction('MowerActionStart', $enableStart);
+        $chg |= $this->AdjustAction('MowerActionPause', $enablePause);
+        $chg |= $this->AdjustAction('MowerActionPark', $enablePark);
 
-        $operatingMode = $this->decode_operatingMode($status['operatingMode']);
-        $this->SendDebug(__FUNCTION__, 'operatingMode="' . $status['operatingMode'] . '" => OperationMode=' . $operatingMode, 0);
-        $this->SetValue('OperationMode', $operatingMode);
-
-        if ($with_gps) {
-            if (isset($status['lastLocations'][0]['longitude'])) {
-                $lon = $status['lastLocations'][0]['longitude'];
-                $this->SetValue('LastLongitude', $lon);
-            }
-            if (isset($status['lastLocations'][0]['latitude'])) {
-                $lat = $status['lastLocations'][0]['latitude'];
-                $this->SetValue('LastLatitude', $lat);
-            }
+        if ($chg) {
+            $this->ReloadForm();
         }
 
-        $this->SetValue('LastStatus', time());
-
-        $lastErrorCode = $status['lastErrorCode'];
-        $lastErrorCodeTimestamp = $status['lastErrorCodeTimestamp'];
+        $lastErrorCode = $this->GetArrayElem($attributes, 'mower.errorCode', 0);
+        $lastErrorCodeTimestamp = $this->calc_ts((string) $this->GetArrayElem($attributes, 'mower.errorCodeTimestamp', '0'));
+        $err = '';
         if ($lastErrorCode) {
-            if (!$this->CheckVarProfile4Value('Automower.Error', $lastErrorCode)) {
+            $s = $this->CheckVarProfile4Value('Automower.Error', $lastErrorCode);
+            if ($s == false) {
                 $msg = __FUNCTION__ . ': unknown error-code=' . $lastErrorCode . ' @' . date('d-m-Y H:i:s', $lastErrorCodeTimestamp);
                 $this->LogMessage($msg, KL_WARNING);
+            } else {
+                $err = '(' . $s . ')';
             }
         } else {
             $lastErrorCodeTimestamp = 0;
         }
+        $ts = ($lastErrorCodeTimestamp != 0 ? date('d.m.y H:i:s', $lastErrorCodeTimestamp) : '');
+        $this->SendDebug(__FUNCTION__, 'lastErrorCode=' . $lastErrorCode . $err . ', lastErrorCodeTimestamp=' . $ts, 0);
         $this->SetValue('LastErrorCode', $lastErrorCode);
         $this->SetValue('LastErrorTimestamp', $lastErrorCodeTimestamp);
+
+        $nextStartTimestamp = $this->calc_ts((string) $this->GetArrayElem($attributes, 'planner.nextStartTimestamp', '0'));
+        $this->SendDebug(__FUNCTION__, 'nextStartTimestamp=' . ($nextStartTimestamp != 0 ? date('d.m.y H:i:s', $nextStartTimestamp) : ''), 0);
+        $this->SetValue('NextStart', $nextStartTimestamp);
+
+        // NOT_ACTIVE, FORCE_PARK, FORCE_MOW
+        $planner_override = $this->GetArrayElem($attributes, 'planner.override.action', '');
+        $this->SendDebug(__FUNCTION__, 'planner_override=' . $planner_override, 0);
+
+        $restricted_reason = $this->GetArrayElem($attributes, 'planner.restrictedReason', '');
+        if ($mower_state == 'RESTRICTED') {
+            if ($restricted_reason == 'NOT_APPLICABLE' && $mower_activity == 'PARKED_IN_CS' && $nextStartTimestamp == 0) {
+                $restricted_reason = 'UNTIL_FURTHER_NOTICE';
+            }
+            $restrictedReason = $this->decode_restrictedReason($restricted_reason);
+        } else {
+            $restrictedReason = '';
+        }
+
+        $this->SendDebug(__FUNCTION__, 'restricted_reason="' . $restricted_reason . '" => ' . $restrictedReason, 0);
+        $this->SetValue('RestrictedReason', $restrictedReason);
 
         $dt = new DateTime(date('d.m.Y 00:00:00'));
         $ts_today = (int) $dt->format('U');
@@ -372,8 +417,8 @@ class AutomowerDevice extends IPSModule
             $this->SetValue('DailyWorking', 0);
         }
         switch ($mowerActivity) {
-            case self::$AUTOMOWER_ACTIVITY_MOVING:
-            case self::$AUTOMOWER_ACTIVITY_CUTTING:
+            case self::$ACTIVITY_GOING_HOME:
+            case self::$ACTIVITY_CUTTING:
                 $isWorking = true;
                 break;
             default:
@@ -403,13 +448,22 @@ class AutomowerDevice extends IPSModule
             }
         }
 
-        if (isset($status['lastLocations'])) {
-            $lastLocations = $status['lastLocations'];
-            $this->SetBuffer('LastLocations', json_encode($lastLocations));
-            if ($save_position && ($wasWorking || $isWorking)) {
-                if (count($lastLocations)) {
-                    $latitude = (float) $this->format_float($lastLocations[0]['latitude'], 6);
-                    $longitude = (float) $this->format_float($lastLocations[0]['longitude'], 6);
+        $with_gps = $this->ReadPropertyBoolean('with_gps');
+        if ($with_gps && isset($attributes['positions'])) {
+            $positions = (array) $this->GetArrayElem($attributes, 'positions', []);
+            $this->SendDebug(__FUNCTION__, 'positions #=' . count($positions), 0);
+
+            $this->SetBuffer('LastLocations', json_encode($positions));
+
+            if (count($positions)) {
+                $this->SetValue('LastLongitude', $positions[0]['longitude']);
+                $this->SetValue('LastLatitude', $positions[0]['latitude']);
+
+                $save_position = $this->ReadPropertyBoolean('save_position');
+                $this->SendDebug(__FUNCTION__, 'save_position=' . $this->bool2str($save_position) . ', wasWorking=' . $this->bool2str($wasWorking) . ', isWorking=' . $this->bool2str($isWorking), 0);
+                if ($save_position && ($wasWorking || $isWorking)) {
+                    $latitude = (float) $this->format_float($positions[0]['latitude'], 6);
+                    $longitude = (float) $this->format_float($positions[0]['longitude'], 6);
                     $pos = json_encode(['latitude'  => $latitude, 'longitude' => $longitude]);
                     if ($this->GetValue('Position') != $pos) {
                         $this->SetValue('Position', $pos);
@@ -419,79 +473,48 @@ class AutomowerDevice extends IPSModule
             }
         }
 
-        // bisher unausgewertet url's:
-        //  - $this->url_track . 'mowers/' . $device_id . '/settings'
-        //  - $this->url_track . 'mowers/' . $device_id . '/geofence'
-    }
+        $this->SetValue('LastStatus', time());
 
-    public function TestAccount()
-    {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-            echo $this->translate('Instance is inactive') . PHP_EOL;
-            return;
-        }
-
-        $device_id = $this->ReadPropertyString('device_id');
-
-        $mowers = $this->GetMowerList();
-        if ($mowers == '') {
-            $this->SetStatus(self::$IS_UNAUTHORIZED);
-            echo $this->Translate('invalid account-data');
-            return;
-        }
-
-        $msg = '';
-        $mower_found = false;
-        foreach ($mowers as $mower) {
-            if ($device_id == $mower['id']) {
-                $mower_found = true;
-            }
-            $name = $mower['name'];
-            $model = isset($mower['model']) ? $mower['model'] : '';
-
-            $msg = $this->Translate('mower') . ' "' . $name . '", ' . $this->Translate('model') . '=' . $model;
-            $this->SendDebug(__FUNCTION__, 'device_id=' . $device_id . ', name=' . $name . ', model=' . $model, 0);
-        }
-
-        if (!$mower_found) {
-            $this->SetStatus(self::$IS_DEVICE_MISSING);
-            echo $this->Translate('device not found');
-            return;
-        }
-
-        echo $this->translate('valid account-data') . "\n" . $msg;
+        $this->SetUpdateInterval();
     }
 
     public function RequestAction($Ident, $Value)
     {
+        if ($this->CommonRequestAction($Ident, $Value)) {
+            return;
+        }
+
+        if ($this->GetStatus() == IS_INACTIVE) {
+            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            return;
+        }
+
+        $r = false;
         switch ($Ident) {
-            case 'MowerAction':
-                $this->SendDebug(__FUNCTION__, "$Ident=$Value", 0);
-                switch ($Value) {
-                    case self::$AUTOMOWER_ACTION_PARK:
-                        $this->ParkMower();
-                        break;
-                    case self::$AUTOMOWER_ACTION_START:
-                        $this->StartMower();
-                        break;
-                    case self::$AUTOMOWER_ACTION_STOP:
-                        $this->StopMower();
-                        break;
-                    default:
-                        $this->SendDebug(__FUNCTION__, "invalid value \"$Value\" for $Ident", 0);
-                        break;
-                }
+            case 'MowerActionStart':
+                $r = $this->StartMower((int) $Value);
+                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                break;
+            case 'MowerActionPause':
+                $r = $this->PauseMower();
+                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                break;
+            case 'MowerActionPark':
+                $r = $this->ParkMower((int) $Value);
+                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
                 break;
             default:
                 $this->SendDebug(__FUNCTION__, "invalid ident $Ident", 0);
                 break;
         }
+        if ($r) {
+            $this->SetValue($Ident, $Value);
+        }
     }
 
     private function decode_operatingMode($val)
     {
+        // MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN
         $val2txt = [
             'HOME'               => 'remain in base',
             'AUTO'               => 'automatic',
@@ -499,6 +522,7 @@ class AutomowerDevice extends IPSModule
             'SECONDARY_AREA'     => 'secondary area',
             'OVERRIDE_TIMER'     => 'override timer',
             'SPOT_CUTTING'       => 'spot cutting',
+            'UNKNOWN'            => 'unknown',
         ];
 
         if (isset($val2txt[$val])) {
@@ -515,27 +539,18 @@ class AutomowerDevice extends IPSModule
     private function decode_mowerStatus($val)
     {
         $val2txt = [
-            'ERROR'                       => 'error',
-
-            'OK_CUTTING'                  => 'cutting',
-            'OK_CUTTING_NOT_AUTO'         => 'manual cutting',
-            'OK_CUTTING_TIMER_OVERRIDDEN' => 'manual cutting',
-
-            'PARKED_TIMER'                => 'parked',
-            'PARKED_AUTOTIMER'            => 'automatic parked',
-            'PARKED_PARKED_SELECTED'      => 'manual parked',
-
-            'PAUSED'                      => 'paused',
-
-            'OFF_DISABLED'                => 'disabled',
-            'OFF_HATCH_OPEN'              => 'hatch open',
-            'OFF_HATCH_CLOSED'            => 'hatch closed',
-            'OFF_HATCH_CLOSED_DISABLED'   => 'hatch closed and disabled',
-
-            'OK_SEARCHING'                => 'searching base',
-            'OK_LEAVING'                  => 'leaving base',
-
-            'OK_CHARGING'                 => 'charging',
+            'UNKNOWN'           => 'unknown',
+            'NOT_APPLICABLE'    => 'not applicable',
+            'PAUSED'            => 'paused',
+            'IN_OPERATION'      => 'in operation',
+            'WAIT_UPDATING'     => 'wait updating',
+            'WAIT_POWER_UP'     => 'wait power up',
+            'RESTRICTED'        => 'restricted',
+            'OFF'               => 'off',
+            'STOPPED'           => 'stopped',
+            'ERROR'             => 'error',
+            'FATAL_ERROR'       => 'fatal error',
+            'ERROR_AT_POWER_UP' => 'error at power up',
         ];
 
         if (isset($val2txt[$val])) {
@@ -549,30 +564,41 @@ class AutomowerDevice extends IPSModule
         return $txt;
     }
 
-    private function normalize_mowerStatus($val)
+    private function decode_restrictedReason($val)
+    {
+        $val2txt = [
+            'NONE'                 => 'none',
+            'UNKNOWN'              => 'unknown',
+            'NOT_APPLICABLE'       => 'not applicable',
+            'WEEK_SCHEDULE'        => 'week schedule',
+            'PARK_OVERRIDE'        => 'park overwrite',
+            'SENSOR'               => 'sensor',
+            'DAILY_LIMIT'          => 'daily limit',
+            'UNTIL_FURTHER_NOTICE' => 'until further notice',
+        ];
+
+        if (isset($val2txt[$val])) {
+            $txt = $this->Translate($val2txt[$val]);
+        } else {
+            $msg = 'unknown value "' . $val . '"';
+            $this->LogMessage(__FUNCTION__ . ': ' . $msg, KL_WARNING);
+            $this->SendDebug(__FUNCTION__, $msg, 0);
+            $txt = $val;
+        }
+        return $txt;
+    }
+
+    private function decode_mowerActivity($val)
     {
         $val2code = [
-            'ERROR'                       => self::$AUTOMOWER_ACTIVITY_ERROR,
-
-            'OK_CUTTING'                  => self::$AUTOMOWER_ACTIVITY_CUTTING,
-            'OK_CUTTING_NOT_AUTO'         => self::$AUTOMOWER_ACTIVITY_CUTTING,
-            'OK_CUTTING_TIMER_OVERRIDDEN' => self::$AUTOMOWER_ACTIVITY_CUTTING,
-
-            'PARKED_TIMER'                => self::$AUTOMOWER_ACTIVITY_PARKED,
-            'PARKED_AUTOTIMER'            => self::$AUTOMOWER_ACTIVITY_PARKED,
-            'PARKED_PARKED_SELECTED'      => self::$AUTOMOWER_ACTIVITY_PARKED,
-
-            'PAUSED'                      => self::$AUTOMOWER_ACTIVITY_PAUSED,
-
-            'OFF_DISABLED'                => self::$AUTOMOWER_ACTIVITY_DISABLED,
-            'OFF_HATCH_OPEN'              => self::$AUTOMOWER_ACTIVITY_DISABLED,
-            'OFF_HATCH_CLOSED'            => self::$AUTOMOWER_ACTIVITY_DISABLED,
-            'OFF_HATCH_CLOSED_DISABLED'   => self::$AUTOMOWER_ACTIVITY_DISABLED,
-
-            'OK_SEARCHING'                => self::$AUTOMOWER_ACTIVITY_MOVING,
-            'OK_LEAVING'                  => self::$AUTOMOWER_ACTIVITY_MOVING,
-
-            'OK_CHARGING'                 => self::$AUTOMOWER_ACTIVITY_CHARGING,
+            'UNKNOWN'           => self::$ACTIVITY_UNKNOWN,
+            'NOT_APPLICABLE'    => self::$ACTIVITY_NOT_APPLICABLE,
+            'MOWING'            => self::$ACTIVITY_CUTTING,
+            'GOING_HOME'        => self::$ACTIVITY_GOING_HOME,
+            'CHARGING'          => self::$ACTIVITY_CHARGING,
+            'LEAVING'           => self::$ACTIVITY_LEAVING,
+            'PARKED_IN_CS'      => self::$ACTIVITY_PARKED,
+            'STOPPED_IN_GARDEN' => self::$ACTIVITY_STOPPED,
         ];
 
         if (isset($val2code[$val])) {
@@ -581,45 +607,122 @@ class AutomowerDevice extends IPSModule
             $msg = 'unknown value "' . $val . '"';
             $this->LogMessage(__FUNCTION__ . ': ' . $msg, KL_WARNING);
             $this->SendDebug(__FUNCTION__, $msg, 0);
-            $code = self::$AUTOMOWER_ACTIVITY_ERROR;
+            $code = self::$ACTIVITY_ERROR;
         }
         return $code;
     }
 
-    public function ParkMower()
+    /*
+
+    - Start + Duration (3h 6h 12h 1d 2d 3d4d 5d 6d 7d)
+    - ResumeSchedule
+    - Pause
+    - Park + Duration (3h 6h 12h 1d 2d 3d4d 5d 6d 7d)
+    - ParkUntilNextSchedule
+    - ParkUntilFurtherNotice
+
+     */
+
+    private function ParkMower(int $value)
     {
-        return $this->MowerCmd('PARK');
+        switch ($value) {
+            case self::$ACTION_PARK_UNTIL_FURTHER_NOTICE:
+                $data = [
+                    'type' => 'ParkUntilFurtherNotice',
+                ];
+                break;
+            case self::$ACTION_PARK_UNTIL_NEXT_SCHEDULE:
+                $data = [
+                    'type' => 'ParkUntilNextSchedule',
+                ];
+                break;
+            default:
+                $hour = (int) $value;
+                if ($hour < 1) {
+                    $this->SendDebug(__FUNCTION__, 'value ' . $value . ' ist not a valid int or below 1', 0);
+                    return false;
+                }
+                $min = $hour * 60;
+                $data = [
+                    'type'        => 'Park',
+                    'attributes'  => [
+                        'duration'=> $min
+                    ]
+                ];
+                break;
+        }
+        $this->SendDebug(__FUNCTION__, 'value=' . $value . ', data=' . print_r($data, true), 0);
+        return $this->MowerCmd($data);
     }
 
-    public function StartMower()
+    private function StartMower(int $value)
     {
-        return $this->MowerCmd('START');
+        switch ($value) {
+            case self::$ACTION_RESUME_SCHEDULE:
+                $data = [
+                    'type' => 'ResumeSchedule',
+                ];
+                break;
+            default:
+                $hour = (int) $value;
+                if ($hour < 1) {
+                    $this->SendDebug(__FUNCTION__, 'value ' . $value . ' ist not a valid int or below 1', 0);
+                    return false;
+                }
+                $min = $hour * 60;
+                $data = [
+                    'type'       => 'Start',
+                    'attributes' => [
+                        'duration' => $min
+                    ]
+                ];
+                break;
+        }
+        $this->SendDebug(__FUNCTION__, 'value=' . $value . ', data=' . print_r($data, true), 0);
+        return $this->MowerCmd($data);
     }
 
-    public function StopMower()
+    private function PauseMower()
     {
-        return $this->MowerCmd('STOP');
-    }
-
-    private function MowerCmd($cmd)
-    {
-        $device_id = $this->ReadPropertyString('device_id');
-
-        $postdata = [
-            'action' => $cmd
+        $data = [
+            'type' => 'Pause',
         ];
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        return $this->MowerCmd($data);
+    }
 
-        $cdata = $this->do_ApiCall($this->url_track . 'mowers/' . $device_id . '/control', $postdata);
+    private function MowerCmd($data)
+    {
+        if ($this->HasActiveParent() == false) {
+            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
+            $this->LogMessage('has no active parent instance', KL_WARNING);
+            return false;
+        }
+
+        $id = $this->ReadPropertyString('id');
+        if ($id == '') {
+            return false;
+        }
+        $sdata = [
+            'DataID'    => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
+            'Function'  => 'MowerCmd',
+            'api_id'    => $id,
+            'data'      => $data
+        ];
+        $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
+        $cdata = $this->SendDataToParent(json_encode($sdata));
+        $this->SendDebug(__FUNCTION__, 'cdata=' . $cdata, 0);
         if ($cdata == '') {
             return false;
         }
         $jdata = json_decode($cdata, true);
         $status = $jdata['status'];
-        if ($status == 'OK') {
-            return true;
+
+        if ($status != 'ok') {
+            return false;
         }
-        $errorCode = $jdata['errorCode'];
-        $this->SendDebug(__FUNCTION__, 'command failed, status=' . $status . ', errorCode=' . $errorCode, 0);
+        $this->SetTimerInterval('UpdateStatus', 15 * 1000);
+        return true;
     }
 
     public function GetRawData(string $name)
@@ -627,5 +730,20 @@ class AutomowerDevice extends IPSModule
         $data = $this->GetBuffer($name);
         $this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
         return $data;
+    }
+
+    private function calc_ts(string $ts_s)
+    {
+        if ($ts_s == '') {
+            $ts = 0;
+        } else {
+            $ts = (int) substr($ts_s, 0, -3);
+        }
+        if ($ts > 0) {
+            // 'ts' ist nicht UTC sondern auf localtime umgerechnet.
+            $ts = strtotime(gmdate('Y-m-d H:i', $ts));
+        }
+
+        return $ts;
     }
 }

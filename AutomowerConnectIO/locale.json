@@ -1,19 +1,41 @@
 {
 	"translations": {
 		"de": {
-			"Husqvarna Automower Configurator": "Husqvarna Automower Konfigurator",
-
-			"Instance has no active parent instance": "Instanz hat keine aktive übergeordnete Instanz",
+			"Disable instance": "Instanz deaktivieren",
 
             "The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
 
-			"category": "Kategorie",
-			"Mower": "Rasenmäher",
+			"Status: Symcon Connect is OK!": "Status: Symcon Connect ist OK!",
+			"Error: Symcon Connect is not active!": "Fehler: Symcon Connect ist nicht aktiv!",
 
+			"Push \"Login at Husqvarna\" in the action part of this configuration form.":
+				"\"Anmelden bei Husqvarna\" in dem Aktionsbereich dieses Konfigurationsformulares drücken.",
+			"At the webpage from Husqvarna log in with your Husqvarna username and password.":
+				"Auf der Webseite von Husqvarna mit dem Husqvarna Benutzernamen und Passwort anmelden.",
+			"If the connection to IP-Symcon was successfull you get the message: \"Husqvarna successfully connected!\". Close the browser window.":
+				"Wenn die Verbindung zu IP-Symcon erfolgreich war erscheint die Meldung: \"Husqvarna successfully connected!\". Das Browserfenster kann nun geschlossen werden.",
+			"Return to this configuration form.":
+				"Danach zu diesem Konfigurationsformular zurückkehren und fortfahren.",
+
+			"Husqvarna Login": "Husqvarna Anmeldung",
+			"This information is only required if position data of the mowers are to be fetched and requires a model with a GPS module.":
+				"Diese Angabe ist nur erforderlich, wenn Positions-Daten des Rasenmäher eingeholt werden sollen und setzt ein Modell mit GPS-Modul voraus.",
+
+			"Username": "Benutzer",
+			"Password": "Passwort",
+			"Husqvarna Account-Details": "Husqvarna Konto-Details",
+
+			"Login at Husqvarna": "Anmelden bei Husqvarna",
+			"Test access": "Zugriff testen",
+			"Clear Token": "Token löschen",
+
+			"Mower": "Rasenmäher",
 			"Name": "Bezeichnung",
 			"Model": "Modell",
-			"Serial": "Seriennummer",
-			"Device-ID": "Geräte-ID",
+
+			"Invalid login at Husqvarna": "Ungültige Anmeldung bei Husqvarna",
+			"Invalid login details": "Ungültige Zugangsdaten",
+			"valid account-data": "gültige Zugangsdaten",
 
             "Expert area": "Experten-Bereich",
 			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
@@ -43,8 +65,6 @@
             "Area": "Bereich",
             "Name": "Bezeichnung",
             "Open object": "Objekt öffnen",
-
-			"unknown": "unbekannt",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
