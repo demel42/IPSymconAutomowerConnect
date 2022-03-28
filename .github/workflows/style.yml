@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
  
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@main
 
     - name: Only fetch Style PHP submodule
       run: git submodule update --init -- .style
 
     - name: Install latest PHP-CS-Fixer
-      run: wget https://cs.symfony.com/download/php-cs-fixer-v2.phar
+      run: wget https://cs.symfony.com/download/php-cs-fixer-v3.phar -O php-cs-fixer
 
     - name: Run Checks
-      run: php php-cs-fixer-v2.phar fix --config=.style/.php_cs -v --dry-run .
+      run: php php-cs-fixer fix --config=.style/.php-cs-fixer.php -v --dry-run --allow-risky=yes .
