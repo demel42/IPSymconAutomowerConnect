@@ -159,7 +159,7 @@ Quellen:
 ## 7. Versions-Historie
 
 - 2.0 @ 28.03.2022 17:07
-  - Umstellung auf die offizielle Husqvarna-REST-API mit OAuth
+  - Umstellung auf die offizielle Husqvarna-REST-API mit OAuth<br>
     Update-Hinweis:
 	- vor dem Update
       - Löschen von Profil Automower.Action, Automower.Error und Variable MowerAction
