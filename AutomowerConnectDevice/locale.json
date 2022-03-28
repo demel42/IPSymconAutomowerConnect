@@ -1,36 +1,25 @@
 {
 	"translations": {
 		"de": {
-			"Instance is disabled": "Instanz ist deaktiviert",
-
 			"Instance has no active parent instance": "Instanz hat keine aktive übergeordnete Instanz",
 
+			"Disable instance": "Instanz deaktivieren",
+
+            "The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
+
 			"Basic configuration (don't change)": "Basis-Konfiguration (nicht ändern)",
-			"Device-ID": "Geräte-ID",
-			"Model": "Modell",
 			"Serial": "Seriennummer",
+			"Model": "Modell",
+			"Device-ID": "Geräte-ID",
 
 			"with GPS-Data": "mit GPS-Daten",
 			"save position to (logged) variable 'Position'": "Position in der (protokollierten) Variablen 'Position' speichern",
 			"save position": "Position speichern",
 
-			"Update status every X minutes": "Aktualisiere Status alle X Minuten",
+			"Update interval": "Aktualisierungs-Intervall",
 			"Minutes": "Minuten",
 
 			"Update status": "Aktualisiere Status",
-
-			"Test area": "Test-Bereich",
-
-			"Expert area": "Experten-Bereich",
-			"manual setting of APPI-ID is only required if not automatic determined":
-				"Die manuelle Einstellung der APPI-ID ist nur erforderlich, wenn sie nicht automatisch ermittelt wird",
-			"Set APP-ID": "APP-ID speichern",
-
-			"device not found": "Gerät nicht gefunden",
-			"invalid account-data": "ungültige Zugangsdaten",
-			"model": "Modell",
-			"mower": "Rasenmäher",
-			"valid account-data": "gültige Zugangsdaten",
 
 			"Battery capacity": "Batteriekapazität",
 			"Day of cumulation": "Datum zu Tageswerten",
@@ -50,7 +39,6 @@
 			"Start action": "Start-Aktion",
 			"Timestamp of last error": "Zeitpunkt des letzten Fehlers",
 			"Working time (day)": "Arbeitszeit (Tag)",
-
 
 			"__comment__": "Automower.ActionStart / MowerActionStart",
 			"next schedule": "nächster Zeitplan",
@@ -222,6 +210,35 @@
 			"Invalid system configuration": "Ungültige Systemkonfiguration",
 			"No power in charging station": "Kein Strom in der Ladestation",
 
+            "Expert area": "Experten-Bereich",
+			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
+
+			"Information": "Information",
+
+            "Test area": "Test-Bereich",
+
+            "References": "Referenzen",
+			"Category": "Kategorie",
+            "Instance": "Instanz",
+            "Variable": "Variable",
+            "Script": "Skript",
+            "Event": "Ereignis",
+            "Medium": "Medium",
+            "Link": "Verknüpfung",
+            "PHP script": "PHP-Skript",
+            "Flow plan": "Ablaufplan",
+            "Triggered event": "Ausgelöstes Ereignis",
+            "Cyclic event": "Zyklisches Ereignis",
+            "Scheduled event": "Geplantes Ereignis",
+            "by instance used objects": "durch die Instanz verwendete Objekte",
+            "Objects using the instance": "Objekte, die die Instanz verwenden",
+            "Referenced statusvariables": "referenzierte Statusvariablen",
+            "Ident": "Ident",
+            "Object": "Objekt",
+            "Area": "Bereich",
+            "Name": "Bezeichnung",
+            "Open object": "Objekt öffnen",
+
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
@@ -237,7 +254,8 @@
 			"Instance is inactive (not logged in)": "Instanz ist inaktiv (nicht angemeldet)",
 			"Instance is inactive (forbidden)": "Instanz ist inaktiv (fehlende Berechtigung)",
 			"Instance is inactive (invalid account)": "Instanz ist inaktiv (ungültige Kontodaten)",
-			"Instance is inactive (device missing)": "Instanz ist inaktiv (Gerät fehlt)"
+			"Instance is inactive (device missing)": "Instanz ist inaktiv (Gerät fehlt)",
+			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)"
 		}
 	}
 }

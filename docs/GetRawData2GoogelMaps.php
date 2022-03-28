@@ -39,7 +39,7 @@ $point = [
 $marker_points[0] = $point;
 
 $activity = GetValueInteger(30160 /*[Rasenmäher\Automower\Aktivität]*/);
-$activity_label = ['E', 'D', 'P', 'L', 'S', 'F', 'M'];
+$activity_label = ['', '', 'E', 'D', 'G', 'L', 'P', 'F', 'R', 'M', 'S'];
 $label = $activity_label[$activity + 1];
 
 $markers[] = [

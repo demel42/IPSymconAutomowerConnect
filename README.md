@@ -1,6 +1,6 @@
 # IPSymconAutomowerConnect
 
-[![Version](https://img.shields.io/badge/Symcon_Version-5.3+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![Version](https://img.shields.io/badge/Symcon_Version-6.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 ![Version](https://img.shields.io/badge/Code-PHP-blue.svg)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -21,37 +21,27 @@
  - Übernahme von eineigen Status-Informationen zu einem Husqvarna Automower mit Connect-Modul.
  - Senden von Befehlen zum Starten, Stoppen und Parken des Mährobotors.
 
-Es wird die REST-Schnittstelle des Husqvarna Connect-Moduls verwendet. Für diese liegt keine Dokumentation vor, sodaß nicht alle der Funktionen der APP abgebildet werden konnten.
-Ich habe die unten angegebenen Quellen verwendet.
-
 ## 2. Voraussetzungen
 
- - IP-Symcon ab Version 5.3<br>
-   Version 4.4 mit Branch _ips_4.4_ (nur noch Fehlerkorrekturen)
+ - IP-Symcon ab Version 6.0<br>
  - Husqvarna Automower mit Connect-Modul
+ - aktives IP-Symcon Connect
 
 ## 3. Installation
 
-### a. Laden des Moduls
+### a. Installation des Moduls
 
-Die Konsole von IP-Symcon öffnen. Im Objektbaum unter Kerninstanzen die Instanz __*Modules*__ durch einen doppelten Mausklick öffnen.
-
-In der _Modules_ Instanz rechts oben auf den Button __*Hinzufügen*__ drücken.
-
-In dem sich öffnenden Fenster folgende URL hinzufügen:
-
-`https://github.com/demel42/IPSymconAutomowerConnect.git`
-
-und mit _OK_ bestätigen.
-
-Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Modules_
+Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *Symcon Notice* zu finden.<br>
+Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconNotice.git` installiert werden.
 
 ### b. Einrichtung in IPS
 
-In IP-Symcon zuerst _Konfigurator Instanzen_ den Konfigurator _AutomowerConnect Konfigurator_ hinzufügen.
-Hier die Zugangsdaten eintragen, _Übernehmen_ und dann kann man über den Konfigurator eine Instanz anlegen.
+In IP-Symcon nun unterhalb von _I/O Instanzen_ die Funktion _Instanz hinzufügen_ auswählen und als Hersteller _Husqvarna_ angeben und _Automower I/O_ auswählen.
+Im Modul, _Anmelden bei Husqvarna_ auswählen und auf der Husqvarna Login-Seite Benutzernamen und Passwort eingeben.
 
-Die so erzeugte Instanz enthält neben den Zugangsdaten die interne Geräte-ID.
+Nun in IP-Symcon in _Konfigurator Instanzen_ den Konfigurator _AutomowerConnect Konfigurator_ hinzufügen; dann kann man über den Konfigurator eine Instanz anlegen.
+
+Die so erzeugte Geräte-Instanz enthält neben der Serienummer die interne Geräte-ID.
 
 ## 4. Funktionsreferenz
 
@@ -81,12 +71,9 @@ Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2Go
 | :----------------------- | :-----  | :----------- | :----------- |
 | Instanz ist deaktiviert  | boolean | false        | Instanz temporär deaktivieren |
 |                          |         |              | |
-| Benutzer                 | string  |              | Husqvarna-Benutzer |
-| Passwort                 | string  |              | Passwort des Benutzers |
-|                          |         |              | |
-| nur _*AutomowerConnect*_ |         |              | |
-| Geräte-ID                | string  |              | interne Geräte-ID |
+| Seriennummer             | string  |              | Seriennummer |
 | Modell                   | string  |              | Modell |
+| Geräte-ID                | string  |              | interne Geräte-ID |
 |                          |         |              | |
 | mit GPS-Daten            | boolean | false        | Gerät schickt GPS-Daten |
 | Position speichern       | boolean | false        | Position in der Variablen 'Position' speichern |
@@ -123,13 +110,17 @@ In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten g
 
 | Wert | Beschreibung |
 | :--- | :----------- |
-| -1   | Fehler |
-|  0   | ausser Betrieb |
-|  1   | geparkt |
-|  2   | lädt |
-|  3   | pausiert |
-|  4   | fährt |
-|  5   | mäht |
+| 0    | unbekannter Status |
+| 1    | nicht anwendbar (?) |
+| 2    | Fehler |
+| 3    | ausser Betrieb |
+| 4    | geparkt |
+| 5    | lädt |
+| 6    | pausiert |
+| 7    | verlässt Ladestation |
+| 8    | fährt zur Ladestation |
+| 9    | mäht |
+| 10   | gestoppt |
 
 Es ist damit z.B. egal, ob der Mähvorgang vom Timer ausgelöst wurde oder manuell.
 Das kann man dann leicht in einem Diagramm darstellen bzw. als Basis für Berechnungen verwenden.
@@ -164,17 +155,22 @@ GUIDs
 
 Quellen:
   - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
-  - https://developer.1689.cloud/apis
-  - https://github.com/chrisz/pyhusmow
-  - https://github.com/krannich/dkFHEM/blob/master/FHEM/74_HusqvarnaAutomower.pm
-  - https://github.com/rannmann/node-husqvarna-automower/blob/master/HMower.js
 
 ## 7. Versions-Historie
 
-- 2.0 @ 22.07.2020 10:06
-  - Umstellung auf die offizielle OAuth-API
-  - Nutzung von HasActiveParent(): Anzeige im Konfigurationsformular sowie entsprechende Absicherung von SendDataToParent()
-  - library.php in local.php umbenannt
+- 2.0 @ 28.03.2022 17:07
+  - Umstellung auf die offizielle Husqvarna-REST-API mit OAuth
+    Update-Hinweis:
+	- vor dem Update
+      - Löschen von Profil Automower.Action, Automower.Error und Variable MowerAction
+    - nach dem Update
+      - I/O-Instanz einrichten
+      - Konfigurator-Instanz  aufrufen, die Devises sollten alle erscheien, aber als "Prüfen" markiert sein; das durchführen
+	  - Script korrigieren (Änderung der Variable _$activity_label_, siehe _docs_)
+	  - Geräte-Instanz kontrollieren, Status aktualisieren ...
+  - diverse interen Änderungen
+  - Anzeige der Modul/Bibliotheks-Informationen
+  - Möglichkeit der Anzeige der Instanz-Referenzen sowie referenzierte Statusvariablen
 
 - 1.19 @ 13.07.2020 14:56
   - LICENSE.md hinzugefügt

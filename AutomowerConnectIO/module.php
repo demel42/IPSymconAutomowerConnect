@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/common.php'; // globale Funktionen
+require_once __DIR__ . '/../libs/CommonStubs/common.php'; // globale Funktionen
 require_once __DIR__ . '/../libs/local.php';  // lokale Funktionen
 
 class AutomowerConnectIO extends IPSModule
 {
-    use AutomowerConnectCommonLib;
+    use StubsCommonLib;
     use AutomowerConnectLocalLib;
 
     private $oauthIdentifer = 'husqvarna';
@@ -18,13 +18,69 @@ class AutomowerConnectIO extends IPSModule
 
         $this->RegisterPropertyBoolean('module_disable', false);
 
-        $this->RegisterPropertyString('user', '');
-        $this->RegisterPropertyString('password', '');
-
         $this->RegisterAttributeString('ApiRefreshToken', ''); // OAuth
-        $this->RegisterAttributeString('AppRefreshToken', ''); // REST-Login
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+    }
+
+    private function CheckConfiguration()
+    {
+        $s = '';
+        $r = [];
+
+        if ($r != []) {
+            $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
+            foreach ($r as $p) {
+                $s .= '- ' . $p . PHP_EOL;
+            }
+        }
+
+        return $s;
+    }
+
+    public function ApplyChanges()
+    {
+        parent::ApplyChanges();
+
+        $refs = $this->GetReferenceList();
+        foreach ($refs as $ref) {
+            $this->UnregisterReference($ref);
+        }
+        $propertyNames = [];
+        foreach ($propertyNames as $name) {
+            $oid = $this->ReadPropertyInteger($name);
+            if ($oid >= 10000) {
+                $this->RegisterReference($oid);
+            }
+        }
+
+        $module_disable = $this->ReadPropertyBoolean('module_disable');
+        if ($module_disable) {
+            $this->SetStatus(IS_INACTIVE);
+            return;
+        }
+
+        if ($this->CheckConfiguration() != false) {
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            return;
+        }
+
+        if ($this->GetConnectUrl() == false) {
+            $this->SetStatus(self::$IS_NOSYMCONCONNECT);
+            return;
+        }
+
+        if (IPS_GetKernelRunlevel() == KR_READY) {
+            $this->RegisterOAuth($this->oauthIdentifer);
+        }
+
+        $refresh_token = $this->ReadAttributeString('ApiRefreshToken');
+        if ($refresh_token == '') {
+            $this->SetStatus(self::$IS_NOLOGIN);
+            return;
+        }
+
+        $this->SetStatus(IS_ACTIVE);
     }
 
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
@@ -36,59 +92,119 @@ class AutomowerConnectIO extends IPSModule
         }
     }
 
-    public function ApplyChanges()
+    protected function GetFormElements()
     {
-        parent::ApplyChanges();
+        $formElements = [];
 
-        $module_disable = $this->ReadPropertyBoolean('module_disable');
-        if ($module_disable) {
-            $this->SetStatus(IS_INACTIVE);
-            return;
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'Husqvarna Automower Connect',
+        ];
+
+        @$s = $this->CheckConfiguration();
+        if ($s != '') {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => $s
+            ];
+            $formElements[] = [
+                'type'    => 'Label',
+            ];
         }
 
-        $user = $this->ReadPropertyString('user');
-        $password = $this->ReadPropertyString('password');
-        if ($user != '' && $password == '') {
-            $this->SetStatus(IS_INACTIVE);
-            return;
-        }
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'module_disable',
+            'caption' => 'Disable instance'
+        ];
 
-        if ($this->GetConnectUrl() == false) {
-            $this->SetStatus(self::$IS_NOSYMCONCONNECT);
-            return;
-        }
-        $refresh_token = $this->ReadAttributeString('ApiRefreshToken');
-        if ($refresh_token == '') {
-            $this->SetStatus(self::$IS_NOLOGIN);
+        $instID = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}')[0];
+        if (IPS_GetInstance($instID)['InstanceStatus'] != IS_ACTIVE) {
+            $msg = 'Error: Symcon Connect is not active!';
         } else {
-            $this->SetStatus(IS_ACTIVE);
+            $msg = 'Status: Symcon Connect is OK!';
         }
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => $msg
+        ];
 
-        if (IPS_GetKernelRunlevel() == KR_READY) {
-            $this->RegisterOAuth($this->oauthIdentifer);
-        }
+        $formElements[] = [
+            'type'    => 'ExpansionPanel',
+            'caption' => 'Husqvarna Login',
+            'items'   => [
+                [
+                    'type'    => 'Label',
+                    'caption' => 'Push "Login at Husqvarna" in the action part of this configuration form.'
+                ],
+                [
+                    'type'    => 'Label',
+                    'caption' => 'At the webpage from Husqvarna log in with your Husqvarna username and password.'
+                ],
+                [
+                    'type'    => 'Label',
+                    'caption' => 'If the connection to IP-Symcon was successfull you get the message: "Husqvarna successfully connected!". Close the browser window.'
+                ],
+                [
+                    'type'    => 'Label',
+                    'caption' => 'Return to this configuration form.'
+                ],
+            ],
+        ];
+
+        return $formElements;
     }
 
-    private function RegisterOAuth($WebOAuth)
+    protected function GetFormActions()
     {
-        $ids = IPS_GetInstanceListByModuleID('{F99BF07D-CECA-438B-A497-E4B55F139D37}');
-        if (count($ids) > 0) {
-            $clientIDs = json_decode(IPS_GetProperty($ids[0], 'ClientIDs'), true);
-            $found = false;
-            foreach ($clientIDs as $index => $clientID) {
-                if ($clientID['ClientID'] == $WebOAuth) {
-                    if ($clientID['TargetID'] == $this->InstanceID) {
-                        return;
-                    }
-                    $clientIDs[$index]['TargetID'] = $this->InstanceID;
-                    $found = true;
-                }
-            }
-            if (!$found) {
-                $clientIDs[] = ['ClientID' => $WebOAuth, 'TargetID' => $this->InstanceID];
-            }
-            IPS_SetProperty($ids[0], 'ClientIDs', json_encode($clientIDs));
-            IPS_ApplyChanges($ids[0]);
+        $formActions = [];
+
+        $formActions[] = [
+            'type'    => 'Button',
+            'caption' => 'Login at Husqvarna',
+            'onClick' => 'echo AutomowerConnect_Login($id);'
+        ];
+
+        $formActions[] = [
+            'type'    => 'Button',
+            'caption' => 'Test access',
+            'onClick' => 'AutomowerConnect_TestAccount($id);'
+        ];
+
+        $formActions[] = [
+            'type'      => 'ExpansionPanel',
+            'caption'   => 'Expert area',
+            'expanded'  => false,
+            'items'     => [
+                [
+                    'type'    => 'Button',
+                    'caption' => 'Re-install variable-profiles',
+                    'onClick' => 'AutomowerConnect_InstallVarProfiles($id, true);'
+                ],
+                [
+                    'type'    => 'Button',
+                    'caption' => 'Clear Token',
+                    'onClick' => 'AutomowerConnect_ClearToken($id);'
+                ],
+
+            ]
+        ];
+
+        $formActions[] = $this->GetInformationForm();
+        $formActions[] = $this->GetReferencesForm();
+
+        return $formActions;
+    }
+
+    public function RequestAction($Ident, $Value)
+    {
+        if ($this->CommonRequestAction($Ident, $Value)) {
+            return;
+        }
+        switch ($Ident) {
+            default:
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                break;
         }
     }
 
@@ -97,6 +213,23 @@ class AutomowerConnectIO extends IPSModule
         $url = 'https://oauth.ipmagic.de/authorize/' . $this->oauthIdentifer . '?username=' . urlencode(IPS_GetLicensee());
         $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
         return $url;
+    }
+
+    protected function ProcessOAuthData()
+    {
+        if (!isset($_GET['code'])) {
+            $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
+            $this->WriteAttributeString('ApiRefreshToken', '');
+            $this->SetBuffer('ApiAccessToken', '');
+            $this->SetStatus(self::$IS_NOLOGIN);
+            return;
+        }
+        $refresh_token = $this->GetApiRefreshToken($_GET['code']);
+        $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
+        $this->WriteAttributeString('ApiRefreshToken', $refresh_token);
+        if ($this->GetStatus() == self::$IS_NOLOGIN) {
+            $this->SetStatus(IS_ACTIVE);
+        }
     }
 
     protected function Call4ApiAccessToken($content)
@@ -150,7 +283,7 @@ class AutomowerConnectIO extends IPSModule
                 $err = 'got http-code ' . $httpcode;
             }
         } elseif ($cdata == '') {
-            $statuscode = self::$IS_NODATA;
+            $statuscode = self::$IS_INVALIDDATA;
             $err = 'no data';
         } else {
             $jdata = json_decode($cdata, true);
@@ -172,24 +305,7 @@ class AutomowerConnectIO extends IPSModule
         return $jdata;
     }
 
-    private function FetchApiRefreshToken($code)
-    {
-        $this->SendDebug(__FUNCTION__, 'code=' . $code, 0);
-        $jdata = $this->Call4ApiAccessToken(['code' => $code]);
-        if ($jdata == false) {
-            $this->SendDebug(__FUNCTION__, 'got no token', 0);
-            $this->SetBuffer('ApiAccessToken', '');
-            return false;
-        }
-        $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
-        $access_token = $jdata['access_token'];
-        $expiration = time() + $jdata['expires_in'];
-        $refresh_token = $jdata['refresh_token'];
-        $this->FetchApiAccessToken($access_token, $expiration);
-        return $refresh_token;
-    }
-
-    private function FetchApiAccessToken($access_token = '', $expiration = 0)
+    private function GetApiAccessToken($access_token = '', $expiration = 0)
     {
         if ($access_token == '' && $expiration == 0) {
             $data = $this->GetBuffer('ApiAccessToken');
@@ -240,128 +356,21 @@ class AutomowerConnectIO extends IPSModule
         return $access_token;
     }
 
-    protected function ProcessOAuthData()
+    private function GetApiRefreshToken($code)
     {
-        if (!isset($_GET['code'])) {
-            $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
-            $this->WriteAttributeString('ApiRefreshToken', '');
+        $this->SendDebug(__FUNCTION__, 'code=' . $code, 0);
+        $jdata = $this->Call4ApiAccessToken(['code' => $code]);
+        if ($jdata == false) {
+            $this->SendDebug(__FUNCTION__, 'got no token', 0);
             $this->SetBuffer('ApiAccessToken', '');
-            $this->SetStatus(self::$IS_NOLOGIN);
-            return;
+            return false;
         }
-        $refresh_token = $this->FetchApiRefreshToken($_GET['code']);
-        $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
-        $this->WriteAttributeString('ApiRefreshToken', $refresh_token);
-        if ($this->GetStatus() == self::$IS_NOLOGIN) {
-            $this->SetStatus(IS_ACTIVE);
-        }
-    }
-
-    public function GetConfigurationForm()
-    {
-        $formElements = $this->GetFormElements();
-        $formActions = $this->GetFormActions();
-        $formStatus = $this->GetFormStatus();
-
-        $form = json_encode(['elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus]);
-        if ($form == '') {
-            $this->SendDebug(__FUNCTION__, 'json_error=' . json_last_error_msg(), 0);
-            $this->SendDebug(__FUNCTION__, '=> formElements=' . print_r($formElements, true), 0);
-            $this->SendDebug(__FUNCTION__, '=> formActions=' . print_r($formActions, true), 0);
-            $this->SendDebug(__FUNCTION__, '=> formStatus=' . print_r($formStatus, true), 0);
-        }
-        return $form;
-    }
-
-    protected function GetFormElements()
-    {
-        $formElements = [];
-        $formElements[] = [
-            'type'    => 'CheckBox',
-            'name'    => 'module_disable',
-            'caption' => 'Instance is disabled'
-        ];
-
-        $instID = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}')[0];
-        if (IPS_GetInstance($instID)['InstanceStatus'] != IS_ACTIVE) {
-            $msg = 'Error: Symcon Connect is not active!';
-        } else {
-            $msg = 'Status: Symcon Connect is OK!';
-        }
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => $msg
-        ];
-
-        $items = [];
-        $items[] = [
-            'type'    => 'Label',
-            'caption' => 'Push "Login at Husqvarna" in the action part of this configuration form.'
-        ];
-        $items[] = [
-            'type'    => 'Label',
-            'caption' => 'At the webpage from Husqvarna log in with your Husqvarna username and password.'
-        ];
-        $items[] = [
-            'type'    => 'Label',
-            'caption' => 'If the connection to IP-Symcon was successfull you get the message: "Husqvarna successfully connected!". Close the browser window.'
-        ];
-        $items[] = [
-            'type'    => 'Label',
-            'caption' => 'Return to this configuration form.'
-        ];
-        $formElements[] = [
-            'type'    => 'ExpansionPanel',
-            'items'   => $items,
-            'caption' => 'Husqvarna Login'
-        ];
-
-        $items = [];
-        $items[] = [
-            'type'    => 'Label',
-            'caption' => 'This information is only required if position data of the mowers are to be fetched and requires a model with a GPS module.'
-        ];
-        $items[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'user',
-            'caption' => 'Username'
-        ];
-        $items[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'password',
-            'caption' => 'Password'
-        ];
-        $formElements[] = [
-            'type'    => 'ExpansionPanel',
-            'items'   => $items,
-            'caption' => 'Husqvarna Account-Details'
-        ];
-
-        return $formElements;
-    }
-
-    protected function GetFormActions()
-    {
-        $formActions = [];
-
-        $formActions[] = [
-            'type'    => 'Button',
-            'caption' => 'Login at Husqvarna',
-            'onClick' => 'echo AutomowerConnect_Login($id);'
-        ];
-
-        $formActions[] = [
-            'type'    => 'Button',
-            'caption' => 'Test access',
-            'onClick' => 'AutomowerConnect_TestAccount($id);'];
-
-        $formActions[] = [
-            'type'    => 'Button',
-            'caption' => 'Clear Token',
-            'onClick' => 'AutomowerConnect_ClearToken($id);'
-        ];
-
-        return $formActions;
+        $this->SendDebug(__FUNCTION__, 'jdata=' . print_r($jdata, true), 0);
+        $access_token = $jdata['access_token'];
+        $expiration = time() + $jdata['expires_in'];
+        $refresh_token = $jdata['refresh_token'];
+        $this->GetApiAccessToken($access_token, $expiration);
+        return $refresh_token;
     }
 
     protected function SendData($data, $source)
@@ -372,7 +381,7 @@ class AutomowerConnectIO extends IPSModule
 
     public function ForwardData($data)
     {
-        if ($this->CheckStatus() == STATUS_INVALID) {
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return;
         }
@@ -392,12 +401,6 @@ class AutomowerConnectIO extends IPSModule
                 case 'MowerCmd':
                     $ret = $this->DoMowerCmd($jdata['api_id'], $jdata['data']);
                     break;
-                case 'MowerList4App':
-                    $ret = $this->GetMowerList4App();
-                    break;
-                case 'MowerStatus4App':
-                    $ret = $this->GetMowerStatus4App($jdata['app_id']);
-                    break;
                 default:
                     $this->SendDebug(__FUNCTION__, 'unknown function "' . $jdata['Function'] . '"', 0);
                     break;
@@ -408,63 +411,6 @@ class AutomowerConnectIO extends IPSModule
 
         $this->SendDebug(__FUNCTION__, 'ret=' . print_r($ret, true), 0);
         return $ret;
-    }
-
-    private function GetApiAccessToken()
-    {
-        return $this->FetchApiAccessToken();
-    }
-
-    private function GetAppAccessToken()
-    {
-        $url = 'https://iam-api.dss.husqvarnagroup.net/api/v3/token';
-
-        $user = $this->ReadPropertyString('user');
-        $password = $this->ReadPropertyString('password');
-
-        $jtoken = json_decode($this->GetBuffer('AppAccessToken'), true);
-        $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
-        $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
-
-        if ($expiration < time()) {
-            $postdata = [
-                'data' => [
-                    'attributes' => [
-                        'username' => $user,
-                        'password' => $password
-                    ],
-                    'type' => 'token'
-                ]
-            ];
-
-            $header = [
-                'Accept: application/json',
-                'Content-Type: application/json'
-            ];
-
-            $ctoken = $this->do_HttpRequest($url, $header, $postdata, true);
-            $this->SendDebug(__FUNCTION__, 'ctoken=' . print_r($ctoken, true), 0);
-            if ($ctoken == '') {
-                return false;
-            }
-            $jtoken = json_decode($ctoken, true);
-            $this->SendDebug(__FUNCTION__, 'jtoken=' . print_r($jtoken, true), 0);
-
-            $token = $jtoken['data']['id'];
-            $provider = $jtoken['data']['attributes']['provider'];
-            $expires_in = $jtoken['data']['attributes']['expires_in'];
-            $user_id = $jtoken['data']['attributes']['user_id'];
-
-            $jtoken = [
-                'token'            => $token,
-                'provider'         => $provider,
-                'user_id'          => $user_id,
-                'expiration'       => time() + $expires_in
-            ];
-            $this->SetBuffer('AppAccessToken', json_encode($jtoken));
-        }
-
-        return $jtoken;
     }
 
     public function ClearToken()
@@ -491,46 +437,27 @@ class AutomowerConnectIO extends IPSModule
     private function DoMowerCmd($api_id, $data)
     {
         $postdata = [
-            'data'=> $data
+            'data' => $data
         ];
         return $this->do_ApiCall('mowers/' . $api_id . '/actions', $postdata);
     }
 
-    private function GetMowerList4App()
-    {
-        $user = $this->ReadPropertyString('user');
-        if ($user == '') {
-            return false;
-        }
-
-        return $this->do_AppCall('mowers');
-    }
-
-    private function GetMowerStatus4App($app_id)
-    {
-        $user = $this->ReadPropertyString('user');
-        if ($user == '') {
-            return false;
-        }
-        return $this->do_AppCall('mowers/' . $app_id . '/status');
-    }
-
     private function do_ApiCall($cmd, $postdata = '')
     {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return;
         }
 
         $token = $this->GetApiAccessToken();
 
-        $header = [];
-        $header[] = 'Accept: application/vnd.api+json';
-        $header[] = 'Content-Type: application/json';
-        $header[] = 'Authorization: Bearer ' . $token;
-        $header[] = 'Authorization-Provider: husqvarna';
-        $header[] = 'X-Api-Key: b42b22bf-5482-4f0b-b78a-9c5558ff5b4a';
+        $header = [
+            'Accept: application/vnd.api+json',
+            'Content-Type: application/vnd.api+json',
+            'Authorization: Bearer ' . $token,
+            'Authorization-Provider: husqvarna',
+            'X-Api-Key: b42b22bf-5482-4f0b-b78a-9c5558ff5b4a',
+        ];
 
         $url = 'https://api.amc.husqvarna.dev/v1/' . $cmd;
 
@@ -616,41 +543,11 @@ class AutomowerConnectIO extends IPSModule
         return $data;
     }
 
-    private function do_AppCall($cmd, $postdata = '')
-    {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-            return;
-        }
-
-        $jtoken = $this->GetAppAccessToken();
-        if ($jtoken == '') {
-            return false;
-        }
-        $token = $jtoken['token'];
-        $provider = $jtoken['provider'];
-
-        $header = [];
-        $header[] = 'Accept: application/json';
-        $header[] = 'Content-Type: application/json';
-        $header[] = 'Authorization: Bearer ' . $token;
-        $header[] = 'Authorization-Provider: ' . $provider;
-
-        $url = 'https://amc-api.dss.husqvarnagroup.net/v1/' . $cmd;
-        $cdata = $this->do_HttpRequest($url, $header, $postdata);
-        $this->SendDebug(__FUNCTION__, 'cdata=' . print_r($cdata, true), 0);
-
-        $this->SetStatus(IS_ACTIVE);
-        return $cdata;
-    }
-
     public function TestAccount()
     {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-            echo $this->translate('Instance is disabled') . PHP_EOL;
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            echo $this->GetStatusText() . PHP_EOL;
             return;
         }
 
@@ -670,20 +567,7 @@ class AutomowerConnectIO extends IPSModule
             return;
         }
 
-        $app_mowers = [];
-        $user = $this->ReadPropertyString('user');
-        if ($user != '') {
-            $appAccessToken = $this->GetAppAccessToken();
-            if ($appAccessToken == false) {
-                $this->SetStatus(self::$IS_INVALIDACCOUNT);
-                echo $this->translate('Invalid login details') . PHP_EOL;
-                return;
-            }
-            $cdata = $this->GetMowerList4App();
-            $app_mowers = $cdata != '' ? json_decode($cdata, true) : '';
-        }
-
-        $msg = '';
+        $msg = $this->translate('valid account-data') . PHP_EOL;
         foreach ($mowers['data'] as $mower) {
             $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
             $api_id = $this->GetArrayElem($mower, 'id', '');
@@ -691,21 +575,10 @@ class AutomowerConnectIO extends IPSModule
             $model = $this->GetArrayElem($mower, 'attributes.system.model', '');
             $serial = $this->GetArrayElem($mower, 'attributes.system.serialNumber', '');
 
-            $msg = $this->Translate('Mower') . ' "' . $name . '", ' . $this->Translate('Model') . '=' . $model;
-            $app_id = false;
-            if ($app_mowers != '') {
-                foreach ($app_mowers as $app_mower) {
-                    $id = $app_mower['id'];
-                    $ids = explode('-', $id);
-                    if ($serial == $ids[0]) {
-                        $app_id = $id;
-                        break;
-                    }
-                }
-            }
-            $this->SendDebug(__FUNCTION__, 'api_id=' . $api_id . ', name=' . $name . ', model=' . $model . ', app_id=' . $app_id, 0);
+            $msg = $this->Translate('Mower') . ' "' . $name . '", ' . $this->Translate('Model') . '=' . $model . PHP_EOL;
+            $this->SendDebug(__FUNCTION__, 'api_id=' . $api_id . ', name=' . $name . ', model=' . $model, 0);
         }
 
-        echo $this->translate('valid account-data') . "\n" . $msg;
+        echo $msg;
     }
 }

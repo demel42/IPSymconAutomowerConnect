@@ -1,7 +1,9 @@
 {
 	"translations": {
 		"de": {
-			"Instance is disabled": "Instanz ist deaktiviert",
+			"Disable instance": "Instanz deaktivieren",
+
+            "The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
 
 			"Status: Symcon Connect is OK!": "Status: Symcon Connect ist OK!",
 			"Error: Symcon Connect is not active!": "Fehler: Symcon Connect ist nicht aktiv!",
@@ -26,7 +28,6 @@
 			"Login at Husqvarna": "Anmelden bei Husqvarna",
 			"Test access": "Zugriff testen",
 			"Clear Token": "Token löschen",
-			"Instance is disabled": "Instanz ist deaktiviert",
 
 			"Mower": "Rasenmäher",
 			"Name": "Bezeichnung",
@@ -35,6 +36,35 @@
 			"Invalid login at Husqvarna": "Ungültige Anmeldung bei Husqvarna",
 			"Invalid login details": "Ungültige Zugangsdaten",
 			"valid account-data": "gültige Zugangsdaten",
+
+            "Expert area": "Experten-Bereich",
+			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
+
+			"Information": "Information",
+
+            "Test area": "Test-Bereich",
+
+            "References": "Referenzen",
+			"Category": "Kategorie",
+            "Instance": "Instanz",
+            "Variable": "Variable",
+            "Script": "Skript",
+            "Event": "Ereignis",
+            "Medium": "Medium",
+            "Link": "Verknüpfung",
+            "PHP script": "PHP-Skript",
+            "Flow plan": "Ablaufplan",
+            "Triggered event": "Ausgelöstes Ereignis",
+            "Cyclic event": "Zyklisches Ereignis",
+            "Scheduled event": "Geplantes Ereignis",
+            "by instance used objects": "durch die Instanz verwendete Objekte",
+            "Objects using the instance": "Objekte, die die Instanz verwenden",
+            "Referenced statusvariables": "referenzierte Statusvariablen",
+            "Ident": "Ident",
+            "Object": "Objekt",
+            "Area": "Bereich",
+            "Name": "Bezeichnung",
+            "Open object": "Objekt öffnen",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
@@ -50,7 +80,8 @@
 			"Instance is inactive (not logged in)": "Instanz ist inaktiv (nicht angemeldet)",
 			"Instance is inactive (forbidden)": "Instanz ist inaktiv (fehlende Berechtigung)",
 			"Instance is inactive (invalid account)": "Instanz ist inaktiv (ungültige Kontodaten)",
-			"Instance is inactive (device missing)": "Instanz ist inaktiv (Gerät fehlt)"
+			"Instance is inactive (device missing)": "Instanz ist inaktiv (Gerät fehlt)",
+			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)"
 		}
 	}
 }
