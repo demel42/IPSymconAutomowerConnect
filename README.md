@@ -168,6 +168,7 @@ Quellen:
       - Konfigurator-Instanz  aufrufen, die Devises sollten alle erscheien, aber als "Prüfen" markiert sein; das durchführen
 	  - Script korrigieren (Änderung der Variable _$activity_label_, siehe _docs_)
 	  - Geräte-Instanz kontrollieren, Status aktualisieren ...
+  - Anpassungen an IPS 6.2 (Prüfung auf ungültige ID's)
   - diverse interen Änderungen
   - Anzeige der Modul/Bibliotheks-Informationen
   - Möglichkeit der Anzeige der Instanz-Referenzen sowie referenzierte Statusvariablen

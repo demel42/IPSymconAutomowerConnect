@@ -44,6 +44,8 @@
             "Name": "Bezeichnung",
             "Open object": "Objekt öffnen",
 
+			"unknown": "unbekannt",
+
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
 			"Instance is deleted": "Instanz wird gelöscht",
