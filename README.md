@@ -31,8 +31,8 @@
 
 ### a. Installation des Moduls
 
-Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *Symcon Notice* zu finden.<br>
-Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconNotice.git` installiert werden.
+Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *Husqvarna AutomowerConnect* zu finden.<br>
+Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconAutomowerConnect` installiert werden.
 
 ### b. Einrichtung in IPS
 
@@ -47,14 +47,23 @@ Die so erzeugte Geräte-Instanz enthält neben der Serienummer die interne Gerä
 
 ### zentrale Funktion
 
-`boolean AutomowerConnect_ParkMower(integer $InstanzID)`<br>
-Parken des Mähers in der Ladestation
+`boolean AutomowerConnect_ParkMower(integer $InstanzID, integer $Value)`<br>
+Parken des Mähers in der Ladestation. _Value_ bedeutet
+| Wert | Bedeutung |
+| :--- | :-------- |
+| -1   | bis auf weiteres |
+| 0    | mit Zeitplan starten |
+| 1..  | Dauer in Stunden, vorgegeben im Variablenprofil sind 3h (=3), 12h (=12), 1d (=24) ... |
 
-`boolean AutomowerConnect_StartMower(integer $InstanzID)`<br>
-Starten eines manuellen Mähvorgangs
+`boolean AutomowerConnect_StartMower(integer $InstanzID, integer $Value)`<br>
+Starten eines manuellen Mähvorgangs. _Value_ bedeutet
+| Wert | Bedeutung |
+| :--- | :-------- |
+| 0    | nächster Zeitplan |
+| 1..  | Dauer in Stunden, vorgegeben im Variablenprofil sind 3h (=3), 12h (=12), 1d (=24) ... |
 
-`boolean AutomowerConnect_StopMower(integer $InstanzID)`<br>
-Stoppen der Aktivität der Mähers
+`boolean AutomowerConnect_PauseMower(integer $InstanzID)`<br>
+Unterbrechen der Aktivität der Mähers
 
 `string AutomowerConnect_GetRawData(integer $InstanceID, string $Name)`<br>
 Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2GoogelMaps.php`.
@@ -111,7 +120,7 @@ In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten g
 | Wert | Beschreibung |
 | :--- | :----------- |
 | 0    | unbekannter Status |
-| 1    | nicht anwendbar (?) |
+| 1    | nicht zutreffend |
 | 2    | Fehler |
 | 3    | ausser Betrieb |
 | 4    | geparkt |
@@ -132,14 +141,22 @@ Beispiel-Script siehe `docs/docs/Position2GoogelMaps.php`.
 
 Es werden folgende Variableprofile angelegt:
 * Boolean<br>
-  - Automower.Connection
+Automower.Connection
 
 * Integer<br>
-  - Automower.Error: enthält die (unvollständige) Umsetzung der Fehlercodes vom Automower.
-  - Automower.Action, Automower.Activity, Automower.Battery, Automower.Duration
+Automower.Error: enthält die (unvollständige) Umsetzung der Fehlercodes vom Automower.<br>
+Automower.ActionPark,
+Automower.ActionPause,
+Automower.ActionStart,
+Automower.Activity,
+Automower.Battery,
+Automower.CuttingHeight,
+Automower.Duration,
+Automower.HeadlightMode
 
 * Float<br>
-  - Automower.Location
+Automower.Location
+
 
 ## 6. Anhang
 
@@ -158,11 +175,11 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.0 @ 28.03.2022 17:07
+- 2.0 @ 29.03.2022 16:33 (beta)
   - Umstellung auf die offizielle Husqvarna-REST-API mit OAuth<br>
     Update-Hinweis:
 	- vor dem Update
-      - Löschen von Profil Automower.Action, Automower.Error und Variable MowerAction
+      - Löschen von Profil "Automower.Action", "Automower.Error" und Variable "MowerAction"
     - nach dem Update
       - I/O-Instanz einrichten
       - Konfigurator-Instanz  aufrufen, die Devises sollten alle erscheien, aber als "Prüfen" markiert sein; das durchführen

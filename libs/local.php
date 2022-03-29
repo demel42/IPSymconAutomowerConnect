@@ -42,6 +42,12 @@ trait AutomowerConnectLocalLib
     // ActionPause
     public static $ACTION_PAUSE = 0;
 
+    // HeadlightMode
+    public static $HEADLIGHT_ALWAYS_ON = 0;
+    public static $HEADLIGHT_ALWAYS_OFF = 1;
+    public static $HEADLIGHT_EVENING_ONLY = 2;
+    public static $HEADLIGHT_EVENING_AND_NIGHT = 3;
+
     private function GetFormStatus()
     {
         $formStatus = [];
@@ -136,6 +142,15 @@ trait AutomowerConnectLocalLib
         $associations[] = ['Wert' => self::$ACTIVITY_CUTTING, 'Name' => $this->Translate('cutting'), 'Farbe' => -1];
         $associations[] = ['Wert' => self::$ACTIVITY_STOPPED, 'Name' => $this->Translate('stopped'), 'Farbe' => -1];
         $this->CreateVarProfile('Automower.Activity', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
+
+        $associations = [];
+        $associations[] = ['Wert' => self::$HEADLIGHT_ALWAYS_ON, 'Name' => $this->Translate('Always on'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$HEADLIGHT_ALWAYS_OFF, 'Name' => $this->Translate('Always off'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$HEADLIGHT_EVENING_ONLY, 'Name' => $this->Translate('Evening only'), 'Farbe' => -1];
+        $associations[] = ['Wert' => self::$HEADLIGHT_EVENING_AND_NIGHT, 'Name' => $this->Translate('Evening and night'), 'Farbe' => -1];
+        $this->CreateVarProfile('Automower.HeadlightMode', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
+
+        $this->CreateVarProfile('Automower.CuttingHeight', VARIABLETYPE_INTEGER, ' mm', 1, 9, 1, 0, '', [], $reInstall);
 
         $associations = [];
         $associations[] = ['Wert' =>  0, 'Name' => '-', 'Farbe' => -1];

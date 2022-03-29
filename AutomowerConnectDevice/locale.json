@@ -22,12 +22,12 @@
 			"Update status": "Aktualisiere Status",
 
 			"Battery capacity": "Batteriekapazität",
+			"Connection status": "Verbindungs-Status",
 			"Day of cumulation": "Datum zu Tageswerten",
 			"Last error": "letzter Fehler",
 			"Last position (latitude)": "letzter Breitengrad",
 			"Last position (longitude)": "letzter Längengrad",
 			"Last status": "letzter Status",
-			"Mower action": "Aktivität starten",
 			"Mower activity": "aktuelle Aktivität",
 			"Mower status": "Status",
 			"Next start": "nächster Start",
@@ -39,6 +39,19 @@
 			"Start action": "Start-Aktion",
 			"Timestamp of last error": "Zeitpunkt des letzten Fehlers",
 			"Working time (day)": "Arbeitszeit (Tag)",
+
+
+			"__comment__": "Automower.HeadlightMode / HeadlightMode",
+			"Headlight mode": "Scheinwerfer",
+			"Always on": "Immer an",
+			"Always off": "Immer aus",
+			"Evening only": "Nur abends",
+			"Evening and night": "Abends und nachts",
+
+
+			"__comment__": "CuttingHeight",
+			"Cutting height": "Schnitthöhe",
+
 
 			"__comment__": "Automower.ActionStart / MowerActionStart",
 			"next schedule": "nächster Zeitplan",

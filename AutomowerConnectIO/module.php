@@ -396,10 +396,10 @@ class AutomowerConnectIO extends IPSModule
                     $ret = $this->GetMowerList();
                     break;
                 case 'MowerStatus':
-                    $ret = $this->GetMowerStatus($jdata['api_id']);
+                    $ret = $this->GetMowerStatus($jdata['id']);
                     break;
                 case 'MowerCmd':
-                    $ret = $this->DoMowerCmd($jdata['api_id'], $jdata['data']);
+                    $ret = $this->DoMowerCmd($jdata['id'], $jdata['command'], $jdata['data']);
                     break;
                 default:
                     $this->SendDebug(__FUNCTION__, 'unknown function "' . $jdata['Function'] . '"', 0);
@@ -429,17 +429,17 @@ class AutomowerConnectIO extends IPSModule
         return $this->do_ApiCall('mowers');
     }
 
-    private function GetMowerStatus($api_id)
+    private function GetMowerStatus($id)
     {
-        return $this->do_ApiCall('mowers/' . $api_id);
+        return $this->do_ApiCall('mowers/' . $id);
     }
 
-    private function DoMowerCmd($api_id, $data)
+    private function DoMowerCmd($id, $command, $data)
     {
         $postdata = [
             'data' => $data
         ];
-        return $this->do_ApiCall('mowers/' . $api_id . '/actions', $postdata);
+        return $this->do_ApiCall('mowers/' . $id . '/' . $command, $postdata);
     }
 
     private function do_ApiCall($cmd, $postdata = '')
@@ -570,13 +570,13 @@ class AutomowerConnectIO extends IPSModule
         $msg = $this->translate('valid account-data') . PHP_EOL;
         foreach ($mowers['data'] as $mower) {
             $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
-            $api_id = $this->GetArrayElem($mower, 'id', '');
+            $id = $this->GetArrayElem($mower, 'id', '');
             $name = $this->GetArrayElem($mower, 'attributes.system.name', '');
             $model = $this->GetArrayElem($mower, 'attributes.system.model', '');
             $serial = $this->GetArrayElem($mower, 'attributes.system.serialNumber', '');
 
             $msg = $this->Translate('Mower') . ' "' . $name . '", ' . $this->Translate('Model') . '=' . $model . PHP_EOL;
-            $this->SendDebug(__FUNCTION__, 'api_id=' . $api_id . ', name=' . $name . ', model=' . $model, 0);
+            $this->SendDebug(__FUNCTION__, 'id=' . $id . ', name=' . $name . ', model=' . $model, 0);
         }
 
         echo $msg;

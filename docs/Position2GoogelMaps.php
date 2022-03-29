@@ -25,9 +25,12 @@ $point = [
 
 $marker_points[0] = $point;
 
-$activity = GetValueInteger(30160 /*[Rasenmäher\Automower\Aktivität]*/);
-$activity_label = ['', '', 'E', 'D', 'G', 'L', 'P', 'F', 'R', 'M', 'S'];
-$label = $activity_label[$activity + 1];
+$activity_label = ['E', 'D', 'G', 'L', 'P', 'F', 'R', 'M', 'S'];
+$activity = GetValueInteger(30160 /*[Rasenmäher\Automower\Aktivität]*/) - 2;
+if ($activity < 0 || $activity >= count($activity_label)) {
+    $activity = 0;
+}
+$label = $activity_label[$activity];
 
 $markers[] = [
     'color'     => 'green',

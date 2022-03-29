@@ -72,16 +72,20 @@ class AutomowerConnectDevice extends IPSModule
         $save_position = $this->ReadPropertyBoolean('save_position');
 
         $vpos = 0;
-        $this->MaintainVariable('Connected', $this->Translate('Connected'), VARIABLETYPE_BOOLEAN, 'Automower.Connection', $vpos++, true);
+        $this->MaintainVariable('Connected', $this->Translate('Connection status'), VARIABLETYPE_BOOLEAN, 'Automower.Connection', $vpos++, true);
         $this->MaintainVariable('Battery', $this->Translate('Battery capacity'), VARIABLETYPE_INTEGER, 'Automower.Battery', $vpos++, true);
         $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('MowerStatus', $this->Translate('Mower status'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('MowerActivity', $this->Translate('Mower activity'), VARIABLETYPE_INTEGER, 'Automower.Activity', $vpos++, true);
         $this->MaintainVariable('RestrictedReason', $this->Translate('Restricted reason'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('NextStart', $this->Translate('Next start'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
+
         $this->MaintainVariable('MowerActionStart', $this->Translate('Start action'), VARIABLETYPE_INTEGER, 'Automower.ActionStart', $vpos++, true);
+        $this->MaintainAction('MowerActionStart', true);
         $this->MaintainVariable('MowerActionPause', $this->Translate('Pause action'), VARIABLETYPE_INTEGER, 'Automower.ActionPause', $vpos++, true);
+        $this->MaintainAction('MowerActionPause', true);
         $this->MaintainVariable('MowerActionPark', $this->Translate('Park action'), VARIABLETYPE_INTEGER, 'Automower.ActionPark', $vpos++, true);
+        $this->MaintainAction('MowerActionPark', true);
 
         $this->MaintainVariable('DailyReference', $this->Translate('Day of cumulation'), VARIABLETYPE_INTEGER, '~UnixTimestampDate', $vpos++, true);
         $this->MaintainVariable('DailyWorking', $this->Translate('Working time (day)'), VARIABLETYPE_INTEGER, 'Automower.Duration', $vpos++, true);
@@ -93,9 +97,10 @@ class AutomowerConnectDevice extends IPSModule
         $this->MaintainVariable('LastStatus', $this->Translate('Last status'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
         $this->MaintainVariable('Position', $this->Translate('Position'), VARIABLETYPE_STRING, '', $vpos++, $save_position);
 
-        $this->MaintainAction('MowerActionStart', true);
-        $this->MaintainAction('MowerActionPause', true);
-        $this->MaintainAction('MowerActionPark', true);
+        $this->MaintainVariable('HeadlightMode', $this->Translate('Headlight mode'), VARIABLETYPE_INTEGER, 'Automower.HeadlightMode', $vpos++, true);
+        $this->MaintainAction('HeadlightMode', true);
+        $this->MaintainVariable('CuttingHeight', $this->Translate('Cutting height'), VARIABLETYPE_INTEGER, 'Automower.CuttingHeight', $vpos++, true);
+        $this->MaintainAction('CuttingHeight', true);
 
         $refs = $this->GetReferenceList();
         foreach ($refs as $ref) {
@@ -277,7 +282,7 @@ class AutomowerConnectDevice extends IPSModule
         $sdata = [
             'DataID'    => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
             'Function'  => 'MowerStatus',
-            'api_id'    => $id,
+            'id'        => $id,
         ];
         $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
         $cdata = $this->SendDataToParent(json_encode($sdata));
@@ -364,9 +369,12 @@ class AutomowerConnectDevice extends IPSModule
         $chg = $this->AdjustAction('MowerActionStart', $enableStart);
         $chg |= $this->AdjustAction('MowerActionPause', $enablePause);
         $chg |= $this->AdjustAction('MowerActionPark', $enablePark);
-
         if ($chg) {
             $this->ReloadForm();
+        }
+
+        if ($mowerActivity == self::$ACTIVITY_PARKED) {
+            $this->SetValue('MowerActionStart', self::$ACTION_RESUME_SCHEDULE);
         }
 
         $lastErrorCode = $this->GetArrayElem($attributes, 'mower.errorCode', 0);
@@ -448,6 +456,15 @@ class AutomowerConnectDevice extends IPSModule
             }
         }
 
+        $cuttingHeight = $this->GetArrayElem($attributes, 'settings.cuttingHeight', 0);
+        $this->SendDebug(__FUNCTION__, 'cuttingHeight=' . $cuttingHeight, 0);
+        $this->SetValue('CuttingHeight', $cuttingHeight);
+
+        $headlight_mode = $this->GetArrayElem($attributes, 'settings.headlight.mode', 0);
+        $headlightMode = $this->decode_headlightMode($headlight_mode);
+        $this->SendDebug(__FUNCTION__, 'headlight_mode="' . $headlight_mode . '" => headlightMode=' . $headlightMode, 0);
+        $this->SetValue('HeadlightMode', $headlightMode);
+
         $with_gps = $this->ReadPropertyBoolean('with_gps');
         if ($with_gps && isset($attributes['positions'])) {
             $positions = (array) $this->GetArrayElem($attributes, 'positions', []);
@@ -456,6 +473,17 @@ class AutomowerConnectDevice extends IPSModule
             $this->SetBuffer('LastLocations', json_encode($positions));
 
             if (count($positions)) {
+                $latitude = $this->GetValue('LastLatitude');
+                $longitude = $this->GetValue('LastLongitude');
+                $pos = $this->GetValue('Position');
+                $this->SendDebug(__FUNCTION__, 'last latitude=' . $latitude . ', longitude=' . $longitude . ', pos=' . $pos, 0);
+
+                for ($i = 0; $i < count($positions) && $i < 10; $i++) {
+                    $latitude = $positions[$i]['latitude'];
+                    $longitude = $positions[$i]['longitude'];
+                    $this->SendDebug(__FUNCTION__, '#' . $i . ' latitude=' . $latitude . ', longitude=' . $longitude, 0);
+                }
+
                 $this->SetValue('LastLongitude', $positions[0]['longitude']);
                 $this->SetValue('LastLatitude', $positions[0]['latitude']);
 
@@ -478,9 +506,9 @@ class AutomowerConnectDevice extends IPSModule
         $this->SetUpdateInterval();
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction($ident, $value)
     {
-        if ($this->CommonRequestAction($Ident, $Value)) {
+        if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
 
@@ -490,25 +518,33 @@ class AutomowerConnectDevice extends IPSModule
         }
 
         $r = false;
-        switch ($Ident) {
+        switch ($ident) {
             case 'MowerActionStart':
-                $r = $this->StartMower((int) $Value);
-                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                $r = $this->StartMower((int) $value);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             case 'MowerActionPause':
                 $r = $this->PauseMower();
-                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             case 'MowerActionPark':
-                $r = $this->ParkMower((int) $Value);
-                $this->SendDebug(__FUNCTION__, $Ident . '=' . $Value . ' => ret=' . $r, 0);
+                $r = $this->ParkMower((int) $value);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
+                break;
+            case 'CuttingHeight':
+                $r = $this->SetCuttingHeight((int) $value);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
+                break;
+            case 'HeadlightMode':
+                $r = $this->SetHeadlightMode((int) $value);
+                $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
                 break;
             default:
-                $this->SendDebug(__FUNCTION__, "invalid ident $Ident", 0);
+                $this->SendDebug(__FUNCTION__, "invalid ident $ident", 0);
                 break;
         }
         if ($r) {
-            $this->SetValue($Ident, $Value);
+            $this->Setvalue($ident, $value);
         }
     }
 
@@ -612,6 +648,26 @@ class AutomowerConnectDevice extends IPSModule
         return $code;
     }
 
+    private function decode_headlightMode($val)
+    {
+        $val2code = [
+            'ALWAYS_ON'         => self::$HEADLIGHT_ALWAYS_ON,
+            'ALWAYS_OFF'        => self::$HEADLIGHT_ALWAYS_OFF,
+            'EVENING_ONLY'      => self::$HEADLIGHT_EVENING_ONLY,
+            'EVENING_AND_NIGHT' => self::$HEADLIGHT_EVENING_AND_NIGHT,
+        ];
+
+        if (isset($val2code[$val])) {
+            $code = $val2code[$val];
+        } else {
+            $msg = 'unknown value "' . $val . '"';
+            $this->LogMessage(__FUNCTION__ . ': ' . $msg, KL_WARNING);
+            $this->SendDebug(__FUNCTION__, $msg, 0);
+            $code = self::$HEADLIGHT_ALWAYS_ON;
+        }
+        return $code;
+    }
+
     /*
 
     - Start + Duration (3h 6h 12h 1d 2d 3d4d 5d 6d 7d)
@@ -652,7 +708,7 @@ class AutomowerConnectDevice extends IPSModule
                 break;
         }
         $this->SendDebug(__FUNCTION__, 'value=' . $value . ', data=' . print_r($data, true), 0);
-        return $this->MowerCmd($data);
+        return $this->MowerCmd('actions', $data);
     }
 
     private function StartMower(int $value)
@@ -679,7 +735,7 @@ class AutomowerConnectDevice extends IPSModule
                 break;
         }
         $this->SendDebug(__FUNCTION__, 'value=' . $value . ', data=' . print_r($data, true), 0);
-        return $this->MowerCmd($data);
+        return $this->MowerCmd('actions', $data);
     }
 
     private function PauseMower()
@@ -688,10 +744,53 @@ class AutomowerConnectDevice extends IPSModule
             'type' => 'Pause',
         ];
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
-        return $this->MowerCmd($data);
+        return $this->MowerCmd('actions', $data);
     }
 
-    private function MowerCmd($data)
+    private function SetCuttingHeight(int $value)
+    {
+        $data = [
+            'type'        => 'settings',
+            'attributes'  => [
+                'cuttingHeight'=> $value
+            ],
+        ];
+        $this->SendDebug(__FUNCTION__, 'value=' . $value . ', data=' . print_r($data, true), 0);
+        return $this->MowerCmd('settings', $data);
+    }
+
+    private function SetHeadlightMode(int $value)
+    {
+        switch ($value) {
+            case self::$HEADLIGHT_ALWAYS_ON:
+                $mode = 'ALWAYS_ON';
+                break;
+            case self::$HEADLIGHT_ALWAYS_OFF:
+                $mode = 'ALWAYS_OFF';
+                break;
+            case self::$HEADLIGHT_EVENING_ONLY:
+                $mode = 'EVENING_ONLY';
+                break;
+            case self::$HEADLIGHT_EVENING_AND_NIGHT:
+                $mode = 'EVENING_AND_NIGHT';
+                break;
+            default:
+                $this->SendDebug(__FUNCTION__, 'invalid headlightMode ' . $value, 0);
+                return false;
+        }
+        $data = [
+            'type'          => 'settings',
+            'attributes'    => [
+                'headlight'  => [
+                    'mode'   => $mode,
+                ],
+            ],
+        ];
+        $this->SendDebug(__FUNCTION__, 'value=' . $value . ', data=' . print_r($data, true), 0);
+        return $this->MowerCmd('settings', $data);
+    }
+
+    private function MowerCmd($command, $data)
     {
         if ($this->HasActiveParent() == false) {
             $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
@@ -706,7 +805,8 @@ class AutomowerConnectDevice extends IPSModule
         $sdata = [
             'DataID'    => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
             'Function'  => 'MowerCmd',
-            'api_id'    => $id,
+            'id'        => $id,
+            'command'   => $command,
             'data'      => $data
         ];
         $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
@@ -717,7 +817,6 @@ class AutomowerConnectDevice extends IPSModule
         }
         $jdata = json_decode($cdata, true);
         $status = $jdata['status'];
-
         if ($status != 'ok') {
             return false;
         }
