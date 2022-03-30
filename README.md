@@ -175,7 +175,7 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.0 @ 29.03.2022 16:33 (beta)
+- 2.0 @ 30.03.2022 14:49 (beta)
   - Umstellung auf die offizielle Husqvarna-REST-API mit OAuth<br>
     Update-Hinweis:
 	- vor dem Update
@@ -183,6 +183,7 @@ Quellen:
     - nach dem Update
       - I/O-Instanz einrichten
       - Konfigurator-Instanz  aufrufen, die Devises sollten alle erscheien, aber als "Prüfen" markiert sein; das durchführen
+	  - in einer der Geräte-Instanzen im Expert-Bereich die "Variablenprofile erneut einrichten"
 	  - Script korrigieren (Änderung der Variable _$activity_label_, siehe _docs_)
 	  - Geräte-Instanz kontrollieren, Status aktualisieren ...
   - Anpassungen an IPS 6.2 (Prüfung auf ungültige ID's)

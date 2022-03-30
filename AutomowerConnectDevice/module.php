@@ -466,6 +466,7 @@ class AutomowerConnectDevice extends IPSModule
         $this->SetValue('HeadlightMode', $headlightMode);
 
         $with_gps = $this->ReadPropertyBoolean('with_gps');
+        $save_position = $this->ReadPropertyBoolean('save_position');
         if ($with_gps && isset($attributes['positions'])) {
             $positions = (array) $this->GetArrayElem($attributes, 'positions', []);
             $this->SendDebug(__FUNCTION__, 'positions #=' . count($positions), 0);
@@ -473,22 +474,43 @@ class AutomowerConnectDevice extends IPSModule
             $this->SetBuffer('LastLocations', json_encode($positions));
 
             if (count($positions)) {
-                $latitude = $this->GetValue('LastLatitude');
-                $longitude = $this->GetValue('LastLongitude');
+                $lat = $this->GetValue('LastLatitude');
+                $lon = $this->GetValue('LastLongitude');
                 $pos = $this->GetValue('Position');
-                $this->SendDebug(__FUNCTION__, 'last latitude=' . $latitude . ', longitude=' . $longitude . ', pos=' . $pos, 0);
+                $this->SendDebug(__FUNCTION__, 'last latitude=' . $lat . ', longitude=' . $lon . ', pos=' . $pos, 0);
 
-                for ($i = 0; $i < count($positions) && $i < 10; $i++) {
+                $new_positions = [];
+                for ($i = 0, $isNew = true; $i < count($positions) && $isNew; $i++) {
                     $latitude = $positions[$i]['latitude'];
                     $longitude = $positions[$i]['longitude'];
-                    $this->SendDebug(__FUNCTION__, '#' . $i . ' latitude=' . $latitude . ', longitude=' . $longitude, 0);
+                    $isNew = $latitude != $lat || $longitude != $lon;
+                    if ($isNew) {
+                        $new_positions[] = $positions[$i];
+                    }
+                    $this->SendDebug(__FUNCTION__, '#' . $i . ' latitude=' . $latitude . ', longitude=' . $longitude . ', isNew=' . $this->bool2str($isNew), 0);
+                }
+                for ($i = count($new_positions) - 1; $i >= 0; $i--) {
+                    $latitude = $new_positions[$i]['latitude'];
+                    $longitude = $new_positions[$i]['longitude'];
+
+                    $this->SetValue('LastLatitude', $latitude);
+                    $this->SetValue('LastLongitude', $longitude);
+
+                    if ($save_position && ($wasWorking || $isWorking)) {
+                        $lat = (float) $this->format_float($latitude, 6);
+                        $lon = (float) $this->format_float($longitude, 6);
+                        $pos = json_encode(['latitude'  => $lat, 'longitude' => $lon]);
+                        if ($this->GetValue('Position') != $pos) {
+                            $this->SetValue('Position', $pos);
+                            $this->SendDebug(__FUNCTION__, 'changed Position=' . $pos, 0);
+                        }
+                    }
                 }
 
+                /*
                 $this->SetValue('LastLongitude', $positions[0]['longitude']);
                 $this->SetValue('LastLatitude', $positions[0]['latitude']);
 
-                $save_position = $this->ReadPropertyBoolean('save_position');
-                $this->SendDebug(__FUNCTION__, 'save_position=' . $this->bool2str($save_position) . ', wasWorking=' . $this->bool2str($wasWorking) . ', isWorking=' . $this->bool2str($isWorking), 0);
                 if ($save_position && ($wasWorking || $isWorking)) {
                     $latitude = (float) $this->format_float($positions[0]['latitude'], 6);
                     $longitude = (float) $this->format_float($positions[0]['longitude'], 6);
@@ -498,6 +520,7 @@ class AutomowerConnectDevice extends IPSModule
                         $this->SendDebug(__FUNCTION__, 'changed Position=' . $pos, 0);
                     }
                 }
+                 */
             }
         }
 
@@ -550,14 +573,11 @@ class AutomowerConnectDevice extends IPSModule
 
     private function decode_operatingMode($val)
     {
-        // MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN
+        // MAIN_AREA, SECONDARY_AREA, HOME, UNKNOWN
         $val2txt = [
-            'HOME'               => 'remain in base',
-            'AUTO'               => 'automatic',
             'MAIN_AREA'          => 'main area',
             'SECONDARY_AREA'     => 'secondary area',
-            'OVERRIDE_TIMER'     => 'override timer',
-            'SPOT_CUTTING'       => 'spot cutting',
+            'HOME'               => 'remain in base',
             'UNKNOWN'            => 'unknown',
         ];
 
