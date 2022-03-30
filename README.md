@@ -47,7 +47,24 @@ Die so erzeugte Geräte-Instanz enthält neben der Serienummer die interne Gerä
 
 ### zentrale Funktion
 
-`boolean AutomowerConnect_ParkMower(integer $InstanzID, integer $Value)`<br>
+`string AutomowerConnect_GetRawData(integer $InstanceID, string $Name)`<br>
+Liefert interne Datenstrukturen. Beispiel-Script siehe `docs/GetRawData2GoogelMaps.php`.
+
+| Name          | Beschreibung |
+| :------------ | :----------- |
+| LastLocations | mit dem Status werden die letzten 50 GPS-Positionen geliefert |
+
+Der Zugriff auf die Steuerung erfolgt per [RequestAction](https://www.symcon.de/service/dokumentation/befehlsreferenz/variablenzugriff/requestaction/),
+dabei sind die Variablen mit den folgenden Idents besonders wichtig
+
+#### MowerActionStart
+Starten eines manuellen Mähvorgangs. _Value_ bedeutet
+| Wert | Bedeutung |
+| :--- | :-------- |
+| 0    | nächster Zeitplan |
+| 1..  | Dauer in Stunden, vorgegeben im Variablenprofil sind 3h (=3), 12h (=12), 1d (=24) ... |
+
+#### MowerActionPark
 Parken des Mähers in der Ladestation. _Value_ bedeutet
 | Wert | Bedeutung |
 | :--- | :-------- |
@@ -55,22 +72,20 @@ Parken des Mähers in der Ladestation. _Value_ bedeutet
 | 0    | mit Zeitplan starten |
 | 1..  | Dauer in Stunden, vorgegeben im Variablenprofil sind 3h (=3), 12h (=12), 1d (=24) ... |
 
-`boolean AutomowerConnect_StartMower(integer $InstanzID, integer $Value)`<br>
-Starten eines manuellen Mähvorgangs. _Value_ bedeutet
+#### MowerActionPause
+Unterbrechen der Aktivität der Mähers, _Value_ ist irrelevant
+
+#### CuttingHeight
+Einstellen der Schnitthöhe. _Value_ kann den Wert von 1 .. 9 annehmen
+
+#### HeadlightMode
+Einstellen der Scheinwerfer. _Value_ bedeutet
 | Wert | Bedeutung |
 | :--- | :-------- |
-| 0    | nächster Zeitplan |
-| 1..  | Dauer in Stunden, vorgegeben im Variablenprofil sind 3h (=3), 12h (=12), 1d (=24) ... |
-
-`boolean AutomowerConnect_PauseMower(integer $InstanzID)`<br>
-Unterbrechen der Aktivität der Mähers
-
-`string AutomowerConnect_GetRawData(integer $InstanceID, string $Name)`<br>
-Liefert interne Datenstrukturen. Beistpiel-Script siehe `docs/docs/GetRawData2GoogelMaps.php`.
-
-| Name          | Beschreibung |
-| :------------ | :----------- |
-| LastLocations | mit dem Status werden die letzten 50 GPS-Positionen geliefert |
+| 0    | Immer an |
+| 1    | Immer aus |
+| 2    | Nur abends |
+| 3    | Abends und nachts |
 
 ## 5. Konfiguration:
 
