@@ -11,6 +11,7 @@ class AutomowerConnectIO extends IPSModule
     use AutomowerConnectLocalLib;
 
     private $oauthIdentifer = 'husqvarna';
+    private static $appKey = '66679300-6f0d-43ed-b5b1-08e83fec88de';
 
     public function Create()
     {
@@ -18,9 +19,12 @@ class AutomowerConnectIO extends IPSModule
 
         $this->RegisterPropertyBoolean('module_disable', false);
 
-        $this->RegisterAttributeString('ApiRefreshToken', ''); // OAuth
+        // OAuth
+        $this->RegisterAttributeString('ApiRefreshToken', '');
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
+
+        $this->SetBuffer('ApiAccessToken', '');
     }
 
     private function CheckConfiguration()
@@ -419,9 +423,12 @@ class AutomowerConnectIO extends IPSModule
         $this->SendDebug(__FUNCTION__, 'clear refresh_token=' . $refresh_token, 0);
         $this->WriteAttributeString('ApiRefreshToken', '');
 
-        $access_token = $this->GetApiAccessToken();
+        $jtoken = json_decode($this->GetBuffer('ApiAccessToken'), true);
+        $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
         $this->SendDebug(__FUNCTION__, 'clear access_token=' . $access_token, 0);
         $this->SetBuffer('ApiAccessToken', '');
+
+        $this->SetStatus(self::$IS_NOLOGIN);
     }
 
     private function GetMowerList()
@@ -456,7 +463,7 @@ class AutomowerConnectIO extends IPSModule
             'Content-Type: application/vnd.api+json',
             'Authorization: Bearer ' . $token,
             'Authorization-Provider: husqvarna',
-            'X-Api-Key: b42b22bf-5482-4f0b-b78a-9c5558ff5b4a',
+            'X-Api-Key: ' . self::$appKey,
         ];
 
         $url = 'https://api.amc.husqvarna.dev/v1/' . $cmd;
@@ -551,8 +558,8 @@ class AutomowerConnectIO extends IPSModule
             return;
         }
 
-        $apiAccessToken = $this->GetApiAccessToken();
-        if ($apiAccessToken == false) {
+        $access_token = $this->GetApiAccessToken();
+        if ($access_token == false) {
             $this->SetStatus(self::$IS_UNAUTHORIZED);
             echo $this->translate('Invalid registration with Husqvarna') . PHP_EOL;
             return;

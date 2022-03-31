@@ -88,7 +88,6 @@ class AutomowerConnectConfig extends IPSModule
 
         if ($this->HasActiveParent() == false) {
             $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
-            $this->LogMessage('has no active parent instance', KL_WARNING);
             return $config_list;
         }
 

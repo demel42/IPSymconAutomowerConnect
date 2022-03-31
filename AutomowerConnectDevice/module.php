@@ -293,6 +293,10 @@ class AutomowerConnectDevice extends IPSModule
         }
 
         $mower = json_decode($cdata, true);
+        if ($mower == []) {
+            $this->SendDebug(__FUNCTION__, 'got no data', 0);
+            return false;
+        }
         $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
 
         $attributes = $this->GetArrayElem($mower, 'data.attributes', '');
@@ -350,6 +354,7 @@ class AutomowerConnectDevice extends IPSModule
             case self::$ACTIVITY_LEAVING:
             case self::$ACTIVITY_GOING_HOME:
             case self::$ACTIVITY_CUTTING:
+                $enableStart = true;
                 $enablePause = true;
                 $enablePark = true;
                 break;
