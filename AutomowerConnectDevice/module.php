@@ -411,7 +411,7 @@ class AutomowerConnectDevice extends IPSModule
 
         $restricted_reason = $this->GetArrayElem($attributes, 'planner.restrictedReason', '');
         if ($mower_state == 'RESTRICTED') {
-            if ($restricted_reason == 'NOT_APPLICABLE' && $mower_activity == 'PARKED_IN_CS' && $nextStartTimestamp == 0) {
+            if ($restricted_reason == 'NOT_APPLICABLE' && $mower_activity == 'PARKED_IN_CS') {
                 $restricted_reason = 'UNTIL_FURTHER_NOTICE';
             }
             $restrictedReason = $this->decode_restrictedReason($restricted_reason);

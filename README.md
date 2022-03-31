@@ -190,9 +190,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.1 @ 31.03.2022 09:28 (beta)
+- 2.1 @ 31.03.2022 15:37 (beta)
   - AppKey korrigiert
   - Korrektur bei der Deaktivierung der Aktionen
+  - Auswertung von planner.restrictedReason verbessert (geparkt bis auf weiteres)
 
 - 2.0 @ 30.03.2022 14:49
   - Umstellung auf die offizielle Husqvarna-REST-API mit OAuth<br>
