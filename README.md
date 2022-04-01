@@ -190,6 +190,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.2 @ 01.04.2022 11:27
+  - RestrictedReason ergänzt
+
 - 2.1 @ 31.03.2022 15:37
   - AppKey korrigiert
   - Korrektur bei der Deaktivierung der Aktionen

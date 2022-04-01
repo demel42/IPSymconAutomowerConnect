@@ -636,6 +636,8 @@ class AutomowerConnectDevice extends IPSModule
             'SENSOR'               => 'sensor',
             'DAILY_LIMIT'          => 'daily limit',
             'UNTIL_FURTHER_NOTICE' => 'until further notice',
+            'FROTS'                => 'frost',
+            'FOTA'                 => 'firmware update',
         ];
 
         if (isset($val2txt[$val])) {

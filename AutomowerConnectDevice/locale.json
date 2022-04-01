@@ -112,12 +112,14 @@
 			"__comment__": "RestrictedReason",
 			"none": "kein",
 			"unknown": "unbekannt",
-			"__comment__": "not applicable",
 			"week schedule": "Wochenplan",
 			"park overwrite": "manuelles Parken",
 			"sensor": "Sensor",
 			"daily limit": "Tageslimit",
+			"__comment__": "not applicable",
 			"__comment__": "until further notice",
+			"frost": "Frost",
+			"firmware update": "Firmware Update",
 
 
 			"__comment__": "OperationMode",
