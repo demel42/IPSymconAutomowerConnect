@@ -46,7 +46,8 @@ _Anmelden bei Husqvarna_ auswählen und auf der Husqvarna Login-Seite Benutzerna
 #### mit Husqvarna Anwendungs-Schlüssel
 Dazu muss man sich bei Husqvarna [hier](https://developer.husqvarnagroup.cloud/apps) anmelden, dazu die Anmeldedaten in der Husqvarna-App verwenden…
 Dann _My Applications_ anwählen, _Create Application_ auswählen. Als _Connected APIs_ sowohl _Authentication API_ also auch _Automower Connect API_ hinzufügen.
-Den angezeigten _API-Key_ dann mit den Anmeldedaten in der I/O-Instanz eintragen.
+Siehe auch [hier](https://developer.husqvarnagroup.cloud/docs/getting-started).<br>
+Den erzeugten _API-Key_ dann mit den Anmeldedaten in der I/O-Instanz eintragen.
 
 Nun in IP-Symcon in _Konfigurator Instanzen_ den Konfigurator _AutomowerConnect Konfigurator_ hinzufügen; dann kann man über den Konfigurator eine Instanz anlegen.
 
