@@ -8,6 +8,20 @@
 			"Status: Symcon Connect is OK!": "Status: Symcon Connect ist OK!",
 			"Error: Symcon Connect is not active!": "Fehler: Symcon Connect ist nicht aktiv!",
 
+			"Username must be specified": "Benutzerkennung muss angegeben sein",
+			"Password must be specified": "Passwort muss angegeben sein",
+			"API-Key must be specified": "API-Key muss angegeben sein",
+
+			"Connection Type": "Verbindungstyp",
+			"Please select a connection type": "Bitte einen Verbindungstyp auswählen",
+			"via IP-Symcon Connect": "über IP-Symcon Connect",
+			"with Husqvarna Application Key": "mit Husqvarna-Anwendungs-Schlüssel",
+
+			"Husqvarna Account-Details": "Husqvarna Konto-Details",
+			"API-Key": "API-Key",
+			"User-ID (email)": "Benutzerkennung (Mail-Adresse)",
+			"Password": "Passwort",
+
 			"Push \"Login at Husqvarna\" in the action part of this configuration form.":
 				"\"Anmelden bei Husqvarna\" in dem Aktionsbereich dieses Konfigurationsformulares drücken.",
 			"At the webpage from Husqvarna log in with your Husqvarna username and password.":
@@ -20,10 +34,6 @@
 			"Husqvarna Login": "Husqvarna Anmeldung",
 			"This information is only required if position data of the mowers are to be fetched and requires a model with a GPS module.":
 				"Diese Angabe ist nur erforderlich, wenn Positions-Daten des Rasenmäher eingeholt werden sollen und setzt ein Modell mit GPS-Modul voraus.",
-
-			"Username": "Benutzer",
-			"Password": "Passwort",
-			"Husqvarna Account-Details": "Husqvarna Konto-Details",
 
 			"Login at Husqvarna": "Anmelden bei Husqvarna",
 			"Test access": "Zugriff testen",

@@ -22,6 +22,8 @@ class AutomowerConnectDevice extends IPSModule
 
         $this->RegisterPropertyString('device_id', ''); // alt, nur noch für Update!
 
+        $this->RegisterPropertyBoolean('with_cuttingHeight', true);
+
         $this->RegisterPropertyBoolean('with_gps', true);
         $this->RegisterPropertyBoolean('save_position', false);
 
@@ -70,6 +72,7 @@ class AutomowerConnectDevice extends IPSModule
 
         $with_gps = $this->ReadPropertyBoolean('with_gps');
         $save_position = $this->ReadPropertyBoolean('save_position');
+        $with_cuttingHeight = $this->ReadPropertyBoolean('with_cuttingHeight');
 
         $vpos = 0;
         $this->MaintainVariable('Connected', $this->Translate('Connection status'), VARIABLETYPE_BOOLEAN, 'Automower.Connection', $vpos++, true);
@@ -99,8 +102,10 @@ class AutomowerConnectDevice extends IPSModule
 
         $this->MaintainVariable('HeadlightMode', $this->Translate('Headlight mode'), VARIABLETYPE_INTEGER, 'Automower.HeadlightMode', $vpos++, true);
         $this->MaintainAction('HeadlightMode', true);
-        $this->MaintainVariable('CuttingHeight', $this->Translate('Cutting height'), VARIABLETYPE_INTEGER, 'Automower.CuttingHeight', $vpos++, true);
-        $this->MaintainAction('CuttingHeight', true);
+        $this->MaintainVariable('CuttingHeight', $this->Translate('Cutting height'), VARIABLETYPE_INTEGER, 'Automower.CuttingHeight', $vpos++, $with_cuttingHeight);
+        if ($with_cuttingHeight) {
+            $this->MaintainAction('CuttingHeight', true);
+        }
 
         $refs = $this->GetReferenceList();
         foreach ($refs as $ref) {
@@ -195,6 +200,11 @@ class AutomowerConnectDevice extends IPSModule
             'type'    => 'CheckBox',
             'name'    => 'save_position',
             'caption' => 'save position'
+        ];
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'with_cuttingHeight',
+            'caption' => 'Cutting height adjustment'
         ];
         $formElements[] = [
             'type'    => 'NumberSpinner',
@@ -461,9 +471,12 @@ class AutomowerConnectDevice extends IPSModule
             }
         }
 
-        $cuttingHeight = $this->GetArrayElem($attributes, 'settings.cuttingHeight', 0);
-        $this->SendDebug(__FUNCTION__, 'cuttingHeight=' . $cuttingHeight, 0);
-        $this->SetValue('CuttingHeight', $cuttingHeight);
+        $with_cuttingHeight = $this->ReadPropertyBoolean('with_cuttingHeight');
+        if ($with_cuttingHeight) {
+            $cuttingHeight = $this->GetArrayElem($attributes, 'settings.cuttingHeight', 0);
+            $this->SendDebug(__FUNCTION__, 'cuttingHeight=' . $cuttingHeight, 0);
+            $this->SetValue('CuttingHeight', $cuttingHeight);
+        }
 
         $headlight_mode = $this->GetArrayElem($attributes, 'settings.headlight.mode', 0);
         $headlightMode = $this->decode_headlightMode($headlight_mode);

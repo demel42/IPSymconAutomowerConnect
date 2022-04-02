@@ -25,7 +25,7 @@
 
  - IP-Symcon ab Version 6.0<br>
  - Husqvarna Automower mit Connect-Modul
- - aktives IP-Symcon Connect
+ - aktives IP-Symcon Connect oder eigenen Anwendungs-Schlüssel
 
 ## 3. Installation
 
@@ -37,7 +37,15 @@ Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/d
 ### b. Einrichtung in IPS
 
 In IP-Symcon nun unterhalb von _I/O Instanzen_ die Funktion _Instanz hinzufügen_ auswählen und als Hersteller _Husqvarna_ angeben und _Automower I/O_ auswählen.
-Im Modul, _Anmelden bei Husqvarna_ auswählen und auf der Husqvarna Login-Seite Benutzernamen und Passwort eingeben.
+
+Num muss man im IØO-Modul den Verbindungstyp auswählen
+
+#### über IP-Symcon Connect
+_Anmelden bei Husqvarna_ auswählen und auf der Husqvarna Login-Seite Benutzernamen und Passwort eingeben.
+
+#### mit Husqvarna Anwendungs-Schlüssel
+Dazu muss man sich bei Husqvarna [hier](https://developer.husqvarnagroup.cloud/apps) anmelden, dazu die Anmeldedaten in der Husqvarna-App verwenden…
+Dann _My Applications_ anwählen, _Create Applicatじon_ auswählen. Als _Connected APIs_ sowohl _Authentication API_ also auch _Automower Connect API_ hinzufügen. Den _API-Key_ dann mit den ANmeldedaten in der I/O-Instanz eintragen.
 
 Nun in IP-Symcon in _Konfigurator Instanzen_ den Konfigurator _AutomowerConnect Konfigurator_ hinzufügen; dann kann man über den Konfigurator eine Instanz anlegen.
 
@@ -189,6 +197,10 @@ Quellen:
   - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
 
 ## 7. Versions-Historie
+
+- 2.3 @ 02.04.2022 17:03
+  - alternativ zur Anmeldung via Symcon-Connect via Anwendungsschlüssel
+  - EInstellung der Schnitthöhe ist nun optional
 
 - 2.2 @ 01.04.2022 11:27
   - RestrictedReason ergänzt
