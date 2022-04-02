@@ -24,7 +24,7 @@ class AutomowerConnectIO extends IPSModule
 
         $this->RegisterPropertyBoolean('module_disable', false);
 
-        $this->RegisterPropertyInteger('connection_type', self::$CONNECTION_UNDEFINED);
+        $this->RegisterPropertyInteger('connection_type', self::$CONNECTION_OAUTH);
 
         // OAuth
         $this->RegisterAttributeString('ApiRefreshToken', '');
@@ -37,7 +37,7 @@ class AutomowerConnectIO extends IPSModule
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
 
         $this->SetBuffer('ApiAccessToken', '');
-        $this->SetBuffer('ConnectionType', self::$CONNECTION_UNDEFINED);
+        $this->SetBuffer('ConnectionType', '');
     }
 
     private function CheckConfiguration()
@@ -103,7 +103,9 @@ class AutomowerConnectIO extends IPSModule
 
         $connection_type = $this->ReadPropertyInteger('connection_type');
         if ($this->GetBuffer('ConnectionType') != $connection_type) {
-            $this->ClearToken();
+            if ($this->GetBuffer('ConnectionType') == '') {
+                $this->ClearToken();
+            }
             $this->SetBuffer('ConnectionType', $connection_type);
         }
 

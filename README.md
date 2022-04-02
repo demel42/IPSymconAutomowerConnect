@@ -38,7 +38,7 @@ Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/d
 
 In IP-Symcon nun unterhalb von _I/O Instanzen_ die Funktion _Instanz hinzufügen_ auswählen und als Hersteller _Husqvarna_ angeben und _Automower I/O_ auswählen.
 
-Num muss man im IØO-Modul den Verbindungstyp auswählen
+Num muss man im I/O-Modul den Verbindungstyp auswählen
 
 #### über IP-Symcon Connect
 _Anmelden bei Husqvarna_ auswählen und auf der Husqvarna Login-Seite Benutzernamen und Passwort eingeben.
