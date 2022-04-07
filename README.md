@@ -200,9 +200,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.3 @ 02.04.2022 17:03
+- 2.3 @ 07.04.2022 17:50
   - alternativ zur Anmeldung via Symcon-Connect via Anwendungsschlüssel
-  - EInstellung der Schnitthöhe ist nun optional
+  - Einstellung der Schnitthöhe ist nun optional
 
 - 2.2 @ 01.04.2022 11:27
   - RestrictedReason ergänzt

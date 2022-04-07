@@ -12,7 +12,7 @@
 			"Password must be specified": "Passwort muss angegeben sein",
 			"API-Key must be specified": "API-Key muss angegeben sein",
 
-			"Connection Type": "Verbindungstyp",
+			"Connection type": "Verbindungstyp",
 			"Please select a connection type": "Bitte einen Verbindungstyp auswählen",
 			"via IP-Symcon Connect": "über IP-Symcon Connect",
 			"with Husqvarna Application Key": "mit Husqvarna-Anwendungs-Schlüssel",
