@@ -3,7 +3,7 @@
 	"name": "AutomowerConnectIO",
 	"type": 1,
 	"vendor": "Husqvarna",
-	"aliases": ["Automower I/O"],
+	"aliases": ["AutomowerConnect I/O"],
 	"parentRequirements": [],
 	"childRequirements": ["{277691A0-EF84-1883-2094-45C56419748A}"],
 	"implemented": ["{4C746488-C0FD-A850-3532-8DEBC042C970}"],
