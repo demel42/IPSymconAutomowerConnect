@@ -3,9 +3,7 @@
 	"name": "AutomowerConnectDevice",
 	"type": 3,
 	"vendor": "Husqvarna",
-	"aliases": [
-		"Automower"
-	],
+	"aliases": ["Automower Gerät"],
 	"parentRequirements": ["{4C746488-C0FD-A850-3532-8DEBC042C970}"],
 	"childRequirements": [],
 	"implemented": ["{277691A0-EF84-1883-2094-45C56419748A}"],

@@ -200,6 +200,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.3.1 @ 08.04.2022 17:00
+  - Konfigurator zeigt nun auch Instanzen an, die nicht mehr zu den vorhadenen Geräten passen
+
 - 2.3 @ 07.04.2022 17:50
   - alternativ zur Anmeldung via Symcon-Connect via Anwendungsschlüssel
   - Einstellung der Schnitthöhe ist nun optional

@@ -101,9 +101,10 @@ class AutomowerConnectConfig extends IPSModule
         $mowers = $data != '' ? json_decode($data, true) : '';
         $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
 
-        if ($mowers != '') {
-            $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}';
-            $instIDs = IPS_GetInstanceListByModuleID($guid);
+        $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}';
+        $instIDs = IPS_GetInstanceListByModuleID($guid);
+
+        if (is_array($mowers) && count($mowers)) {
             foreach ($mowers['data'] as $mower) {
                 $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
                 $id = $this->GetArrayElem($mower, 'id', '');
@@ -137,29 +138,55 @@ class AutomowerConnectConfig extends IPSModule
                     }
                 }
 
-                $create = [
-                    'moduleID'      => $guid,
-                    'location'      => $this->SetLocation(),
-                    'configuration' => [
-                        'model'       => $model,
-                        'serial'      => (string) $serial,
-                        'id'          => (string) $id
-                    ]
-                ];
-                $create['info'] = 'Automower  ' . $model;
-
                 $entry = [
                     'instanceID'    => $instanceID,
                     'name'          => $name,
                     'model'         => $model,
                     'serial'        => $serial,
                     'id'            => $id,
-                    'create'        => $create
+                    'create'        => [
+                        'moduleID'      => $guid,
+                        'location'      => $this->SetLocation(),
+                        'info'          => 'Automower  ' . $model,
+                        'configuration' => [
+                            'model'       => $model,
+                            'serial'      => (string) $serial,
+                            'id'          => (string) $id,
+                        ],
+                    ],
                 ];
 
                 $config_list[] = $entry;
                 $this->SendDebug(__FUNCTION__, 'entry=' . print_r($entry, true), 0);
             }
+        }
+        foreach ($instIDs as $instID) {
+            $fnd = false;
+            foreach ($config_list as $entry) {
+                if ($entry['instanceID'] == $instID) {
+                    $fnd = true;
+                    break;
+                }
+            }
+            if ($fnd) {
+                continue;
+            }
+
+            $name = IPS_GetName($instID);
+            $model = IPS_GetProperty($instID, 'model');
+            $serial = IPS_GetProperty($instID, 'serial');
+            $id = IPS_GetProperty($instID, 'id');
+
+            $entry = [
+                'instanceID'   => $instID,
+                'name'         => $name,
+                'model'        => $model,
+                'serial'       => $serial,
+                'id'           => $id,
+            ];
+
+            $config_list[] = $entry;
+            $this->SendDebug(__FUNCTION__, 'missing entry=' . print_r($entry, true), 0);
         }
 
         return $config_list;
