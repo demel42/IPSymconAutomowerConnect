@@ -192,6 +192,7 @@ class AutomowerConnectDevice extends IPSModule
             'name'    => 'with_gps',
             'caption' => 'with GPS-Data'
         ];
+
         $formElements[] = [
             'type'    => 'Label',
             'caption' => 'save position to (logged) variable \'Position\''
@@ -201,15 +202,18 @@ class AutomowerConnectDevice extends IPSModule
             'name'    => 'save_position',
             'caption' => 'save position'
         ];
+
         $formElements[] = [
             'type'    => 'CheckBox',
             'name'    => 'with_cuttingHeight',
             'caption' => 'Cutting height adjustment'
         ];
+
         $formElements[] = [
             'type'    => 'NumberSpinner',
             'name'    => 'update_interval',
             'suffix'  => 'Minutes',
+			'minimum' => 5,
             'caption' => 'Update interval',
         ];
 

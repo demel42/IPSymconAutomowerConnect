@@ -10,10 +10,6 @@ class AutomowerConnectIO extends IPSModule
     use StubsCommonLib;
     use AutomowerConnectLocalLib;
 
-    public static $CONNECTION_UNDEFINED = 0;
-    public static $CONNECTION_OAUTH = 1;
-    public static $CONNECTION_DEVELOPER = 2;
-
     private $oauthIdentifer = 'husqvarna';
     private $oauthAppKey = '66679300-6f0d-43ed-b5b1-08e83fec88de';
     private $semaphore = 'husqvarna';

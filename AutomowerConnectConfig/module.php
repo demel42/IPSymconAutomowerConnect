@@ -196,17 +196,17 @@ class AutomowerConnectConfig extends IPSModule
     {
         $formElements = [];
 
+        $formElements[] = [
+            'type'    => 'Label',
+            'caption' => 'Husqvarna Automower Configurator'
+        ];
+
         if ($this->HasActiveParent() == false) {
             $formElements[] = [
                 'type'    => 'Label',
                 'caption' => 'Instance has no active parent instance',
             ];
         }
-
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Husqvarna Automower Configurator'
-        ];
 
         $formElements[] = [
             'type'    => 'SelectCategory',
@@ -262,14 +262,14 @@ class AutomowerConnectConfig extends IPSModule
         return $formActions;
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction($ident, $value)
     {
-        if ($this->CommonRequestAction($Ident, $Value)) {
+        if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
-        switch ($Ident) {
+        switch ($ident) {
             default:
-                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
         }
     }

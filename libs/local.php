@@ -48,6 +48,11 @@ trait AutomowerConnectLocalLib
     public static $HEADLIGHT_EVENING_ONLY = 2;
     public static $HEADLIGHT_EVENING_AND_NIGHT = 3;
 
+    // Authentifizierungs-Methode
+    public static $CONNECTION_UNDEFINED = 0;
+    public static $CONNECTION_OAUTH = 1;
+    public static $CONNECTION_DEVELOPER = 2;
+
     private function GetFormStatus()
     {
         $formStatus = [];
@@ -85,6 +90,11 @@ trait AutomowerConnectLocalLib
             case self::$IS_INVALIDDATA:
             case self::$IS_INVALIDACCOUNT:
                 $class = self::$STATUS_RETRYABLE;
+                break;
+            case self::$IS_NOLOGIN:
+                @$connection_type = $this->ReadPropertyInteger('connection_type');
+                // bei Entwicklerschlüssel macht das Modul das Login selber
+                $class = $connection_type == self::$CONNECTION_DEVELOPER ? self::$STATUS_RETRYABLE : self::$STATUS_INVALID;
                 break;
             default:
                 $class = self::$STATUS_INVALID;

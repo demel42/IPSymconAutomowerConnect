@@ -200,8 +200,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.3.1 @ 08.04.2022 17:00
+- 2.3.1 @ 09.04.2022 17:23
   - Konfigurator zeigt nun auch Instanzen an, die nicht mehr zu den vorhandenen Geräten passen
+  - minimales Abrufintervall sind 5 Minuten
+  - Korrekturen
 
 - 2.3 @ 07.04.2022 17:50
   - alternativ zur Anmeldung via Symcon-Connect via Anwendungsschlüssel
