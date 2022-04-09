@@ -160,7 +160,7 @@ Es ist damit z.B. egal, ob der Mähvorgang vom Timer ausgelöst wurde oder manue
 Das kann man dann leicht in einem Diagramm darstellen bzw. als Basis für Berechnungen verwenden.
 
 in _Position_ wird die akuelle Positon gespeichert; es werden Longitude und Latitude als json-encodeded String abgelegt. Wenn die Variable protokolliert wird, können damit längerfristig die Weg des Mähers dargestellt werden.
-Beispiel-Script siehe `docs/docs/Position2GoogelMaps.php`.
+Beispiel-Script siehe [docs/Position2GoogelMaps.php](docs/Position2GoogelMaps.php).
 
 ### Variablenprofile
 
