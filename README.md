@@ -204,7 +204,7 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.3.2 @ 11.04.2022 09:15
+- 2.3.2 @ 11.04.2022 10:38
   - Anpassung des Aktualisierungsintervalls (siehe AutomowerConnect_SetUpdateInterval())
 
 - 2.3.1 @ 09.04.2022 17:23
