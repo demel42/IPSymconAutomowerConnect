@@ -204,8 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.3.2 @ 11.04.2022 10:38
+- 2.3.2 @ 11.04.2022 11:28
   - Anpassung des Aktualisierungsintervalls (siehe AutomowerConnect_SetUpdateInterval())
+  - Ausgabe der Instanz-Timer unter "Referenzen"
 
 - 2.3.1 @ 09.04.2022 17:23
   - Konfigurator zeigt nun auch Instanzen an, die nicht mehr zu den vorhandenen Geräten passen

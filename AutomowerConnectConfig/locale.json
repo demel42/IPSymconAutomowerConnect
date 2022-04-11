@@ -43,6 +43,11 @@
 			"Area": "Bereich",
 			"Name": "Bezeichnung",
 			"Open object": "Objekt öffnen",
+			"Timer": "Timer",
+			"Interval": "Intervall",
+			"Next run": "nächste Ausführung",
+			"Last run": "letzte Ausführung",
+			"Timer information": "Timer-Information",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
