@@ -64,6 +64,10 @@ Liefert interne Datenstrukturen. Beispiel-Script siehe `docs/GetRawData2GoogelMa
 | :------------ | :----------- |
 | LastLocations | mit dem Status werden die letzten 50 GPS-Positionen geliefert |
 
+`AutomowerConnect_SetUpdateInterval(integer $InstanceID, int $Minutes)`<br>
+ändert das Aktualisierumgsintervall; eine Angabe von **null** setzt auf den in der Konfiguration vorgegebene Wert zurück.
+Es gibt hierzu auch zwei Aktionen (Setzen und Zurücksetzen).
+
 Der Zugriff auf die Steuerung erfolgt per [RequestAction](https://www.symcon.de/service/dokumentation/befehlsreferenz/variablenzugriff/requestaction/),
 dabei sind die Variablen mit den folgenden Idents besonders wichtig
 
@@ -169,7 +173,7 @@ Es werden folgende Variableprofile angelegt:
 Automower.Connection
 
 * Integer<br>
-Automower.Error: enthält die (unvollständige) Umsetzung der Fehlercodes vom Automower.<br>
+Automower.Error (enthält die Umsetzung der Fehlercodes vom Automower)<br>
 Automower.ActionPark,
 Automower.ActionPause,
 Automower.ActionStart,
@@ -199,6 +203,9 @@ Quellen:
   - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
 
 ## 7. Versions-Historie
+
+- 2.3.2 @ 11.04.2022 09:15
+  - Anpassung des Aktualisierungsintervalls (siehe AutomowerConnect_SetUpdateInterval())
 
 - 2.3.1 @ 09.04.2022 17:23
   - Konfigurator zeigt nun auch Instanzen an, die nicht mehr zu den vorhandenen Geräten passen

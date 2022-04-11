@@ -119,6 +119,10 @@ class AutomowerConnectDevice extends IPSModule
             }
         }
 
+        $model = $this->ReadPropertyString('model');
+        $serial = $this->ReadPropertyString('serial');
+        $this->SetSummary($model . '(#' . $serial . ')');
+
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
             $this->SetTimerInterval('UpdateStatus', 0);
@@ -132,12 +136,9 @@ class AutomowerConnectDevice extends IPSModule
             return;
         }
 
-        $this->SetUpdateInterval();
         $this->SetStatus(IS_ACTIVE);
 
-        $model = $this->ReadPropertyString('model');
-        $serial = $this->ReadPropertyString('serial');
-        $this->SetSummary($model . '(#' . $serial . ')');
+        $this->SetUpdateInterval();
     }
 
     protected function GetFormElements()
@@ -213,7 +214,7 @@ class AutomowerConnectDevice extends IPSModule
             'type'    => 'NumberSpinner',
             'name'    => 'update_interval',
             'suffix'  => 'Minutes',
-			'minimum' => 5,
+            'minimum' => 5,
             'caption' => 'Update interval',
         ];
 
@@ -269,11 +270,23 @@ class AutomowerConnectDevice extends IPSModule
         }
     }
 
-    protected function SetUpdateInterval()
+    public function SetUpdateInterval(int $min = null)
     {
-        $min = $this->ReadPropertyInteger('update_interval');
+        if (!($min > 0)) {
+            $min = $this->ReadPropertyInteger('update_interval');
+        }
+        $this->SendDebug(__FUNCTION__, 'minutes=' . $min, 0);
         $msec = $min > 0 ? $min * 1000 * 60 : 0;
         $this->SetTimerInterval('UpdateStatus', $msec);
+
+        $timerList = IPS_GetTimerList();
+        foreach ($timerList as $t) {
+            $timer = IPS_GetTimer($t);
+            if ($timer['InstanceID'] != $this->InstanceID) {
+                continue;
+            }
+            $this->SendDebug(__FUNCTION__, 'timer=' . print_r($timer, true), 0);
+        }
     }
 
     public function UpdateStatus()
@@ -547,8 +560,6 @@ class AutomowerConnectDevice extends IPSModule
         }
 
         $this->SetValue('LastStatus', time());
-
-        $this->SetUpdateInterval();
     }
 
     public function RequestAction($ident, $value)
