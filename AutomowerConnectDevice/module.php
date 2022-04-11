@@ -125,13 +125,13 @@ class AutomowerConnectDevice extends IPSModule
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
-            $this->SetTimerInterval('UpdateStatus', 0);
+            $this->MaintainTimer('UpdateStatus', 0);
             $this->SetStatus(IS_INACTIVE);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
-            $this->SetTimerInterval('UpdateStatus', 0);
+            $this->MaintainTimer('UpdateStatus', 0);
             $this->SetStatus(self::$IS_INVALIDCONFIG);
             return;
         }
@@ -275,18 +275,8 @@ class AutomowerConnectDevice extends IPSModule
         if (is_null($min)) {
             $min = $this->ReadPropertyInteger('update_interval');
         }
-        $this->SendDebug(__FUNCTION__, 'minutes=' . $min, 0);
         $msec = $min > 0 ? $min * 1000 * 60 : 0;
-        $this->SetTimerInterval('UpdateStatus', $msec);
-
-        $timerList = IPS_GetTimerList();
-        foreach ($timerList as $t) {
-            $timer = IPS_GetTimer($t);
-            if ($timer['InstanceID'] != $this->InstanceID) {
-                continue;
-            }
-            $this->SendDebug(__FUNCTION__, 'timer=' . print_r($timer, true), 0);
-        }
+        $this->MaintainTimer('UpdateStatus', $msec);
     }
 
     public function UpdateStatus()
@@ -541,25 +531,12 @@ class AutomowerConnectDevice extends IPSModule
                         }
                     }
                 }
-
-                /*
-                $this->SetValue('LastLongitude', $positions[0]['longitude']);
-                $this->SetValue('LastLatitude', $positions[0]['latitude']);
-
-                if ($save_position && ($wasWorking || $isWorking)) {
-                    $latitude = (float) $this->format_float($positions[0]['latitude'], 6);
-                    $longitude = (float) $this->format_float($positions[0]['longitude'], 6);
-                    $pos = json_encode(['latitude'  => $latitude, 'longitude' => $longitude]);
-                    if ($this->GetValue('Position') != $pos) {
-                        $this->SetValue('Position', $pos);
-                        $this->SendDebug(__FUNCTION__, 'changed Position=' . $pos, 0);
-                    }
-                }
-                 */
             }
         }
 
         $this->SetValue('LastStatus', time());
+
+        $this->SendDebug(__FUNCTION__, $this->PrintTimer('UpdateStatus'), 0);
     }
 
     public function RequestAction($ident, $value)
@@ -875,7 +852,7 @@ class AutomowerConnectDevice extends IPSModule
         if ($status != 'ok') {
             return false;
         }
-        $this->SetTimerInterval('UpdateStatus', 15 * 1000);
+        $this->MaintainTimer('UpdateStatus', 15 * 1000);
         return true;
     }
 
