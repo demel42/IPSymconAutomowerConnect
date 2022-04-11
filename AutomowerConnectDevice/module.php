@@ -272,7 +272,7 @@ class AutomowerConnectDevice extends IPSModule
 
     public function SetUpdateInterval(int $min = null)
     {
-        if (!($min > 0)) {
+        if (is_null($min)) {
             $min = $this->ReadPropertyInteger('update_interval');
         }
         $this->SendDebug(__FUNCTION__, 'minutes=' . $min, 0);
