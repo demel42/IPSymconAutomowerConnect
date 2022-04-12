@@ -536,7 +536,7 @@ class AutomowerConnectDevice extends IPSModule
 
         $this->SetValue('LastStatus', time());
 
-        $this->SendDebug(__FUNCTION__, $this->PrintTimer('UpdateStatus'), 0);
+        $this->SetUpdateInterval();
     }
 
     public function RequestAction($ident, $value)

@@ -204,6 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.3.3 @ 12.04.2022 13:18
+  - Korrektur zu 2.3: nach einer manuellen Auslösung blieb das Intervall auf 15s
+
 - 2.3.2 @ 11.04.2022 11:28
   - Anpassung des Aktualisierungsintervalls (siehe AutomowerConnect_SetUpdateInterval())
   - Ausgabe der Instanz-Timer unter "Referenzen"
