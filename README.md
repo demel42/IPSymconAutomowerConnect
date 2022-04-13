@@ -204,6 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.3.4 @ 13.04.2022 10:53
+ - Beispiel-Script docs/Position2GoogelMaps.php ergänzt um 'restrict_points' und 'skip_points' (setzt akt. GoogleMaps voraus)
+
 - 2.3.3 @ 12.04.2022 13:18
   - Korrektur zu 2.3: nach einer manuellen Auslösung blieb das Intervall auf 15s
 

@@ -106,6 +106,10 @@ trait AutomowerConnectLocalLib
 
     public function InstallVarProfiles(bool $reInstall = false)
     {
+        if ($reInstall) {
+            $this->SendDebug(__FUNCTION__, 'reInstall=' . $this->bool2str($reInstall), 0);
+        }
+
         $associations = [];
         $associations[] = ['Wert' => self::$ACTION_RESUME_SCHEDULE, 'Name' => $this->Translate('next schedule'), 'Farbe' => -1];
         $associations[] = ['Wert' =>   3, 'Name' => $this->Translate('3 hours'), 'Farbe' => -1];
