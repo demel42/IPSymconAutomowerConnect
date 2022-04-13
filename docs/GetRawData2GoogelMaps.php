@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 $cdata = AutomowerConnect_GetRawData(24687 /*[Rasenmäher\Automower]*/, 'LastLocations');
 $jdata = json_decode($cdata, true);
+if ($jdata == false) {
+	return;
+}
 
 $points = [];
 foreach ($jdata as $jpoint) {

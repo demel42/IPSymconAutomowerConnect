@@ -204,6 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.3.5 @ 13.04.2022 14:28
+  - Namenskonflikt (trait CommonStubs)
+
 - 2.3.4 @ 13.04.2022 10:53
  - Beispiel-Script docs/Position2GoogelMaps.php ergänzt um 'restrict_points' und 'skip_points' (setzt akt. GoogleMaps voraus)
 
