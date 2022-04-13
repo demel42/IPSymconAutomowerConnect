@@ -27,7 +27,7 @@ class AutomowerConnectDevice extends IPSModule
         $this->RegisterPropertyBoolean('with_gps', true);
         $this->RegisterPropertyBoolean('save_position', false);
 
-        $this->RegisterPropertyInteger('update_interval', '5');
+        $this->RegisterPropertyInteger('update_interval', 5);
 
         $this->RegisterTimer('UpdateStatus', 0, 'AutomowerConnect_UpdateStatus(' . $this->InstanceID . ');');
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
@@ -37,6 +37,7 @@ class AutomowerConnectDevice extends IPSModule
         $this->InstallVarProfiles(false);
 
         $this->SetBuffer('LastLocations', '');
+        $this->SetBuffer('ManualUpdateInterval', '');
     }
 
     private function CheckConfiguration()
@@ -138,7 +139,7 @@ class AutomowerConnectDevice extends IPSModule
 
         $this->SetStatus(IS_ACTIVE);
 
-        $this->SetUpdateInterval();
+        $this->SetUpdateTimer();
     }
 
     protected function GetFormElements()
@@ -270,13 +271,26 @@ class AutomowerConnectDevice extends IPSModule
         }
     }
 
-    public function SetUpdateInterval(int $min = null)
+    private function SetUpdateTimer(int $min = null)
     {
         if (is_null($min)) {
-            $min = $this->ReadPropertyInteger('update_interval');
+            $min = $this->GetBuffer('ManualUpdateInterval');
+            if ($min == '') {
+                $min = $this->ReadPropertyInteger('update_interval');
+            }
         }
         $msec = $min > 0 ? $min * 1000 * 60 : 0;
         $this->MaintainTimer('UpdateStatus', $msec);
+    }
+
+    public function SetUpdateInterval(int $min = null)
+    {
+        if (is_null($min)) {
+            $this->SetBuffer('ManualUpdateInterval', '');
+        } else {
+            $this->SetBuffer('ManualUpdateInterval', $min);
+        }
+        $this->SetUpdateTimer($min);
     }
 
     public function UpdateStatus()
@@ -536,7 +550,7 @@ class AutomowerConnectDevice extends IPSModule
 
         $this->SetValue('LastStatus', time());
 
-        $this->SetUpdateInterval();
+        $this->SetUpdateTimer();
     }
 
     public function RequestAction($ident, $value)

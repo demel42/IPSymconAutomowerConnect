@@ -1,18 +1,27 @@
 {
-    "id": "{8CC1DDB4-6286-1F43-7C0E-34887C96C1C1}",
-    "caption": "Reset update interval to default",
-    "form": [],
-    "action": "AutomowerConnect_SetUpdateInterval($_IPS['TARGET'], null);",
-    "restrictions": {
-        "objectType": [ 1 ],
-        "moduleID": [ "{B64D5F1C-6F12-474B-8DBC-3B263E67954E}" ],
-        "includeEnvironments": [ "TestCommands", "Default" ]
-    },
-    "priority": 10,
-    "category": "target",
-    "locale": {
-        "de": {
-            "Reset update interval to default": "Aktualisierungs-Intervall auf Standardwert zurücksetzen"
-        }
-    }
+	"id": "{8CC1DDB4-6286-1F43-7C0E-34887C96C1C1}",
+	"caption": "Reset interval",
+	"form": [],
+	"action": "AutomowerConnect_SetUpdateInterval($_IPS['TARGET'], null);",
+	"restrictions": {
+		"objectType": [
+			1
+		],
+		"moduleID": [
+			"{B64D5F1C-6F12-474B-8DBC-3B263E67954E}"
+		],
+		"includeEnvironments": [
+			"TestCommands",
+			"Default"
+		]
+	},
+	"priority": 10,
+	"category": "target",
+	"description": "Reset update interval to configuration value",
+	"locale": {
+		"de": {
+			"Reset interval": "Intervall zurücksetzen",
+			"Reset update interval to configuration value": "Aktualisierungs-Intervall auf Konfiguration zurücksetzen"
+		}
+	}
 }

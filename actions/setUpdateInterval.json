@@ -1,29 +1,38 @@
 {
-    "id": "{08A22A65-AF4E-D191-E1BD-7221C88E9243}",
-    "caption": "Set update interval",
-    "form": [
-        {
-            "type": "NumberSpinner",
-            "digits": 0,
-            "minimum": 0,
-            "suffix": "Minutes",
-            "name": "INTERVAL",
-            "caption": "Interval"
-        }
-    ],
-    "action": "AutomowerConnect_SetUpdateInterval($_IPS['TARGET'], $_IPS['INTERVAL']);",
-    "restrictions": {
-        "objectType": [ 1 ],
-        "moduleID": [ "{B64D5F1C-6F12-474B-8DBC-3B263E67954E}" ],
-        "includeEnvironments": [ "TestCommands", "Default" ]
-    },
-    "priority": 10,
-    "category": "target",
-    "locale": {
-        "de": {
-            "Set update interval": "Aktualisierungs-Intervall setzen",
-            "Interval": "Intervall",
-            "Minutes": "Minuten"
-        }
-    }
+	"id": "{08A22A65-AF4E-D191-E1BD-7221C88E9243}",
+	"caption": "Set interval",
+	"form": [
+		{
+			"type": "NumberSpinner",
+			"digits": 0,
+			"minimum": 0,
+			"suffix": "Minutes",
+			"name": "INTERVAL",
+			"caption": "Interval"
+		}
+	],
+	"action": "AutomowerConnect_SetUpdateInterval($_IPS['TARGET'], $_IPS['INTERVAL']);",
+	"restrictions": {
+		"objectType": [
+			1
+		],
+		"moduleID": [
+			"{B64D5F1C-6F12-474B-8DBC-3B263E67954E}"
+		],
+		"includeEnvironments": [
+			"TestCommands",
+			"Default"
+		]
+	},
+	"priority": 10,
+	"category": "target",
+	"description": "Set update interval",
+	"locale": {
+		"de": {
+			"Set interval": "Intervall setzen",
+			"Set update interval": "Aktualisierungs-Intervall setzen",
+			"Interval": "Intervall",
+			"Minutes": "Minuten"
+		}
+	}
 }

@@ -204,6 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.3.6 @ 13.04.2022 17:17 
+  - Anpassung des Aktualisierungsintervalls: Korrektur von 2.3.3
+
 - 2.3.5 @ 13.04.2022 14:28
   - Namenskonflikt (trait CommonStubs)
 
