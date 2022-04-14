@@ -512,8 +512,6 @@ class AutomowerConnectDevice extends IPSModule
         $save_position = $this->ReadPropertyBoolean('save_position');
         if ($with_gps && isset($attributes['positions'])) {
             $positions = (array) $this->GetArrayElem($attributes, 'positions', []);
-            $this->SendDebug(__FUNCTION__, 'positions #=' . count($positions), 0);
-
             $this->SetBuffer('LastLocations', json_encode($positions));
 
             if (count($positions)) {
@@ -529,7 +527,7 @@ class AutomowerConnectDevice extends IPSModule
                         break;
                     }
                 }
-                $this->SendDebug(__FUNCTION__, 'changed positions=' . $i, 0);
+                $this->SendDebug(__FUNCTION__, 'changed positions=' . $i . ' (total=' . count($positions) . ')', 0);
                 for ($i--; $i >= 0; $i--) {
                     $latitude = $positions[$i]['latitude'];
                     $longitude = $positions[$i]['longitude'];
@@ -541,8 +539,8 @@ class AutomowerConnectDevice extends IPSModule
 
                     if ($save_position) {
                         $pos = [
-                            'latitude'  => (float) $this->format_float($latitude, 6),
-                            'longitude' => (float) $this->format_float($longitude, 6),
+                            'latitude'  => $latitude,
+                            'longitude' => $longitude,
                         ];
                         $this->SetValue('Position', json_encode($pos));
                     }
