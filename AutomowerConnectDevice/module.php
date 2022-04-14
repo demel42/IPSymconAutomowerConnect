@@ -541,6 +541,7 @@ class AutomowerConnectDevice extends IPSModule
                         $pos = [
                             'latitude'  => $latitude,
                             'longitude' => $longitude,
+                            'activity'  => $mowerActivity,
                         ];
                         $this->SetValue('Position', json_encode($pos));
                     }

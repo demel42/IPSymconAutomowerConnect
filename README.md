@@ -142,7 +142,7 @@ folgende Variable werden angelegt, zum Teil optional
 | LastLongitude | integer        | letzter Längengrad |
 | LastLatitude  | integer        | letzter Breitengrad |
 | LastStatus    | UNIX-Timestamp | letzte Status-Abfrage |
-| Position      | string         | letzte Position (Longitude, Latitude) |
+| Position      | string         | letzte Position (longitude, latitude, activity) |
 
 In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten gruppiert und als Integer abgelegt:
 
@@ -163,7 +163,7 @@ In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten g
 Es ist damit z.B. egal, ob der Mähvorgang vom Timer ausgelöst wurde oder manuell.
 Das kann man dann leicht in einem Diagramm darstellen bzw. als Basis für Berechnungen verwenden.
 
-in _Position_ wird die akuelle Positon gespeichert; es werden Longitude und Latitude als json-encodeded String abgelegt. Wenn die Variable protokolliert wird, können damit längerfristig die Weg des Mähers dargestellt werden.
+in _Position_ wird die akuelle Positon gespeichert; es werden Longitude und Latitude sowie der Wert die aktielle Aktivität als json-encodeded String abgelegt. Wenn die Variable protokolliert wird, können damit längerfristig die Weg des Mähers dargestellt werden.
 Beispiel-Script siehe [docs/Position2GoogelMaps.php](docs/Position2GoogelMaps.php).
 
 ### Variablenprofile
@@ -203,6 +203,9 @@ Quellen:
   - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
 
 ## 7. Versions-Historie
+
+- 2.3.8 @ 14.04.2022 19:06
+  - Variable "Position" um die Aktivität ergänzt
 
 - 2.3.7 @ 14.04.2022 15:32
   - die Positionen wurden bei LEAVING nicht in die Variable "Positions" protokolliert
