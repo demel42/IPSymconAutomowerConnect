@@ -29,15 +29,18 @@ class AutomowerConnectDevice extends IPSModule
 
         $this->RegisterPropertyInteger('update_interval', 5);
 
-        $this->RegisterTimer('UpdateStatus', 0, 'AutomowerConnect_UpdateStatus(' . $this->InstanceID . ');');
-        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
-
-        $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
+        $this->RegisterAttributeString('ManualUpdateInterval', '');
+        $this->RegisterAttributeInteger('WorkingStart', 0);
+        $this->RegisterAttributeInteger('DailyWorking', 0);
 
         $this->InstallVarProfiles(false);
 
         $this->SetBuffer('LastLocations', '');
-        $this->SetBuffer('ManualUpdateInterval', '');
+
+        $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
+
+        $this->RegisterTimer('UpdateStatus', 0, 'AutomowerConnect_UpdateStatus(' . $this->InstanceID . ');');
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
     private function CheckConfiguration()
@@ -274,7 +277,7 @@ class AutomowerConnectDevice extends IPSModule
     private function SetUpdateTimer(int $min = null)
     {
         if (is_null($min)) {
-            $min = $this->GetBuffer('ManualUpdateInterval');
+            $min = $this->ReadAttributeString('ManualUpdateInterval');
             if ($min == '') {
                 $min = $this->ReadPropertyInteger('update_interval');
             }
@@ -286,9 +289,9 @@ class AutomowerConnectDevice extends IPSModule
     public function SetUpdateInterval(int $min = null)
     {
         if (is_null($min)) {
-            $this->SetBuffer('ManualUpdateInterval', '');
+            $this->WriteAttributeString('ManualUpdateInterval', '');
         } else {
-            $this->SetBuffer('ManualUpdateInterval', $min);
+            $this->WriteAttributeString('ManualUpdateInterval', $min);
         }
         $this->SetUpdateTimer($min);
     }
@@ -349,16 +352,6 @@ class AutomowerConnectDevice extends IPSModule
         $this->SetValue('MowerStatus', $mowerStatus);
 
         $oldActivity = $this->GetValue('MowerActivity');
-        switch ($oldActivity) {
-            case self::$ACTIVITY_GOING_HOME:
-            case self::$ACTIVITY_CUTTING:
-                $wasWorking = true;
-                break;
-            default:
-                $wasWorking = false;
-                break;
-        }
-        $this->SendDebug(__FUNCTION__, 'wasWorking=' . $wasWorking, 0);
 
         $mower_activity = $this->GetArrayElem($attributes, 'mower.activity', '');
         $mowerActivity = $this->decode_mowerActivity($mower_activity);
@@ -419,7 +412,7 @@ class AutomowerConnectDevice extends IPSModule
         if ($lastErrorCode) {
             $s = $this->CheckVarProfile4Value('Automower.Error', $lastErrorCode);
             if ($s == false) {
-                $msg = __FUNCTION__ . ': unknown error-code=' . $lastErrorCode . ' @' . date('d-m-Y H:i:s', $lastErrorCodeTimestamp);
+                $msg = __FUNCTION__ . ': unknown error-code=' . $lastErrorCode . ' @' . date('d.m.Y H:i:s', $lastErrorCodeTimestamp);
                 $this->LogMessage($msg, KL_WARNING);
             } else {
                 $err = '(' . $s . ')';
@@ -460,6 +453,7 @@ class AutomowerConnectDevice extends IPSModule
             $this->SetValue('DailyReference', $ts_today);
             $this->SetValue('DailyWorking', 0);
         }
+
         switch ($mowerActivity) {
             case self::$ACTIVITY_GOING_HOME:
             case self::$ACTIVITY_CUTTING:
@@ -469,25 +463,35 @@ class AutomowerConnectDevice extends IPSModule
                 $isWorking = false;
                 break;
         }
-        $tstamp = $this->GetBuffer('Working');
-        $this->SendDebug(__FUNCTION__, 'isWorking=' . $isWorking . ', tstamp[GET]=' . $tstamp, 0);
+        switch ($oldActivity) {
+            case self::$ACTIVITY_LEAVING:
+            case self::$ACTIVITY_GOING_HOME:
+            case self::$ACTIVITY_CUTTING:
+                $wasWorking = true;
+                break;
+            default:
+                $wasWorking = false;
+                break;
+        }
+        $tstamp = $this->ReadAttributeInteger('WorkingStart');
+        $this->SendDebug(__FUNCTION__, 'isWorking=' . $isWorking . ', wasWorking=' . $wasWorking . ', tstamp[GET]=' . $tstamp, 0);
 
-        if ($tstamp != '') {
-            $daily_working = $this->GetBuffer('DailyWorking');
+        if ($tstamp > 0) {
+            $daily_working = $this->ReadAttributeInteger('DailyWorking');
             $duration = $daily_working + ((time() - $tstamp) / 60);
             $this->SetValue('DailyWorking', $duration);
             $this->SendDebug(__FUNCTION__, 'daily_working[GET]=' . $daily_working . ', duration=' . $duration, 0);
             if (!$isWorking) {
-                $this->SetBuffer('Working', '');
-                $this->SetBuffer('DailyWorking', 0);
+                $this->WriteAttributeInteger('WorkingStart', 0);
+                $this->WriteAttributeInteger('DailyWorking', 0);
                 $this->SendDebug(__FUNCTION__, 'tstamp[CLR], daily_working[CLR]', 0);
             }
         } else {
             if ($isWorking) {
                 $tstamp = time();
-                $this->SetBuffer('Working', $tstamp);
+                $this->WriteAttributeInteger('WorkingStart', $tstamp);
                 $daily_working = $this->GetValue('DailyWorking');
-                $this->SetBuffer('DailyWorking', $daily_working);
+                $this->WriteAttributeInteger('DailyWorking', $daily_working);
                 $this->SendDebug(__FUNCTION__, 'tstamp[SET]=' . $tstamp . ', daily_working[SET]=' . $daily_working, 0);
             }
         }
@@ -518,31 +522,29 @@ class AutomowerConnectDevice extends IPSModule
                 $pos = $this->GetValue('Position');
                 $this->SendDebug(__FUNCTION__, 'last latitude=' . $lat . ', longitude=' . $lon . ', pos=' . $pos, 0);
 
-                $new_positions = [];
-                for ($i = 0, $isNew = true; $i < count($positions) && $isNew; $i++) {
+                for ($i = 0; $i < count($positions); $i++) {
                     $latitude = $positions[$i]['latitude'];
                     $longitude = $positions[$i]['longitude'];
-                    $isNew = $latitude != $lat || $longitude != $lon;
-                    if ($isNew) {
-                        $new_positions[] = $positions[$i];
+                    if ($latitude == $lat && $longitude == $lon) {
+                        break;
                     }
-                    $this->SendDebug(__FUNCTION__, '#' . $i . ' latitude=' . $latitude . ', longitude=' . $longitude . ', isNew=' . $this->bool2str($isNew), 0);
                 }
-                for ($i = count($new_positions) - 1; $i >= 0; $i--) {
-                    $latitude = $new_positions[$i]['latitude'];
-                    $longitude = $new_positions[$i]['longitude'];
+                $this->SendDebug(__FUNCTION__, 'changed positions=' . $i, 0);
+                for ($i--; $i >= 0; $i--) {
+                    $latitude = $positions[$i]['latitude'];
+                    $longitude = $positions[$i]['longitude'];
+
+                    $this->SendDebug(__FUNCTION__, 'set #' . $i . ' latitude=' . $latitude . ', longitude=' . $longitude, 0);
 
                     $this->SetValue('LastLatitude', $latitude);
                     $this->SetValue('LastLongitude', $longitude);
 
-                    if ($save_position && ($wasWorking || $isWorking)) {
-                        $lat = (float) $this->format_float($latitude, 6);
-                        $lon = (float) $this->format_float($longitude, 6);
-                        $pos = json_encode(['latitude'  => $lat, 'longitude' => $lon]);
-                        if ($this->GetValue('Position') != $pos) {
-                            $this->SetValue('Position', $pos);
-                            $this->SendDebug(__FUNCTION__, 'changed Position=' . $pos, 0);
-                        }
+                    if ($save_position) {
+                        $pos = [
+                            'latitude'  => (float) $this->format_float($latitude, 6),
+                            'longitude' => (float) $this->format_float($longitude, 6),
+                        ];
+                        $this->SetValue('Position', json_encode($pos));
                     }
                 }
             }
@@ -713,17 +715,6 @@ class AutomowerConnectDevice extends IPSModule
         }
         return $code;
     }
-
-    /*
-
-    - Start + Duration (3h 6h 12h 1d 2d 3d4d 5d 6d 7d)
-    - ResumeSchedule
-    - Pause
-    - Park + Duration (3h 6h 12h 1d 2d 3d4d 5d 6d 7d)
-    - ParkUntilNextSchedule
-    - ParkUntilFurtherNotice
-
-     */
 
     private function ParkMower(int $value)
     {

@@ -204,6 +204,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.3.7 @ 14.04.2022 15:32
+  - die Positionen wurden bei LEAVING nicht in die Variable "Positions" protokolliert
+  - Nutzung von Attributes statt Buffer (damit reboot-fest)
+
 - 2.3.6 @ 13.04.2022 17:17 
   - Anpassung des Aktualisierungsintervalls: Korrektur von 2.3.3
 
