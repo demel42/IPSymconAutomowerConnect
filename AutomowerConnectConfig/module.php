@@ -79,16 +79,16 @@ class AutomowerConnectConfig extends IPSModule
 
     private function getConfiguratorValues()
     {
-        $config_list = [];
+        $entries = [];
 
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
-            return $config_list;
+            return $entries;
         }
 
         if ($this->HasActiveParent() == false) {
             $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
-            return $config_list;
+            return $entries;
         }
 
         // an AutomowerConnectIO
@@ -156,13 +156,13 @@ class AutomowerConnectConfig extends IPSModule
                     ],
                 ];
 
-                $config_list[] = $entry;
+                $entries[] = $entry;
                 $this->SendDebug(__FUNCTION__, 'entry=' . print_r($entry, true), 0);
             }
         }
         foreach ($instIDs as $instID) {
             $fnd = false;
-            foreach ($config_list as $entry) {
+            foreach ($entries as $entry) {
                 if ($entry['instanceID'] == $instID) {
                     $fnd = true;
                     break;
@@ -178,18 +178,18 @@ class AutomowerConnectConfig extends IPSModule
             $id = IPS_GetProperty($instID, 'id');
 
             $entry = [
-                'instanceID'   => $instID,
-                'name'         => $name,
-                'model'        => $model,
-                'serial'       => $serial,
-                'id'           => $id,
+                'instanceID' => $instID,
+                'name'       => $name,
+                'model'      => $model,
+                'serial'     => $serial,
+                'id'         => $id,
             ];
 
-            $config_list[] = $entry;
+            $entries[] = $entry;
             $this->SendDebug(__FUNCTION__, 'missing entry=' . print_r($entry, true), 0);
         }
 
-        return $config_list;
+        return $entries;
     }
 
     private function GetFormElements()
@@ -205,6 +205,17 @@ class AutomowerConnectConfig extends IPSModule
             $formElements[] = [
                 'type'    => 'Label',
                 'caption' => 'Instance has no active parent instance',
+            ];
+        }
+
+        @$s = $this->CheckConfiguration();
+        if ($s != '') {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => $s,
+            ];
+            $formElements[] = [
+                'type'    => 'Label',
             ];
         }
 

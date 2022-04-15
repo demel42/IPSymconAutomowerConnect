@@ -204,7 +204,7 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.3.8 @ 14.04.2022 19:06
+- 2.3.8 @ 15.04.2022 18:11
   - Variable "Position" um die Aktivität ergänzt
 
 - 2.3.7 @ 14.04.2022 15:32
