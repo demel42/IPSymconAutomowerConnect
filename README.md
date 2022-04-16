@@ -204,6 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.3.9 @ 16.04.2022 11:17
+  - Aktualisierung von submodule CommonStubs
+
 - 2.3.8 @ 15.04.2022 18:11
   - Variable "Position" um die Aktivität ergänzt
 

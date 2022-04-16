@@ -155,25 +155,19 @@ class AutomowerConnectIO extends IPSModule
             ];
         }
 
+        $connection_type = $this->ReadPropertyInteger('connection_type');
+        if ($connection_type == self::$CONNECTION_OAUTH) {
+            $formElements[] = [
+                'type'    => 'Label',
+                'caption' => $this->GetConnectStatusText(),
+            ];
+        }
+
         $formElements[] = [
             'type'    => 'CheckBox',
             'name'    => 'module_disable',
             'caption' => 'Disable instance'
         ];
-
-        $connection_type = $this->ReadPropertyInteger('connection_type');
-        if ($connection_type == self::$CONNECTION_OAUTH) {
-            $instID = IPS_GetInstanceListByModuleID('{9486D575-BE8C-4ED8-B5B5-20930E26DE6F}')[0];
-            if (IPS_GetInstance($instID)['InstanceStatus'] != IS_ACTIVE) {
-                $msg = 'Error: Symcon Connect is not active!';
-            } else {
-                $msg = 'Status: Symcon Connect is OK!';
-            }
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => $msg
-            ];
-        }
 
         $formElements[] = [
             'type'    => 'Select',

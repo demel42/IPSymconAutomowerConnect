@@ -104,7 +104,7 @@ class AutomowerConnectConfig extends IPSModule
         $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}';
         $instIDs = IPS_GetInstanceListByModuleID($guid);
 
-        if (is_array($mowers) && count($mowers)) {
+        if (is_array($mowers)) {
             foreach ($mowers['data'] as $mower) {
                 $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
                 $id = $this->GetArrayElem($mower, 'id', '');
@@ -222,7 +222,7 @@ class AutomowerConnectConfig extends IPSModule
         $formElements[] = [
             'type'    => 'SelectCategory',
             'name'    => 'ImportCategoryID',
-            'caption' => 'category'
+            'caption' => 'category for mower to be created'
         ];
 
         $entries = $this->getConfiguratorValues();
