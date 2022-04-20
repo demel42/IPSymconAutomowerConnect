@@ -204,6 +204,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.4 @ 20.04.2022 09:45
+  - Implememtierung einer Update-Logik
+  - diverse interne Änderungen
+
 - 2.3.9 @ 16.04.2022 11:17
   - Aktualisierung von submodule CommonStubs
 

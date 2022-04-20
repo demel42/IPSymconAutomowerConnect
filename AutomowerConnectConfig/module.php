@@ -16,27 +16,24 @@ class AutomowerConnectConfig extends IPSModule
 
         $this->RegisterPropertyInteger('ImportCategoryID', 0);
 
+        $this->RegisterAttributeString('UpdateInfo', '');
+
         $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
-    }
-
-    private function CheckConfiguration()
-    {
-        $s = '';
-        $r = [];
-
-        if ($r != []) {
-            $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
-            foreach ($r as $p) {
-                $s .= '- ' . $p . PHP_EOL;
-            }
-        }
-
-        return $s;
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
+
+        if ($this->CheckPrerequisites() != false) {
+            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            return;
+        }
+
+        if ($this->CheckUpdate() != false) {
+            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            return;
+        }
 
         $refs = $this->GetReferenceList();
         foreach ($refs as $ref) {
@@ -194,29 +191,10 @@ class AutomowerConnectConfig extends IPSModule
 
     private function GetFormElements()
     {
-        $formElements = [];
+        $formElements = $this->GetCommonFormElements('Husqvarna AutomowerConnect Configurator');
 
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Husqvarna Automower Configurator'
-        ];
-
-        if ($this->HasActiveParent() == false) {
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => 'Instance has no active parent instance',
-            ];
-        }
-
-        @$s = $this->CheckConfiguration();
-        if ($s != '') {
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => $s,
-            ];
-            $formElements[] = [
-                'type'    => 'Label',
-            ];
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            return $formElements;
         }
 
         $formElements[] = [
@@ -227,10 +205,9 @@ class AutomowerConnectConfig extends IPSModule
 
         $entries = $this->getConfiguratorValues();
         $formElements[] = [
-            'type'    => 'Configurator',
-            'name'    => 'Mower',
-            'caption' => 'Mower',
-
+            'type'     => 'Configurator',
+            'name'     => 'Mower',
+            'caption'  => 'Mower',
             'rowCount' => count($entries),
 
             'add'     => false,
@@ -267,8 +244,17 @@ class AutomowerConnectConfig extends IPSModule
     {
         $formActions = [];
 
-        $formActions[] = $this->GetInformationForm();
-        $formActions[] = $this->GetReferencesForm();
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            $formActions[] = $this->GetCompleteUpdateFormAction();
+
+            $formActions[] = $this->GetInformationFormAction();
+            $formActions[] = $this->GetReferencesFormAction();
+
+            return $formActions;
+        }
+
+        $formActions[] = $this->GetInformationFormAction();
+        $formActions[] = $this->GetReferencesFormAction();
 
         return $formActions;
     }

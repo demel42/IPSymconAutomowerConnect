@@ -30,15 +30,16 @@ class AutomowerConnectIO extends IPSModule
         $this->RegisterPropertyString('password', '');
         $this->RegisterPropertyString('api_key', '');
 
+        $this->RegisterAttributeString('UpdateInfo', '');
+
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
 
         $this->SetBuffer('ApiAccessToken', '');
         $this->SetBuffer('ConnectionType', '');
     }
 
-    private function CheckConfiguration()
+    private function CheckModuleConfiguration()
     {
-        $s = '';
         $r = [];
 
         $connection_type = $this->ReadPropertyInteger('connection_type');
@@ -60,19 +61,22 @@ class AutomowerConnectIO extends IPSModule
             }
         }
 
-        if ($r != []) {
-            $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
-            foreach ($r as $p) {
-                $s .= '- ' . $p . PHP_EOL;
-            }
-        }
-
-        return $s;
+        return $r;
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
+
+        if ($this->CheckPrerequisites() != false) {
+            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            return;
+        }
+
+        if ($this->CheckUpdate() != false) {
+            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            return;
+        }
 
         $refs = $this->GetReferenceList();
         foreach ($refs as $ref) {
@@ -86,14 +90,14 @@ class AutomowerConnectIO extends IPSModule
             }
         }
 
-        $module_disable = $this->ReadPropertyBoolean('module_disable');
-        if ($module_disable) {
-            $this->SetStatus(IS_INACTIVE);
+        if ($this->CheckConfiguration() != false) {
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
             return;
         }
 
-        if ($this->CheckConfiguration() != false) {
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
+        $module_disable = $this->ReadPropertyBoolean('module_disable');
+        if ($module_disable) {
+            $this->SetStatus(self::$IS_DEACTIVATED);
             return;
         }
 
@@ -137,22 +141,10 @@ class AutomowerConnectIO extends IPSModule
 
     protected function GetFormElements()
     {
-        $formElements = [];
+        $formElements = $this->GetCommonFormElements('Husqvarna AutomowerConnect I/O');
 
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Husqvarna Automower Connect',
-        ];
-
-        @$s = $this->CheckConfiguration();
-        if ($s != '') {
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => $s
-            ];
-            $formElements[] = [
-                'type'    => 'Label',
-            ];
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            return $formElements;
         }
 
         $connection_type = $this->ReadPropertyInteger('connection_type');
@@ -246,6 +238,15 @@ class AutomowerConnectIO extends IPSModule
     {
         $formActions = [];
 
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            $formActions[] = $this->GetCompleteUpdateFormAction();
+
+            $formActions[] = $this->GetInformationFormAction();
+            $formActions[] = $this->GetReferencesFormAction();
+
+            return $formActions;
+        }
+
         $connection_type = $this->ReadPropertyInteger('connection_type');
         if ($connection_type == self::$CONNECTION_OAUTH) {
             $formActions[] = [
@@ -280,8 +281,8 @@ class AutomowerConnectIO extends IPSModule
             ]
         ];
 
-        $formActions[] = $this->GetInformationForm();
-        $formActions[] = $this->GetReferencesForm();
+        $formActions[] = $this->GetInformationFormAction();
+        $formActions[] = $this->GetReferencesFormAction();
 
         return $formActions;
     }
