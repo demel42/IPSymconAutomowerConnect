@@ -41,7 +41,7 @@ class AutomowerConnectDevice extends IPSModule
 
         $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
 
-        $this->RegisterTimer('UpdateStatus', 0, 'AutomowerConnect_UpdateStatus(' . $this->InstanceID . ');');
+        $this->RegisterTimer('UpdateStatus', 0, $this->GetModulePrefix() . '_UpdateStatus(' . $this->InstanceID . ');');
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
@@ -273,7 +273,7 @@ class AutomowerConnectDevice extends IPSModule
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Update status',
-            'onClick' => 'AutomowerConnect_UpdateStatus($id);'
+            'onClick' => $this->GetModulePrefix() . '_UpdateStatus($id);'
         ];
 
         $formActions[] = [
@@ -295,7 +295,7 @@ class AutomowerConnectDevice extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
-                    'onClick' => 'AutomowerConnect_InstallVarProfiles($id, true);'
+                    'onClick' => $this->GetModulePrefix() . '_InstallVarProfiles($id, true);'
                 ],
             ]
         ];

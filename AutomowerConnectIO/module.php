@@ -259,7 +259,7 @@ class AutomowerConnectIO extends IPSModule
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Test access',
-            'onClick' => 'AutomowerConnect_TestAccount($id);'
+            'onClick' => $this->GetModulePrefix() . '_TestAccount($id);'
         ];
 
         $formActions[] = [
@@ -270,12 +270,12 @@ class AutomowerConnectIO extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
-                    'onClick' => 'AutomowerConnect_InstallVarProfiles($id, true);'
+                    'onClick' => $this->GetModulePrefix() . '_InstallVarProfiles($id, true);'
                 ],
                 [
                     'type'    => 'Button',
                     'caption' => 'Clear Token',
-                    'onClick' => 'AutomowerConnect_ClearToken($id);'
+                    'onClick' => $this->GetModulePrefix() . '_ClearToken($id);'
                 ],
 
             ]
