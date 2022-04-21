@@ -49,13 +49,14 @@ class AutomowerConnectDevice extends IPSModule
     {
         $r = [];
 
-        @$varID = $this->GetIDForIdent('MowerAction');
-        if (@$varID != false) {
-            $r[] = $this->Translate('Delete variable \'MowerAction\'');
-        }
-
-        if (IPS_VariableProfileExists('Automower.Action')) {
-            $r[] = $this->Translate('Delete variable-profile \'Automower.Action\'');
+        if ($this->version2num($oldInfo) < $this->version2num('2.4')) {
+            @$varID = $this->GetIDForIdent('MowerAction');
+            if (@$varID != false) {
+                $r[] = $this->Translate('Delete variable \'MowerAction\'');
+            }
+            if (IPS_VariableProfileExists('Automower.Action')) {
+                $r[] = $this->Translate('Delete variable-profile \'Automower.Action\'');
+            }
         }
 
         return $r;
@@ -63,14 +64,17 @@ class AutomowerConnectDevice extends IPSModule
 
     private function CompleteModuleUpdate(array $oldInfo, array $newInfo)
     {
-        @$varID = $this->GetIDForIdent('MowerAction');
-        if (@$varID != false) {
-            $this->UnregisterVariable('MowerAction');
-        }
-
-        if (IPS_VariableProfileExists('Automower.Action')) {
-            IPS_DeleteVariableProfile('Automower.Action');
-            IPS_DeleteVariableProfile('Automower.Error');
+        if ($this->version2num($oldInfo) < $this->version2num('2.4')) {
+            @$varID = $this->GetIDForIdent('MowerAction');
+            if (@$varID != false) {
+                $this->UnregisterVariable('MowerAction');
+            }
+            if (IPS_VariableProfileExists('Automower.Action')) {
+                IPS_DeleteVariableProfile('Automower.Action');
+            }
+            if (IPS_VariableProfileExists('Automower.Error')) {
+                IPS_DeleteVariableProfile('Automower.Error');
+            }
             $this->InstallVarProfiles(false);
         }
 
@@ -697,7 +701,7 @@ class AutomowerConnectDevice extends IPSModule
             'SENSOR'               => 'sensor',
             'DAILY_LIMIT'          => 'daily limit',
             'UNTIL_FURTHER_NOTICE' => 'until further notice',
-            'FROTS'                => 'frost',
+            'FROST'                => 'frost',
             'FOTA'                 => 'firmware update',
         ];
 

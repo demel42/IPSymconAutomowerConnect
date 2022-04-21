@@ -204,7 +204,8 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.4 @ 20.04.2022 09:45
+- 2.4 @ 21.04.2022 08:41
+  - Schreibfehler ("FROTS" -> "FROST")
   - Implememtierung einer Update-Logik
   - diverse interne Änderungen
 
