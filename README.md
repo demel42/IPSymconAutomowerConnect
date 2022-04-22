@@ -197,12 +197,15 @@ GUIDs
   - AutomowerConnectDevice: `{B64D5F1C-6F12-474B-8DBC-3B263E67954E}`
 - Nachrichten
   - `{4C746488-C0FD-A850-3532-8DEBC042C970}`: an AutomowerConnectIO
-  - `{277691A0-EF84-1883-2094-45C56419748A}`: an AutomowerConnectDevice
+  - `{277691A0-EF84-1883-2094-45C56419748A}`: an AutomowerConnectConfig, AutomowerConnectDevice
 
 Quellen:
   - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
 
 ## 7. Versions-Historie
+
+- 2.4.1 @ 22.04.2022 18:00
+  - Tippfehler
 
 - 2.4 @ 21.04.2022 08:41
   - Schreibfehler ("FROTS" -> "FROST")

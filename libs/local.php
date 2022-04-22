@@ -39,12 +39,11 @@ trait AutomowerConnectLocalLib
             case IS_ACTIVE:
                 $class = self::$STATUS_VALID;
                 break;
-            case self::$IS_INVALIDDATA:
             case self::$IS_UNAUTHORIZED:
-            case self::$IS_FORBIDDEN:
             case self::$IS_SERVERERROR:
             case self::$IS_HTTPERROR:
             case self::$IS_INVALIDDATA:
+            case self::$IS_FORBIDDEN:
             case self::$IS_INVALIDACCOUNT:
                 $class = self::$STATUS_RETRYABLE;
                 break;
