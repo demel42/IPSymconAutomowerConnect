@@ -204,8 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.4.1 @ 22.04.2022 18:00
+- 2.4.1 @ 23.04.2022 09:35
   - Tippfehler
+  - Bug in IO-Instanz (falsche GUID)
 
 - 2.4 @ 21.04.2022 08:41
   - Schreibfehler ("FROTS" -> "FROST")

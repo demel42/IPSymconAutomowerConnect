@@ -563,10 +563,10 @@ class AutomowerConnectIO extends IPSModule
         return $refresh_token;
     }
 
-    protected function SendData($data, $source)
+    protected function SendData($data)
     {
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
-        $this->SendDataToChildren(json_encode(['DataID' => '{5F947426-53FB-4DD9-A725-F95590CBD97C}', 'Source' => $source, 'Buffer' => $data]));
+        $this->SendDataToChildren(json_encode(['DataID' => '{277691A0-EF84-1883-2094-45C56419748A}', 'Buffer' => $data]));
     }
 
     public function ForwardData($data)
