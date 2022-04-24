@@ -38,10 +38,9 @@
 			"Update interval": "Aktualisierungs-Intervall",
 			"Minutes": "Minuten",
 
-			"Update status": "Aktualisiere Status",
-
 			"Battery capacity": "Batteriekapazität",
 			"Connection status": "Verbindungs-Status",
+			"Cutting height": "Schnitthöhe",
 			"Day of cumulation": "Datum zu Tageswerten",
 			"Last error": "letzter Fehler",
 			"Last position (latitude)": "letzter Breitengrad",
@@ -59,20 +58,41 @@
 			"Timestamp of last error": "Zeitpunkt des letzten Fehlers",
 			"Working time (day)": "Arbeitszeit (Tag)",
 
+			"__variable__": "MowerStatus",
+			"not applicable": "unzutreffend",
+			"paused": "pausiert",
+			"in operation": "in Betrieb",
+			"wait updating": "wird aktualisiert",
+			"wait power up": "startet",
+			"restricted": "inaktiv",
+			"off": "aus",
+			"error": "Fehler",
+			"fatal error": "fataler Fehler",
+			"error at power up": "Fehler beim Start",
+			"unknown": "unbekannt",
 
-			"__comment__": "Automower.HeadlightMode / HeadlightMode",
-			"Headlight mode": "Scheinwerfer",
-			"Always on": "Immer an",
-			"Always off": "Immer aus",
-			"Evening only": "Nur abends",
-			"Evening and night": "Abends und nachts",
+			"__variable__": "RestrictedReason",
+			"none": "kein",
+			"week schedule": "Wochenplan",
+			"park overwrite": "manuelles Parken",
+			"sensor": "Sensor",
+			"daily limit": "Tageslimit",
+			"not applicable": "unzutreffend",
+			"until further notice": "bis auf weiteres",
+			"frost": "Frost",
+			"firmware update": "Firmware Update",
+			"unknown": "unbekannt",
 
+			"__variable__": "OperationMode",
+			"remain in base": "in Basis bleiben",
+			"automatic": "Automatikbetrieb",
+			"main area": "Hauptbereich",
+			"secondary area": "Nebenbereich",
+			"override timer": "Timer deaktiviert",
+			"spot cutting": "Spiralschnitt",
+			"unknown": "unbekannt",
 
-			"__comment__": "CuttingHeight",
-			"Cutting height": "Schnitthöhe",
-
-
-			"__comment__": "Automower.ActionStart / MowerActionStart",
+			"__variableprofile__": "Automower.ActionStart",
 			"next schedule": "nächster Zeitplan",
 			"3 hours": "3 Stunden",
 			"6 hours": "6 Stunden",
@@ -85,22 +105,14 @@
 			"6 days": "6 Tage",
 			"7 days": "7 Tage",
 
-
-			"__comment__": "Automower.ActionPause / MowerActionPause",
-			"pause": "Pause",
-
-
-			"__comment__": "Automower.ActionPark / MowerActionPark",
+			"__variableprofile__": "Automower.ActionPark",
 			"until further notice": "bis auf weiteres",
 			"until next schedule": "mit Zeitplan starten",
 
+			"__variableprofile__": "Automower.ActionPause",
+			"pause": "Pause",
 
-			"__comment__": "Automower.Connection / Connected",
-			"Connected": "Verbunden",
-			"Disconnected": "Getrennt",
-
-
-			"__comment__": "Automower.Activity / MowerActivity",
+			"__variableprofile__": "Automower.Activity",
 			"unknown": "unbekannt",
 			"manual intervention required": "manueller Eingriff erforderlich",
 			"error": "Fehler",
@@ -113,45 +125,16 @@
 			"cutting": "mäht",
 			"stopped": "gestoppt",
 
+			"__variableprofile__": "Automower.HeadlightMode",
+			"Headlight mode": "Scheinwerfer",
+			"Always on": "Immer an",
+			"Always off": "Immer aus",
+			"Evening only": "Nur abends",
+			"Evening and night": "Abends und nachts",
 
-			"__comment__": "MowerStatus",
-			"unknown": "unbekannt",
-			"not applicable": "unzutreffend",
-			"__comment__": "paused",
-			"in operation": "in Betrieb",
-			"wait updating": "wird aktualisiert",
-			"wait power up": "startet",
-			"restricted": "inaktiv",
-			"off": "aus",
-			"__comment__": "error",
-			"fatal error": "fataler Fehler",
-			"error at power up": "Fehler beim Start",
+			"__variableprofile__": "CuttingHeight",
 
-
-			"__comment__": "RestrictedReason",
-			"none": "kein",
-			"unknown": "unbekannt",
-			"week schedule": "Wochenplan",
-			"park overwrite": "manuelles Parken",
-			"sensor": "Sensor",
-			"daily limit": "Tageslimit",
-			"__comment__": "not applicable",
-			"__comment__": "until further notice",
-			"frost": "Frost",
-			"firmware update": "Firmware Update",
-
-
-			"__comment__": "OperationMode",
-			"remain in base": "in Basis bleiben",
-			"automatic": "Automatikbetrieb",
-			"main area": "Hauptbereich",
-			"secondary area": "Nebenbereich",
-			"override timer": "Timer deaktiviert",
-			"spot cutting": "Spiralschnitt",
-			"__comment__": "unknown",
-
-
-			"__comment__": "Automower.Error",
+			"__variableprofile__": "Automower.Error",
 			"Unexpected error": "Unerwarteter Fehler",
 			"Outside working area": "Außerhalb des Arbeitsbereichs",
 			"No loop signal": "Kein Schleifensignal",
@@ -276,6 +259,12 @@
 			"High internal temerature": "Hohe interne Temperatur",
 			"CAN error": "CAN-Fehler",
 			"Destination not reachable": "Ziel nicht erreichbar",
+
+			"__variableprofile__": "Automower.Connection",
+			"Connected": "Verbunden",
+			"Disconnected": "Getrennt",
+
+			"Update status": "Aktualisiere Status",
 
 			"Expert area": "Experten-Bereich",
 			"Re-install variable-profiles": "Variablenprofile erneut einrichten",

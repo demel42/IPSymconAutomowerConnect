@@ -204,6 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.4.2 @ 24.04.2022 10:26
+  - Übersetzung vervollständigt
+
 - 2.4.1 @ 23.04.2022 09:35
   - Tippfehler
   - Bug in IO-Instanz (falsche GUID)
