@@ -23,7 +23,7 @@
 
 ## 2. Voraussetzungen
 
- - IP-Symcon ab Version 6.0<br>
+ - IP-Symcon ab Version 6.0
  - Husqvarna Automower mit Connect-Modul
  - aktives IP-Symcon Connect oder eigenen Anwendungs-Schlüssel
 
@@ -203,6 +203,9 @@ Quellen:
   - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
 
 ## 7. Versions-Historie
+
+- 2.4.3 @ 26.04.2022 12:27
+  - Korrektur: self::$IS_DEACTIVATED wieder IS_INACTIVE
 
 - 2.4.2 @ 24.04.2022 10:26
   - Übersetzung vervollständigt

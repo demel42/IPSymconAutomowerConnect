@@ -87,7 +87,7 @@ class AutomowerConnectIO extends IPSModule
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
-            $this->SetStatus(self::$IS_DEACTIVATED);
+            $this->SetStatus(IS_INACTIVE);
             return;
         }
 
@@ -750,7 +750,7 @@ class AutomowerConnectIO extends IPSModule
         $access_token = $this->GetApiAccessToken();
         if ($access_token == false) {
             $this->SetStatus(self::$IS_UNAUTHORIZED);
-            echo $this->translate('Invalid registration with Husqvarna') . PHP_EOL;
+            echo $this->Translate('Invalid registration with Husqvarna') . PHP_EOL;
             return;
         }
 
@@ -763,7 +763,7 @@ class AutomowerConnectIO extends IPSModule
             return;
         }
 
-        $msg = $this->translate('valid account-data') . PHP_EOL;
+        $msg = $this->Translate('valid account-data') . PHP_EOL;
         foreach ($mowers['data'] as $mower) {
             $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
             $id = $this->GetArrayElem($mower, 'id', '');
