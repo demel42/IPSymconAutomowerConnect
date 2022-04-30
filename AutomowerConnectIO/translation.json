@@ -1,0 +1,49 @@
+{
+	"translations": {
+		"de": {
+			"Husqvarna AutomowerConnect I/O": "Husqvarna AutomowerConnect I/O",
+
+			"__function__": "CheckConfiguration",
+			"Username must be specified": "Benutzerkennung muss angegeben sein",
+			"Password must be specified": "Passwort muss angegeben sein",
+			"API-Key must be specified": "API-Key muss angegeben sein",
+
+			"__elements__": "",
+			"Disable instance": "Instanz deaktivieren",
+
+			"Connection type": "Verbindungstyp",
+			"Please select a connection type": "Bitte einen Verbindungstyp auswählen",
+			"via IP-Symcon Connect": "über IP-Symcon Connect",
+			"with Husqvarna Application Key": "mit Husqvarna-Anwendungs-Schlüssel",
+
+			"Husqvarna Account-Details": "Husqvarna Konto-Details",
+			"API-Key": "API-Key",
+			"User-ID (email)": "Benutzerkennung (Mail-Adresse)",
+			"Password": "Passwort",
+
+			"Husqvarna Login": "Husqvarna Anmeldung",
+			"Push \"Login at Husqvarna\" in the action part of this configuration form.":
+				"\"Anmelden bei Husqvarna\" in dem Aktionsbereich dieses Konfigurationsformulares drücken.",
+			"At the webpage from Husqvarna log in with your Husqvarna username and password.":
+				"Auf der Webseite von Husqvarna mit dem Husqvarna Benutzernamen und Passwort anmelden.",
+			"If the connection to IP-Symcon was successfull you get the message: \"Husqvarna successfully connected!\". Close the browser window.":
+				"Wenn die Verbindung zu IP-Symcon erfolgreich war erscheint die Meldung: \"Husqvarna successfully connected!\". Das Browserfenster kann nun geschlossen werden.",
+			"Return to this configuration form.":
+				"Danach zu diesem Konfigurationsformular zurückkehren und fortfahren.",
+
+			"__actions__": "",
+			"Login at Husqvarna": "Anmelden bei Husqvarna",
+			"Test access": "Zugriff testen",
+			"Clear Token": "Token löschen",
+
+			"__function__": "TestAccount",
+			"Invalid registration with Husqvarna": "Ungültige Registrierung bei Husqvarna",
+			"Invalid account-data": "ungültige Zugangsdaten",
+			"Valid account-data": "gültige Zugangsdaten",
+			"Mower": "Rasenmäher",
+			"Model": "Modell",
+
+			"__end__": ""
+		}
+	}
+}

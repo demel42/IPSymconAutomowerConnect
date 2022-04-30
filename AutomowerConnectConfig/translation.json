@@ -1,0 +1,18 @@
+{
+	"translations": {
+		"de": {
+			"Husqvarna AutomowerConnect Configurator": "Husqvarna AutomowerConnect Konfigurator",
+
+			"__elements__": "",
+			"category for mowers to be created": "Kategorie für zu erstellende Mäher",
+
+			"Mower": "Rasenmäher",
+			"Name": "Bezeichnung",
+			"Model": "Modell",
+			"Serial": "Seriennummer",
+			"Device-ID": "Geräte-ID",
+
+			"__end__": ""
+		}
+	}
+}

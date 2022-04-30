@@ -10,6 +10,15 @@ class AutomowerConnectDevice extends IPSModule
     use AutomowerConnect\StubsCommonLib;
     use AutomowerConnectLocalLib;
 
+    private $ModuleDir;
+
+    public function __construct(string $InstanceID)
+    {
+        parent::__construct($InstanceID);
+
+        $this->ModuleDir = __DIR__;
+    }
+
     public function Create()
     {
         parent::Create();
@@ -198,22 +207,23 @@ class AutomowerConnectDevice extends IPSModule
             'caption' => 'Basic configuration (don\'t change)',
             'items'   => [
                 [
-                    'type'    => 'ValidationTextBox',
                     'name'    => 'serial',
+                    'type'    => 'ValidationTextBox',
+                    'enabled' => false,
                     'caption' => 'Serial',
-                    'enabled' => false
                 ],
                 [
-                    'type'    => 'ValidationTextBox',
                     'name'    => 'model',
+                    'type'    => 'ValidationTextBox',
+                    'enabled' => false,
                     'caption' => 'Model',
-                    'enabled' => false
                 ],
                 [
-                    'type'    => 'ValidationTextBox',
                     'name'    => 'id',
+                    'type'    => 'ValidationTextBox',
+					'width'   => '400px',
+                    'enabled' => false,
                     'caption' => 'ID',
-                    'enabled' => false
                 ],
             ],
         ];

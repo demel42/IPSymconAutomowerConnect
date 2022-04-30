@@ -10,6 +10,15 @@ class AutomowerConnectConfig extends IPSModule
     use AutomowerConnect\StubsCommonLib;
     use AutomowerConnectLocalLib;
 
+    private $ModuleDir;
+
+    public function __construct(string $InstanceID)
+    {
+        parent::__construct($InstanceID);
+
+        $this->ModuleDir = __DIR__;
+    }
+
     public function Create()
     {
         parent::Create();
@@ -191,7 +200,7 @@ class AutomowerConnectConfig extends IPSModule
         $formElements[] = [
             'type'    => 'SelectCategory',
             'name'    => 'ImportCategoryID',
-            'caption' => 'category for mower to be created'
+            'caption' => 'category for mowers to be created'
         ];
 
         $entries = $this->getConfiguratorValues();
@@ -222,7 +231,7 @@ class AutomowerConnectConfig extends IPSModule
                 [
                     'caption' => 'Device-ID',
                     'name'    => 'id',
-                    'width'   => '350px'
+                    'width'   => '400px'
                 ],
             ],
             'values' => $entries

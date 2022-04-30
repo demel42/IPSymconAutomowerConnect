@@ -14,6 +14,15 @@ class AutomowerConnectIO extends IPSModule
     private $oauthAppKey = '66679300-6f0d-43ed-b5b1-08e83fec88de';
     private $semaphore = 'husqvarna';
 
+    private $ModuleDir;
+
+    public function __construct(string $InstanceID)
+    {
+        parent::__construct($InstanceID);
+
+        $this->ModuleDir = __DIR__;
+    }
+
     public function Create()
     {
         parent::Create();
@@ -204,6 +213,7 @@ class AutomowerConnectIO extends IPSModule
                         [
                             'name'    => 'api_key',
                             'type'    => 'ValidationTextBox',
+							'width'   => '400px',
                             'caption' => 'API-Key'
                         ],
                         [
@@ -242,7 +252,7 @@ class AutomowerConnectIO extends IPSModule
             $formActions[] = [
                 'type'    => 'Button',
                 'caption' => 'Login at Husqvarna',
-                'onClick' => 'echo AutomowerConnect_Login($id);'
+                'onClick' => 'echo ' . $this->GetModulePrefix() . '_Login($id);'
             ];
         }
 
@@ -759,11 +769,11 @@ class AutomowerConnectIO extends IPSModule
         $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
         if ($mowers == '') {
             $this->SetStatus(self::$IS_UNAUTHORIZED);
-            echo $this->Translate('invalid account-data');
+            echo $this->Translate('Invalid account-data');
             return;
         }
 
-        $msg = $this->Translate('valid account-data') . PHP_EOL;
+        $msg = $this->Translate('Valid account-data') . PHP_EOL;
         foreach ($mowers['data'] as $mower) {
             $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
             $id = $this->GetArrayElem($mower, 'id', '');

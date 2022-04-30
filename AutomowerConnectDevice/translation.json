@@ -1,0 +1,92 @@
+{
+	"translations": {
+		"de": {
+			"Husqvarna AutomowerConnect Mower": "Husqvarna AutomowerConnect Mäher",
+
+			"__function__": "CheckModuleUpdate",
+			"Delete variable 'MowerAction'": "Variable 'MowerAction' löschen",
+			"Delete variable-profile 'Automower.Action'": "Variablenprofil 'Automower.Action' löschen",
+
+			"__function__": "CheckModuleConfiguration",
+			"Field \"Serial\" is empty": "Feld \"Serial\" ist leer",
+			"Field \"Device-ID\" is empty": "Das Feld \"Geräte-ID\" ist leer",
+
+			"__elements__": "",
+			"Disable instance": "Instanz deaktivieren",
+
+			"Basic configuration (don't change)": "Basis-Konfiguration (nicht ändern)",
+			"Serial": "Seriennummer",
+			"Model": "Modell",
+			"Device-ID": "Geräte-ID",
+
+			"with GPS-Data": "mit GPS-Daten",
+			"save position to (logged) variable 'Position'": "Position in der (protokollierten) Variablen 'Position' speichern",
+			"save position": "Position speichern",
+
+			"Cutting height adjustment": "Schnitthöhen-Verstellung",
+
+			"Update interval": "Aktualisierungs-Intervall",
+			"Minutes": "Minuten",
+
+			"__variables__": "",
+			"Battery capacity": "Batteriekapazität",
+			"Connection status": "Verbindungs-Status",
+			"Cutting height": "Schnitthöhe",
+			"Day of cumulation": "Datum zu Tageswerten",
+			"Last error": "letzter Fehler",
+			"Last position (latitude)": "letzter Breitengrad",
+			"Last position (longitude)": "letzter Längengrad",
+			"Last status": "letzter Status",
+			"Mower activity": "aktuelle Aktivität",
+			"Mower status": "Status",
+			"Next start": "nächster Start",
+			"Operation mode": "Betriebsart",
+			"Park action": "Park-Aktion",
+			"Pause action": "Pause-Aktion",
+			"Position": "Position",
+			"Restricted reason": "Grund für Inaktivität",
+			"Start action": "Start-Aktion",
+			"Timestamp of last error": "Zeitpunkt des letzten Fehlers",
+			"Working time (day)": "Arbeitszeit (Tag)",
+
+			"__variable__": "MowerStatus",
+			"not applicable": "unzutreffend",
+			"paused": "pausiert",
+			"in operation": "in Betrieb",
+			"wait updating": "wird aktualisiert",
+			"wait power up": "startet",
+			"restricted": "inaktiv",
+			"off": "aus",
+			"error": "Fehler",
+			"fatal error": "fataler Fehler",
+			"error at power up": "Fehler beim Start",
+			"unknown": "unbekannt",
+
+			"__variable__": "RestrictedReason",
+			"none": "kein",
+			"week schedule": "Wochenplan",
+			"park overwrite": "manuelles Parken",
+			"sensor": "Sensor",
+			"daily limit": "Tageslimit",
+			"not applicable": "unzutreffend",
+			"until further notice": "bis auf weiteres",
+			"frost": "Frost",
+			"firmware update": "Firmware Update",
+			"unknown": "unbekannt",
+
+			"__variable__": "OperationMode",
+			"remain in base": "in Basis bleiben",
+			"automatic": "Automatikbetrieb",
+			"main area": "Hauptbereich",
+			"secondary area": "Nebenbereich",
+			"override timer": "Timer deaktiviert",
+			"spot cutting": "Spiralschnitt",
+			"unknown": "unbekannt",
+
+			"__actions__": "",
+			"Update status": "Aktualisiere Status",
+
+			"__end__": ""
+		}
+	}
+}

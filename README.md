@@ -204,6 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.4.4 @ 30.04.2022 18:40
+  - Überlagerung von Translate und Aufteilung von locale.json in 3 translation.json (Modul, libs und CommonStubs)
+
 - 2.4.3 @ 26.04.2022 12:27
   - Korrektur: self::$IS_DEACTIVATED wieder IS_INACTIVE
 
