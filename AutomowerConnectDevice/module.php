@@ -221,7 +221,7 @@ class AutomowerConnectDevice extends IPSModule
                 [
                     'name'    => 'id',
                     'type'    => 'ValidationTextBox',
-					'width'   => '400px',
+                    'width'   => '400px',
                     'enabled' => false,
                     'caption' => 'ID',
                 ],

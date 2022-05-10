@@ -213,7 +213,7 @@ class AutomowerConnectIO extends IPSModule
                         [
                             'name'    => 'api_key',
                             'type'    => 'ValidationTextBox',
-							'width'   => '400px',
+                            'width'   => '400px',
                             'caption' => 'API-Key'
                         ],
                         [
