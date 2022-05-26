@@ -50,7 +50,8 @@ class AutomowerConnectDevice extends IPSModule
 
         $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
 
-        $this->RegisterTimer('UpdateStatus', 0, $this->GetModulePrefix() . '_UpdateStatus(' . $this->InstanceID . ');');
+        $this->RegisterTimer('UpdateStatus', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "UpdateStatus", "");');
+
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
@@ -188,7 +189,7 @@ class AutomowerConnectDevice extends IPSModule
         }
     }
 
-    protected function GetFormElements()
+    private function GetFormElements()
     {
         $formElements = $this->GetCommonFormElements('Husqvarna AutomowerConnect Mower');
 
@@ -261,7 +262,7 @@ class AutomowerConnectDevice extends IPSModule
         return $formElements;
     }
 
-    protected function GetFormActions()
+    private function GetFormActions()
     {
         $formActions = [];
 
@@ -277,7 +278,7 @@ class AutomowerConnectDevice extends IPSModule
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Update status',
-            'onClick' => $this->GetModulePrefix() . '_UpdateStatus($id);'
+            'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "UpdateStatus", "");',
         ];
 
         $formActions[] = [
@@ -296,11 +297,7 @@ class AutomowerConnectDevice extends IPSModule
             'caption'   => 'Expert area',
             'expanded ' => false,
             'items'     => [
-                [
-                    'type'    => 'Button',
-                    'caption' => 'Re-install variable-profiles',
-                    'onClick' => $this->GetModulePrefix() . '_InstallVarProfiles($id, true);'
-                ],
+                $this->GetInstallVarProfilesFormItem(),
             ]
         ];
 
@@ -341,7 +338,7 @@ class AutomowerConnectDevice extends IPSModule
         $this->SetUpdateTimer($min);
     }
 
-    public function UpdateStatus()
+    private function UpdateStatus()
     {
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
@@ -631,6 +628,9 @@ class AutomowerConnectDevice extends IPSModule
             case 'HeadlightMode':
                 $r = $this->SetHeadlightMode((int) $value);
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
+                break;
+            case 'UpdateStatus':
+                $this->UpdateStatus();
                 break;
             default:
                 $this->SendDebug(__FUNCTION__, "invalid ident $ident", 0);

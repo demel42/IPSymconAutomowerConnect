@@ -94,7 +94,7 @@ trait AutomowerConnectLocalLib
     public static $CONNECTION_OAUTH = 1;
     public static $CONNECTION_DEVELOPER = 2;
 
-    public function InstallVarProfiles(bool $reInstall = false)
+    private function InstallVarProfiles(bool $reInstall = false)
     {
         if ($reInstall) {
             $this->SendDebug(__FUNCTION__, 'reInstall=' . $this->bool2str($reInstall), 0);
