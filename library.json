@@ -4,9 +4,9 @@
 	"name": "Husqvarna AutomowerConnect",
 	"url": "https://github.com/demel42/IPSymconAutomowerConnect",
 	"compatibility": {
-		"version": "6.0"
+		"version": "6.2"
 	},
-	"version": "2.5.1",
+	"version": "2.5.2",
 	"build": 0,
-	"date": 1653730666
+	"date": 1655886820
 }
