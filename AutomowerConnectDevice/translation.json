@@ -6,6 +6,7 @@
 			"__function__": "CheckModuleUpdate",
 			"Delete variable 'MowerAction'": "Variable 'MowerAction' löschen",
 			"Delete variable-profile 'Automower.Action'": "Variablenprofil 'Automower.Action' löschen",
+			"Spelling error in variableprofile 'Automower.Error'": "Rechtschreibfehler im Variablenprofil 'Automower.Error'",
 
 			"__function__": "CheckModuleConfiguration",
 			"Field \"Serial\" is empty": "Feld \"Serial\" ist leer",

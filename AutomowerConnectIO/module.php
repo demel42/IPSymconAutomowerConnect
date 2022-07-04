@@ -80,23 +80,23 @@ class AutomowerConnectIO extends IPSModule
         $this->MaintainReferences();
 
         if ($this->CheckPrerequisites() != false) {
-            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            $this->MaintainStatus(self::$IS_INVALIDPREREQUISITES);
             return;
         }
 
         if ($this->CheckUpdate() != false) {
-            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            $this->MaintainStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            $this->MaintainStatus(self::$IS_INVALIDCONFIG);
             return;
         }
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
-            $this->SetStatus(IS_INACTIVE);
+            $this->MaintainStatus(IS_INACTIVE);
             return;
         }
 
@@ -110,7 +110,7 @@ class AutomowerConnectIO extends IPSModule
 
         if ($connection_type == self::$CONNECTION_OAUTH) {
             if ($this->GetConnectUrl() == false) {
-                $this->SetStatus(self::$IS_NOSYMCONCONNECT);
+                $this->MaintainStatus(self::$IS_NOSYMCONCONNECT);
                 return;
             }
             if (IPS_GetKernelRunlevel() == KR_READY) {
@@ -118,12 +118,12 @@ class AutomowerConnectIO extends IPSModule
             }
             $refresh_token = $this->ReadAttributeString('ApiRefreshToken');
             if ($refresh_token == '') {
-                $this->SetStatus(self::$IS_NOLOGIN);
+                $this->MaintainStatus(self::$IS_NOLOGIN);
                 return;
             }
         }
 
-        $this->SetStatus(IS_ACTIVE);
+        $this->MaintainStatus(IS_ACTIVE);
     }
 
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
@@ -313,14 +313,14 @@ class AutomowerConnectIO extends IPSModule
             $this->SendDebug(__FUNCTION__, 'code missing, _GET=' . print_r($_GET, true), 0);
             $this->WriteAttributeString('ApiRefreshToken', '');
             $this->SetBuffer('ApiAccessToken', '');
-            $this->SetStatus(self::$IS_NOLOGIN);
+            $this->MaintainStatus(self::$IS_NOLOGIN);
             return;
         }
         $refresh_token = $this->GetApiRefreshToken($_GET['code']);
         $this->SendDebug(__FUNCTION__, 'refresh_token=' . $refresh_token, 0);
         $this->WriteAttributeString('ApiRefreshToken', $refresh_token);
         if ($this->GetStatus() == self::$IS_NOLOGIN) {
-            $this->SetStatus(IS_ACTIVE);
+            $this->MaintainStatus(IS_ACTIVE);
         }
     }
 
@@ -391,7 +391,7 @@ class AutomowerConnectIO extends IPSModule
         }
         if ($statuscode) {
             $this->SendDebug(__FUNCTION__, '    statuscode=' . $statuscode . ', err=' . $err, 0);
-            $this->SetStatus($statuscode);
+            $this->MaintainStatus($statuscode);
             return false;
         }
         return $jdata;
@@ -470,7 +470,7 @@ class AutomowerConnectIO extends IPSModule
         }
         if ($statuscode) {
             $this->SendDebug(__FUNCTION__, '    statuscode=' . $statuscode . ', err=' . $err, 0);
-            $this->SetStatus($statuscode);
+            $this->MaintainStatus($statuscode);
             return false;
         }
         return $jdata;
@@ -506,7 +506,7 @@ class AutomowerConnectIO extends IPSModule
                             $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
                             $this->WriteAttributeString('ApiRefreshToken', '');
                             $this->SetBuffer('ApiAccessToken', '');
-                            $this->SetStatus(self::$IS_NOLOGIN);
+                            $this->MaintainStatus(self::$IS_NOLOGIN);
                             IPS_SemaphoreLeave($this->semaphore);
                             return false;
                         }
@@ -615,7 +615,7 @@ class AutomowerConnectIO extends IPSModule
         $this->SendDebug(__FUNCTION__, 'clear access_token=' . $access_token, 0);
         $this->SetBuffer('ApiAccessToken', '');
 
-        $this->SetStatus(self::$IS_NOLOGIN);
+        $this->MaintainStatus(self::$IS_NOLOGIN);
     }
 
     private function GetMowerList()
@@ -671,7 +671,7 @@ class AutomowerConnectIO extends IPSModule
         $cdata = $this->do_HttpRequest($url, $header, $postdata);
         $this->SendDebug(__FUNCTION__, 'cdata=' . print_r($cdata, true), 0);
 
-        $this->SetStatus(IS_ACTIVE);
+        $this->MaintainStatus(IS_ACTIVE);
         return $cdata;
     }
 
@@ -744,7 +744,7 @@ class AutomowerConnectIO extends IPSModule
         if ($statuscode) {
             $this->LogMessage('url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err, KL_WARNING);
             $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err, 0);
-            $this->SetStatus($statuscode);
+            $this->MaintainStatus($statuscode);
         }
 
         return $data;
@@ -761,7 +761,7 @@ class AutomowerConnectIO extends IPSModule
 
         $access_token = $this->GetApiAccessToken();
         if ($access_token == false) {
-            $this->SetStatus(self::$IS_UNAUTHORIZED);
+            $this->MaintainStatus(self::$IS_UNAUTHORIZED);
             $msg = $this->Translate('Invalid registration with Husqvarna') . PHP_EOL;
             $this->PopupMessage($msg);
             return;
@@ -771,7 +771,7 @@ class AutomowerConnectIO extends IPSModule
         $mowers = $cdata != '' ? json_decode($cdata, true) : '';
         $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
         if ($mowers == '') {
-            $this->SetStatus(self::$IS_UNAUTHORIZED);
+            $this->MaintainStatus(self::$IS_UNAUTHORIZED);
             $msg = $this->Translate('Invalid account-data');
             $this->PopupMessage($msg);
             return;

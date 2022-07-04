@@ -204,6 +204,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.6 @ 04.07.2022 17:59
+  - Verbesserung: IPS-Status wird nur noch gesetzt, wenn er sich ändert
+  - Übersetzung vervollständigt
+
 - 2.5.2 @ 22.06.2022 10:33
   - Fix: Angabe der Kompatibilität auf 6.2 korrigiert
 

@@ -69,6 +69,10 @@ class AutomowerConnectDevice extends IPSModule
             }
         }
 
+        if ($this->version2num($oldInfo) < $this->version2num('2.6')) {
+            $r[] = $this->Translate('Spelling error in variableprofile \'Automower.Error\'');
+        }
+
         return $r;
     }
 
@@ -82,6 +86,13 @@ class AutomowerConnectDevice extends IPSModule
             if (IPS_VariableProfileExists('Automower.Action')) {
                 IPS_DeleteVariableProfile('Automower.Action');
             }
+            if (IPS_VariableProfileExists('Automower.Error')) {
+                IPS_DeleteVariableProfile('Automower.Error');
+            }
+            $this->InstallVarProfiles(false);
+        }
+
+        if ($this->version2num($oldInfo) < $this->version2num('2.6')) {
             if (IPS_VariableProfileExists('Automower.Error')) {
                 IPS_DeleteVariableProfile('Automower.Error');
             }
@@ -118,19 +129,19 @@ class AutomowerConnectDevice extends IPSModule
 
         if ($this->CheckPrerequisites() != false) {
             $this->MaintainTimer('UpdateStatus', 0);
-            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            $this->MaintainStatus(self::$IS_INVALIDPREREQUISITES);
             return;
         }
 
         if ($this->CheckUpdate() != false) {
             $this->MaintainTimer('UpdateStatus', 0);
-            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            $this->MaintainStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
             $this->MaintainTimer('UpdateStatus', 0);
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            $this->MaintainStatus(self::$IS_INVALIDCONFIG);
             return;
         }
 
@@ -178,11 +189,11 @@ class AutomowerConnectDevice extends IPSModule
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
             $this->MaintainTimer('UpdateStatus', 0);
-            $this->SetStatus(IS_INACTIVE);
+            $this->MaintainStatus(IS_INACTIVE);
             return;
         }
 
-        $this->SetStatus(IS_ACTIVE);
+        $this->MaintainStatus(IS_ACTIVE);
 
         if (IPS_GetKernelRunlevel() == KR_READY) {
             $this->SetUpdateTimer();
