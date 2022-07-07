@@ -204,7 +204,7 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.6 @ 04.07.2022 15:52
+- 2.6 @ 07.07.2022 11:43
   - Verbesserung: IPS-Status wird nur noch gesetzt, wenn er sich ändert
   - Übersetzung vervollständigt (Variablenprofil "Automower.Error")
   - update submodule CommonStubs

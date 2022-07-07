@@ -607,14 +607,31 @@ class AutomowerConnectDevice extends IPSModule
         $this->SetUpdateTimer();
     }
 
+    private function LocalRequestAction($ident, $value)
+    {
+        $r = true;
+        switch ($ident) {
+            case 'UpdateStatus':
+                $this->UpdateStatus();
+                break;
+            default:
+                $r = false;
+                break;
+        }
+        return $r;
+    }
+
     public function RequestAction($ident, $value)
     {
+        if ($this->LocalRequestAction($ident, $value)) {
+            return;
+        }
         if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
 
         if ($this->GetStatus() == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
             return;
         }
 
@@ -639,9 +656,6 @@ class AutomowerConnectDevice extends IPSModule
             case 'HeadlightMode':
                 $r = $this->SetHeadlightMode((int) $value);
                 $this->SendDebug(__FUNCTION__, $ident . '=' . $value . ' => ret=' . $r, 0);
-                break;
-            case 'UpdateStatus':
-                $this->UpdateStatus();
                 break;
             default:
                 $this->SendDebug(__FUNCTION__, "invalid ident $ident", 0);
