@@ -204,6 +204,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.6.1 @ 26.07.2022 10:22
+  - update submodule CommonStubs
+    Fix: CheckModuleUpdate() nicht mehr aufrufen, wenn das erstmalig installiert wird
+
 - 2.6 @ 07.07.2022 11:43
   - Verbesserung: IPS-Status wird nur noch gesetzt, wenn er sich ändert
   - Übersetzung vervollständigt (Variablenprofil "Automower.Error")
