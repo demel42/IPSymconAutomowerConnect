@@ -204,6 +204,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.7 @ 28.07.2022 09:48
+  - Neu: Login ist nun auch möglich unter Angabe von 'Application secret' anstelle von Benutzer und Passwort
+  - update submodule CommonStubs
+
 - 2.6.1 @ 26.07.2022 10:22
   - update submodule CommonStubs
     Fix: CheckModuleUpdate() nicht mehr aufrufen, wenn das erstmalig installiert wird

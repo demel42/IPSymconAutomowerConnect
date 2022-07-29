@@ -38,6 +38,7 @@ class AutomowerConnectIO extends IPSModule
         $this->RegisterPropertyString('username', '');
         $this->RegisterPropertyString('password', '');
         $this->RegisterPropertyString('api_key', '');
+        $this->RegisterPropertyString('api_secret', '');
 
         $this->RegisterAttributeString('UpdateInfo', '');
 
@@ -53,20 +54,17 @@ class AutomowerConnectIO extends IPSModule
 
         $connection_type = $this->ReadPropertyInteger('connection_type');
         if ($connection_type == self::$CONNECTION_DEVELOPER) {
-            $username = $this->ReadPropertyString('username');
-            if ($username == '') {
-                $this->SendDebug(__FUNCTION__, '"username" is needed', 0);
-                $r[] = $this->Translate('Username must be specified');
-            }
-            $password = $this->ReadPropertyString('password');
-            if ($password == '') {
-                $this->SendDebug(__FUNCTION__, '"password" is needed', 0);
-                $r[] = $this->Translate('Password must be specified');
-            }
             $api_key = $this->ReadPropertyString('api_key');
             if ($api_key == '') {
                 $this->SendDebug(__FUNCTION__, '"api_key" is needed', 0);
-                $r[] = $this->Translate('API-Key must be specified');
+                $r[] = $this->Translate('\'Application key\' must be specified');
+            }
+            $api_secret = $this->ReadPropertyString('api_secret');
+            $username = $this->ReadPropertyString('username');
+            $password = $this->ReadPropertyString('password');
+            if ($api_secret == '' && ($username == '' || $password == '')) {
+                $this->SendDebug(__FUNCTION__, '"api_secret" or "username" and "password" is needed', 0);
+                $r[] = $this->Translate('\'Application secret\' or Username and Password must be specified');
             }
         }
 
@@ -214,7 +212,17 @@ class AutomowerConnectIO extends IPSModule
                             'name'    => 'api_key',
                             'type'    => 'ValidationTextBox',
                             'width'   => '400px',
-                            'caption' => 'API-Key'
+                            'caption' => 'Application key'
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'caption' => '\'Application secret\' or Username and Password must be specified'
+                        ],
+                        [
+                            'name'    => 'api_secret',
+                            'type'    => 'PasswordTextBox',
+                            'width'   => '400px',
+                            'caption' => 'Application secret'
                         ],
                         [
                             'name'    => 'username',
@@ -397,25 +405,37 @@ class AutomowerConnectIO extends IPSModule
         return $jdata;
     }
 
-    private function DeveloperApiAccessToken($content)
+    private function DeveloperApiAccessToken()
     {
         $username = $this->ReadPropertyString('username');
         $password = $this->ReadPropertyString('password');
         $api_key = $this->ReadPropertyString('api_key');
+        $api_secret = $this->ReadPropertyString('api_secret');
 
         $url = 'https://api.authentication.husqvarnagroup.dev/v1/oauth2/token';
-        $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
 
         $header = [
             'Content-Type: application/x-www-form-urlencoded',
         ];
 
-        $postdata = [
-            'grant_type' => 'password',
-            'client_id'  => $api_key,
-            'username'   => $username,
-            'password'   => $password,
-        ];
+        if ($api_secret != '') {
+            $postdata = [
+                'grant_type'    => 'client_credentials',
+                'client_id'     => $api_key,
+                'client_secret' => $api_secret,
+            ];
+        } else {
+            $postdata = [
+                'grant_type'    => 'password',
+                'client_id'     => $api_key,
+                'username'      => $username,
+                'password'      => $password,
+            ];
+        }
+
+        $this->SendDebug(__FUNCTION__, 'http-post: url=' . $url, 0);
+        $this->SendDebug(__FUNCTION__, '    header=' . print_r($header, true), 0);
+        $this->SendDebug(__FUNCTION__, '    postdata=' . http_build_query($postdata), 0);
 
         $time_start = microtime(true);
 
@@ -461,11 +481,6 @@ class AutomowerConnectIO extends IPSModule
             if ($jdata == '') {
                 $statuscode = self::$IS_INVALIDDATA;
                 $err = 'malformed response';
-            } else {
-                if (!isset($jdata['refresh_token'])) {
-                    $statuscode = self::$IS_INVALIDDATA;
-                    $err = 'malformed response';
-                }
             }
         }
         if ($statuscode) {
@@ -497,11 +512,11 @@ class AutomowerConnectIO extends IPSModule
                 } else {
                     $this->SendDebug(__FUNCTION__, 'no saved access_token', 0);
                 }
-                $refresh_token = $this->ReadAttributeString('ApiRefreshToken');
-                $this->SendDebug(__FUNCTION__, 'refresh_token=' . print_r($refresh_token, true), 0);
                 $connection_type = $this->ReadPropertyInteger('connection_type');
                 switch ($connection_type) {
                     case self::$CONNECTION_OAUTH:
+                        $refresh_token = $this->ReadAttributeString('ApiRefreshToken');
+                        $this->SendDebug(__FUNCTION__, 'refresh_token=' . print_r($refresh_token, true), 0);
                         if ($refresh_token == '') {
                             $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
                             $this->WriteAttributeString('ApiRefreshToken', '');
@@ -513,7 +528,7 @@ class AutomowerConnectIO extends IPSModule
                         $jdata = $this->Call4ApiAccessToken(['refresh_token' => $refresh_token]);
                         break;
                     case self::$CONNECTION_DEVELOPER:
-                        $jdata = $this->DeveloperApiAccessToken(['refresh_token' => $refresh_token]);
+                        $jdata = $this->DeveloperApiAccessToken();
                         break;
                     default:
                         $jdata = false;
@@ -527,10 +542,12 @@ class AutomowerConnectIO extends IPSModule
                 }
                 $access_token = $jdata['access_token'];
                 $expiration = time() + $jdata['expires_in'];
-                if (isset($jdata['refresh_token'])) {
-                    $refresh_token = $jdata['refresh_token'];
-                    $this->SendDebug(__FUNCTION__, 'new refresh_token=' . $refresh_token, 0);
-                    $this->WriteAttributeString('ApiRefreshToken', $refresh_token);
+                if ($connection_type == self::$CONNECTION_OAUTH) {
+                    if (isset($jdata['refresh_token'])) {
+                        $refresh_token = $jdata['refresh_token'];
+                        $this->SendDebug(__FUNCTION__, 'new refresh_token=' . $refresh_token, 0);
+                        $this->WriteAttributeString('ApiRefreshToken', $refresh_token);
+                    }
                 }
             }
             $this->SendDebug(__FUNCTION__, 'new access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
