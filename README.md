@@ -204,6 +204,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.7.1 @ 16.08.2022 10:10
+  - update submodule CommonStubs
+    Fix: in den Konfiguratoren war es nicht möglich, eine Instanz direkt unter dem Wurzelverzeichnis "IP-Symcon" zu erzeugen
+
 - 2.7 @ 28.07.2022 09:48
   - Neu: Login ist nun auch möglich unter Angabe von 'Application secret' anstelle von Benutzer und Passwort
   - update submodule CommonStubs
