@@ -58,7 +58,7 @@ Die so erzeugte Geräte-Instanz enthält neben der Serienummer die interne Gerä
 ### zentrale Funktion
 
 `string AutomowerConnect_GetRawData(integer $InstanceID, string $Name)`<br>
-Liefert interne Datenstrukturen. Beispiel-Script siehe `docs/GetRawData2GoogelMaps.php`.
+Liefert interne Datenstrukturen. Beispiel-Script siehe [docs/GetRawData2GoogelMaps.php](docs/GetRawData2GoogelMaps.php).
 
 | Name          | Beschreibung |
 | :------------ | :----------- |
