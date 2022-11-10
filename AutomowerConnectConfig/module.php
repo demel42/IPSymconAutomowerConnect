@@ -156,9 +156,9 @@ class AutomowerConnectConfig extends IPSModule
                 continue;
             }
 
-			if (IPS_GetInstance($instID)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
-				continue;
-			}
+            if (IPS_GetInstance($instID)['ConnectionID'] != IPS_GetInstance($this->InstanceID)['ConnectionID']) {
+                continue;
+            }
 
             $name = IPS_GetName($instID);
             $model = IPS_GetProperty($instID, 'model');

@@ -32,6 +32,7 @@ class AutomowerConnectDevice extends IPSModule
         $this->RegisterPropertyString('device_id', ''); // alt, nur noch für Update!
 
         $this->RegisterPropertyBoolean('with_cuttingHeight', true);
+        $this->RegisterPropertyBoolean('with_headlightMode', true);
 
         $this->RegisterPropertyBoolean('with_gps', true);
         $this->RegisterPropertyBoolean('save_position', false);
@@ -148,6 +149,7 @@ class AutomowerConnectDevice extends IPSModule
         $with_gps = $this->ReadPropertyBoolean('with_gps');
         $save_position = $this->ReadPropertyBoolean('save_position');
         $with_cuttingHeight = $this->ReadPropertyBoolean('with_cuttingHeight');
+        $with_headlightMode = $this->ReadPropertyBoolean('with_headlightMode');
 
         $vpos = 0;
         $this->MaintainVariable('Connected', $this->Translate('Connection status'), VARIABLETYPE_BOOLEAN, 'Automower.Connection', $vpos++, true);
@@ -175,8 +177,10 @@ class AutomowerConnectDevice extends IPSModule
         $this->MaintainVariable('LastStatus', $this->Translate('Last status'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
         $this->MaintainVariable('Position', $this->Translate('Position'), VARIABLETYPE_STRING, '', $vpos++, $save_position);
 
-        $this->MaintainVariable('HeadlightMode', $this->Translate('Headlight mode'), VARIABLETYPE_INTEGER, 'Automower.HeadlightMode', $vpos++, true);
-        $this->MaintainAction('HeadlightMode', true);
+        $this->MaintainVariable('HeadlightMode', $this->Translate('Headlight mode'), VARIABLETYPE_INTEGER, 'Automower.HeadlightMode', $vpos++, $with_headlightMode);
+        if ($with_headlightMode) {
+            $this->MaintainAction('HeadlightMode', true);
+        }
         $this->MaintainVariable('CuttingHeight', $this->Translate('Cutting height'), VARIABLETYPE_INTEGER, 'Automower.CuttingHeight', $vpos++, $with_cuttingHeight);
         if ($with_cuttingHeight) {
             $this->MaintainAction('CuttingHeight', true);
@@ -260,6 +264,12 @@ class AutomowerConnectDevice extends IPSModule
             'type'    => 'CheckBox',
             'name'    => 'with_cuttingHeight',
             'caption' => 'Cutting height adjustment'
+        ];
+
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'with_headlightMode',
+            'caption' => 'Headlight mode'
         ];
 
         $formElements[] = [
@@ -556,10 +566,13 @@ class AutomowerConnectDevice extends IPSModule
             $this->SetValue('CuttingHeight', $cuttingHeight);
         }
 
-        $headlight_mode = $this->GetArrayElem($attributes, 'settings.headlight.mode', 0);
-        $headlightMode = $this->decode_headlightMode($headlight_mode);
-        $this->SendDebug(__FUNCTION__, 'headlight_mode="' . $headlight_mode . '" => headlightMode=' . $headlightMode, 0);
-        $this->SetValue('HeadlightMode', $headlightMode);
+        $with_headlightMode = $this->ReadPropertyBoolean('with_headlightMode');
+        if ($with_headlightMode) {
+            $headlight_mode = $this->GetArrayElem($attributes, 'settings.headlight.mode', 0);
+            $headlightMode = $this->decode_headlightMode($headlight_mode);
+            $this->SendDebug(__FUNCTION__, 'headlight_mode="' . $headlight_mode . '" => headlightMode=' . $headlightMode, 0);
+            $this->SetValue('HeadlightMode', $headlightMode);
+        }
 
         $with_gps = $this->ReadPropertyBoolean('with_gps');
         $save_position = $this->ReadPropertyBoolean('save_position');

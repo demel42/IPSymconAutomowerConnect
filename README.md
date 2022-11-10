@@ -204,6 +204,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.8 @ 10.11.2022 09:32
+  - Neu: Option um die Einstellbarkeit der Scheinwerfer zu deaktivieren
+  - update submodule CommonStubs
+
 - 2.7.4 @ 19.10.2022 09:16
   - Fix: README
   - update submodule CommonStubs
