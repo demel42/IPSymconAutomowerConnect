@@ -204,8 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.8 @ 10.11.2022 09:32
+- 2.8 @ 11.11.2022 08:34
   - Neu: Option um die Einstellbarkeit der Scheinwerfer zu deaktivieren
+  - Neu: Ausgabe von Language und Translation im Debug
 
 - 2.7.4 @ 19.10.2022 09:16
   - Fix: README
