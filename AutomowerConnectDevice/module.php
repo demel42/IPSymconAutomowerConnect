@@ -377,9 +377,10 @@ class AutomowerConnectDevice extends IPSModule
             return false;
         }
         $sdata = [
-            'DataID'    => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
-            'Function'  => 'MowerStatus',
-            'id'        => $id,
+            'DataID'   => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
+            'CallerID' => $this->InstanceID,
+            'Function' => 'MowerStatus',
+            'id'       => $id,
         ];
         $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
         $cdata = $this->SendDataToParent(json_encode($sdata));

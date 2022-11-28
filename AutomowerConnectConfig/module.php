@@ -26,6 +26,7 @@ class AutomowerConnectConfig extends IPSModule
         $this->RegisterPropertyInteger('ImportCategoryID', 0);
 
         $this->RegisterAttributeString('UpdateInfo', '');
+        $this->RegisterAttributeString('DataCache', '');
 
         $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
     }
@@ -71,17 +72,36 @@ class AutomowerConnectConfig extends IPSModule
 
         $catID = $this->ReadPropertyInteger('ImportCategoryID');
 
-        // an AutomowerConnectIO
-        $sdata = [
-            'DataID'   => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
-            'Function' => 'MowerList'
-        ];
-        $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
-        $data = $this->SendDataToParent(json_encode($sdata));
-        $mowers = $data != '' ? json_decode($data, true) : '';
-        $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
+        $cache = json_decode($this->ReadAttributeString('DataCache'), true);
+        if ($cache == false) {
+            $cache = [];
+        }
+        if (isset($cache['tstamp']) == false || $cache['tstamp'] < strtotime('-1 day')) {
+            $cache = [];
+        }
+        if ($cache == false) {
+            $sdata = [
+                'DataID'   => '{4C746488-C0FD-A850-3532-8DEBC042C970}', // an AutomowerConnectIO
+                'CallerID' => $this->InstanceID,
+                'Function' => 'MowerList'
+            ];
+            $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
+            $data = $this->SendDataToParent(json_encode($sdata));
+            $mowers = $data != '' ? json_decode($data, true) : '';
+            $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
+            if (is_array($mowers)) {
+                $cache = [
+                    'tstamp' => time(),
+                    'mowers' => $mowers,
+                ];
+                $this->WriteAttributeString('DataCache', json_encode($cache));
+            }
+        } else {
+            $mowers = $cache['mowers'];
+            $this->SendDebug(__FUNCTION__, 'mowers (from cache)=' . print_r($mowers, true), 0);
+        }
 
-        $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}';
+        $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}'; // AutomowerConnectDevice
         $instIDs = IPS_GetInstanceListByModuleID($guid);
 
         if (is_array($mowers)) {
@@ -98,7 +118,7 @@ class AutomowerConnectConfig extends IPSModule
                 $instanceID = 0;
                 foreach ($instIDs as $instID) {
                     if (IPS_GetProperty($instID, 'serial') == $serial) {
-                        $this->SendDebug(__FUNCTION__, 'device found: ' . utf8_decode(IPS_GetName($instID)) . ' (' . $instID . ')', 0);
+                        $this->SendDebug(__FUNCTION__, 'device found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
                         break;
                     }
@@ -111,7 +131,7 @@ class AutomowerConnectConfig extends IPSModule
                             $device_id = $r[1];
                         }
                         if ($device_id == $serial) {
-                            $this->SendDebug(__FUNCTION__, 'device found: ' . utf8_decode(IPS_GetName($instID)) . ' (' . $instID . ')', 0);
+                            $this->SendDebug(__FUNCTION__, 'device found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                             $instanceID = $instID;
                             break;
                         }
@@ -196,14 +216,13 @@ class AutomowerConnectConfig extends IPSModule
 
         $entries = $this->getConfiguratorValues();
         $formElements[] = [
-            'type'     => 'Configurator',
-            'name'     => 'Mower',
-            'caption'  => 'Mower',
-            'rowCount' => count($entries),
-
-            'add'     => false,
-            'delete'  => false,
-            'columns' => [
+            'type'              => 'Configurator',
+            'name'              => 'Mower',
+            'caption'           => 'Mower',
+            'rowCount'          => count($entries),
+            'add'               => false,
+            'delete'            => false,
+            'columns'           => [
                 [
                     'caption' => 'Name',
                     'name'    => 'name',
@@ -225,7 +244,8 @@ class AutomowerConnectConfig extends IPSModule
                     'width'   => '400px'
                 ],
             ],
-            'values' => $entries
+            'values'            => $entries,
+            'discoveryInterval' => 60 * 60 * 24,
         ];
 
         return $formElements;
@@ -244,17 +264,69 @@ class AutomowerConnectConfig extends IPSModule
             return $formActions;
         }
 
+        $cache = json_decode($this->ReadAttributeString('DataCache'), true);
+        if (isset($cache['tstamp']) && $cache['tstamp'] > 0) {
+            $t = date('d.m.y H:i:s', $cache['tstamp']);
+        } else {
+            $t = '-';
+        }
+		$s = $this->TranslateFormat('(last updated: ${tstamp})', ['${tstamp}' => $t]);
+
+        $formActions[] = [
+            'type'    => 'RowLayout',
+            'items'   => [
+                [
+                    'type'    => 'Button',
+                    'caption' => 'Refresh data cache',
+                    'onClick' => 'IPS_RequestAction($id, "RefreshDataCache", "");'
+                ],
+                [
+                    'type'    => 'Label',
+                    'caption' => $s,
+                ],
+            ],
+        ];
+
         $formActions[] = $this->GetInformationFormAction();
         $formActions[] = $this->GetReferencesFormAction();
 
         return $formActions;
     }
 
+    private function RefreshDataCache()
+    {
+        $this->WriteAttributeString('DataCache', '');
+        $this->ReloadForm();
+    }
+
+    private function LocalRequestAction($ident, $value)
+    {
+        $r = true;
+        switch ($ident) {
+			case 'RefreshDataCache':
+				$this->RefreshDataCache();
+				break;
+			default:
+                $r = false;
+                break;
+        }
+        return $r;
+    }
+
     public function RequestAction($ident, $value)
     {
+        if ($this->LocalRequestAction($ident, $value)) {
+            return;
+        }
         if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
+
+        if ($this->GetStatus() == IS_INACTIVE) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return;
+        }
+
         switch ($ident) {
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);

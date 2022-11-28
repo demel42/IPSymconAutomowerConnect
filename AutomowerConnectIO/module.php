@@ -12,15 +12,18 @@ class AutomowerConnectIO extends IPSModule
 
     private $oauthIdentifer = 'husqvarna';
     private $oauthAppKey = '66679300-6f0d-43ed-b5b1-08e83fec88de';
-    private $semaphore = 'husqvarna';
+
+    private static $semaphoreTM = 5 * 1000;
 
     private $ModuleDir;
+    private $SemaphoreID;
 
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
 
         $this->ModuleDir = __DIR__;
+        $this->SemaphoreID = __CLASS__ . '_' . $InstanceID;
     }
 
     public function Create()
@@ -41,9 +44,12 @@ class AutomowerConnectIO extends IPSModule
         $this->RegisterPropertyString('api_secret', '');
 
         $this->RegisterAttributeString('UpdateInfo', '');
+        $this->RegisterAttributeString('ApiCallStats', '');
 
         $this->SetBuffer('ApiAccessToken', '');
         $this->SetBuffer('ConnectionType', '');
+
+        $this->SetBuffer('LastApiCall', 0);
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
@@ -91,6 +97,18 @@ class AutomowerConnectIO extends IPSModule
             $this->MaintainStatus(self::$IS_INVALIDCONFIG);
             return;
         }
+
+        $apiLimits = [
+            [
+                'value' => 1,
+                'unit'  => 'second',
+            ],
+            [
+                'value' => 10000,
+                'unit'  => 'month',
+            ],
+        ];
+        $this->ApiCallsSetInfo($apiLimits, '');
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
@@ -281,6 +299,7 @@ class AutomowerConnectIO extends IPSModule
                     'caption' => 'Clear Token',
                     'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "ClearToken", "");',
                 ],
+                $this->GetApiCallStatsFormItem(),
             ]
         ];
 
@@ -493,75 +512,76 @@ class AutomowerConnectIO extends IPSModule
 
     private function GetApiAccessToken($access_token = '', $expiration = 0)
     {
-        if (IPS_SemaphoreEnter($this->semaphore, 5 * 1000)) {
-            if ($access_token == '' && $expiration == 0) {
-                $data = $this->GetBuffer('ApiAccessToken');
-                if ($data != '') {
-                    $jtoken = json_decode($data, true);
-                    $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
-                    $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
-                    if ($expiration < time()) {
-                        $this->SendDebug(__FUNCTION__, 'access_token expired', 0);
-                        $access_token = '';
-                    }
-                    if ($access_token != '') {
-                        $this->SendDebug(__FUNCTION__, 'access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
-                        IPS_SemaphoreLeave($this->semaphore);
-                        return $access_token;
-                    }
-                } else {
-                    $this->SendDebug(__FUNCTION__, 'no saved access_token', 0);
+        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+            $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
+            return false;
+        }
+
+        if ($access_token == '' && $expiration == 0) {
+            $data = $this->GetBuffer('ApiAccessToken');
+            if ($data != '') {
+                $jtoken = json_decode($data, true);
+                $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
+                $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
+                if ($expiration < time()) {
+                    $this->SendDebug(__FUNCTION__, 'access_token expired', 0);
+                    $access_token = '';
                 }
-                $connection_type = $this->ReadPropertyInteger('connection_type');
-                switch ($connection_type) {
-                    case self::$CONNECTION_OAUTH:
-                        $refresh_token = $this->ReadAttributeString('ApiRefreshToken');
-                        $this->SendDebug(__FUNCTION__, 'refresh_token=' . print_r($refresh_token, true), 0);
-                        if ($refresh_token == '') {
-                            $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
-                            $this->WriteAttributeString('ApiRefreshToken', '');
-                            $this->SetBuffer('ApiAccessToken', '');
-                            $this->MaintainStatus(self::$IS_NOLOGIN);
-                            IPS_SemaphoreLeave($this->semaphore);
-                            return false;
-                        }
-                        $jdata = $this->Call4ApiAccessToken(['refresh_token' => $refresh_token]);
-                        break;
-                    case self::$CONNECTION_DEVELOPER:
-                        $jdata = $this->DeveloperApiAccessToken();
-                        break;
-                    default:
-                        $jdata = false;
-                        break;
+                if ($access_token != '') {
+                    $this->SendDebug(__FUNCTION__, 'access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
+                    IPS_SemaphoreLeave($this->SemaphoreID);
+                    return $access_token;
                 }
-                if ($jdata == false) {
-                    $this->SendDebug(__FUNCTION__, 'got no access_token', 0);
-                    $this->SetBuffer('ApiAccessToken', '');
-                    IPS_SemaphoreLeave($this->semaphore);
-                    return false;
-                }
-                $access_token = $jdata['access_token'];
-                $expiration = time() + $jdata['expires_in'];
-                if ($connection_type == self::$CONNECTION_OAUTH) {
-                    if (isset($jdata['refresh_token'])) {
-                        $refresh_token = $jdata['refresh_token'];
-                        $this->SendDebug(__FUNCTION__, 'new refresh_token=' . $refresh_token, 0);
-                        $this->WriteAttributeString('ApiRefreshToken', $refresh_token);
+            } else {
+                $this->SendDebug(__FUNCTION__, 'no saved access_token', 0);
+            }
+            $connection_type = $this->ReadPropertyInteger('connection_type');
+            switch ($connection_type) {
+                case self::$CONNECTION_OAUTH:
+                    $refresh_token = $this->ReadAttributeString('ApiRefreshToken');
+                    $this->SendDebug(__FUNCTION__, 'refresh_token=' . print_r($refresh_token, true), 0);
+                    if ($refresh_token == '') {
+                        $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
+                        $this->WriteAttributeString('ApiRefreshToken', '');
+                        $this->SetBuffer('ApiAccessToken', '');
+                        $this->MaintainStatus(self::$IS_NOLOGIN);
+                        IPS_SemaphoreLeave($this->SemaphoreID);
+                        return false;
                     }
+                    $jdata = $this->Call4ApiAccessToken(['refresh_token' => $refresh_token]);
+                    break;
+                case self::$CONNECTION_DEVELOPER:
+                    $jdata = $this->DeveloperApiAccessToken();
+                    break;
+                default:
+                    $jdata = false;
+                    break;
+            }
+            if ($jdata == false) {
+                $this->SendDebug(__FUNCTION__, 'got no access_token', 0);
+                $this->SetBuffer('ApiAccessToken', '');
+                IPS_SemaphoreLeave($this->SemaphoreID);
+                return false;
+            }
+            $access_token = $jdata['access_token'];
+            $expiration = time() + $jdata['expires_in'];
+            if ($connection_type == self::$CONNECTION_OAUTH) {
+                if (isset($jdata['refresh_token'])) {
+                    $refresh_token = $jdata['refresh_token'];
+                    $this->SendDebug(__FUNCTION__, 'new refresh_token=' . $refresh_token, 0);
+                    $this->WriteAttributeString('ApiRefreshToken', $refresh_token);
                 }
             }
-            $this->SendDebug(__FUNCTION__, 'new access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
-            $jtoken = [
-                'access_token' => $access_token,
-                'expiration'   => $expiration,
-            ];
-            $this->SetBuffer('ApiAccessToken', json_encode($jtoken));
-            IPS_SemaphoreLeave($this->semaphore);
-            return $access_token;
-        } else {
-            $this->SendDebug(__FUNCTION__, 'parallel requests', 0);
-            return fales;
         }
+        $this->SendDebug(__FUNCTION__, 'new access_token=' . $access_token . ', valid until ' . date('d.m.y H:i:s', $expiration), 0);
+        $jtoken = [
+            'access_token' => $access_token,
+            'expiration'   => $expiration,
+        ];
+        $this->SetBuffer('ApiAccessToken', json_encode($jtoken));
+        IPS_SemaphoreLeave($this->SemaphoreID);
+
+        return $access_token;
     }
 
     private function GetApiRefreshToken($code)
@@ -596,6 +616,10 @@ class AutomowerConnectIO extends IPSModule
 
         $jdata = json_decode($data, true);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($jdata, true), 0);
+
+        $callerID = $jdata['CallerID'];
+        $this->SendDebug(__FUNCTION__, 'caller=' . $callerID . '(' . IPS_GetName($callerID) . ')', 0);
+        $_IPS['CallerID'] = $callerID;
 
         $ret = '';
         if (isset($jdata['Function'])) {
@@ -662,6 +686,20 @@ class AutomowerConnectIO extends IPSModule
 
         $token = $this->GetApiAccessToken();
 
+        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+            $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
+            return;
+        }
+
+        $ts = intval($this->GetBuffer('LastApiCall'));
+        if ($ts == time()) {
+            $this->SendDebug(__FUNCTION__, 'multiple call/second', 0);
+            while ($ts == time()) {
+                IPS_Sleep(100);
+            }
+            $this->SetBuffer('LastApiCall', time());
+        }
+
         $connection_type = $this->ReadPropertyInteger('connection_type');
         switch ($connection_type) {
             case self::$CONNECTION_OAUTH:
@@ -689,6 +727,8 @@ class AutomowerConnectIO extends IPSModule
         $this->SendDebug(__FUNCTION__, 'cdata=' . print_r($cdata, true), 0);
 
         $this->MaintainStatus(IS_ACTIVE);
+        IPS_SemaphoreLeave($this->SemaphoreID);
+
         return $cdata;
     }
 
@@ -763,6 +803,8 @@ class AutomowerConnectIO extends IPSModule
             $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err, 0);
             $this->MaintainStatus($statuscode);
         }
+
+        $this->ApiCallsCollect($url, $err, $statuscode);
 
         return $data;
     }

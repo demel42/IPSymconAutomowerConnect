@@ -12,6 +12,10 @@
 			"Serial": "Seriennummer",
 			"Device-ID": "Geräte-ID",
 
+			"__actions__": "",
+			"Refresh data cache": "Datencache aktualisieren",
+			"(last updated: ${tstamp})": "(zuletzt aktualisiert: ${tstamp})",
+
 			"__end__": ""
 		}
 	}
