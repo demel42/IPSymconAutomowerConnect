@@ -377,7 +377,7 @@ class AutomowerConnectDevice extends IPSModule
             return false;
         }
         $sdata = [
-            'DataID'   => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
+            'DataID'   => '{4C746488-C0FD-A850-3532-8DEBC042C970}', // an AutomowerConnectIO
             'CallerID' => $this->InstanceID,
             'Function' => 'MowerStatus',
             'id'       => $id,
@@ -923,7 +923,7 @@ class AutomowerConnectDevice extends IPSModule
             return false;
         }
         $sdata = [
-            'DataID'    => '{4C746488-C0FD-A850-3532-8DEBC042C970}',
+            'DataID'    => '{4C746488-C0FD-A850-3532-8DEBC042C970}', // an AutomowerConnectIO
             'Function'  => 'MowerCmd',
             'id'        => $id,
             'command'   => $command,

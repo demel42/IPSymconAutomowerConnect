@@ -270,7 +270,7 @@ class AutomowerConnectConfig extends IPSModule
         } else {
             $t = '-';
         }
-		$s = $this->TranslateFormat('(last updated: ${tstamp})', ['${tstamp}' => $t]);
+        $s = $this->TranslateFormat('(last updated: ${tstamp})', ['${tstamp}' => $t]);
 
         $formActions[] = [
             'type'    => 'RowLayout',
@@ -303,10 +303,10 @@ class AutomowerConnectConfig extends IPSModule
     {
         $r = true;
         switch ($ident) {
-			case 'RefreshDataCache':
-				$this->RefreshDataCache();
-				break;
-			default:
+            case 'RefreshDataCache':
+                $this->RefreshDataCache();
+                break;
+            default:
                 $r = false;
                 break;
         }
