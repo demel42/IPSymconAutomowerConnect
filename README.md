@@ -204,11 +204,12 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 2.9 @ 28.11.2022 10:06
+- 2.9 @ 21.12.2022 09:48
   - Verbesserung: Absicherung vor mehreren API-Calls/Sekunde (API lässt 1 Aufruf/Sekunde und 10000/Monat zu)
-  - Neu: Mitführen einer Statistik der API-Calls, Popup im Experten-Bereich
+  - Neu: Führen einer Statistik der API-Calls im IO-Modul, Anzeige als Popup im Experten-Bereich
   - Neu: Verwendung der Option 'discoveryInterval' im Konfigurator (ab 6.3) zur Reduzierung der API-Calls: nur noch ein Discovery/Tag
-  - Neu: Cache für Daten im Konfigurator zur Reduzierung der API-Aufrufe, wird autmatisch 1/Tag oder manuell aktualisiert
+  - Neu: Daten-Cache für Daten im Konfigurator zur Reduzierung der API-Aufrufe, wird automatisch 1/Tag oder manuell aktualisiert
+  - update submodule CommonStubs
 
 - 2.8 @ 11.11.2022 08:34
   - Neu: Option um die Einstellbarkeit der Scheinwerfer zu deaktivieren

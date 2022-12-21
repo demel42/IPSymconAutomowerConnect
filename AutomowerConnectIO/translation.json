@@ -37,7 +37,7 @@
 			"__actions__": "",
 			"Login at Husqvarna": "Anmelden bei Husqvarna",
 			"Test access": "Zugriff testen",
-			"Clear Token": "Token löschen",
+			"Clear token": "Token löschen",
 
 			"__function__": "TestAccount",
 			"Invalid registration with Husqvarna": "Ungültige Registrierung bei Husqvarna",

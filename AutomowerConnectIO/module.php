@@ -44,7 +44,7 @@ class AutomowerConnectIO extends IPSModule
         $this->RegisterPropertyString('api_secret', '');
 
         $this->RegisterAttributeString('UpdateInfo', '');
-        $this->RegisterAttributeString('ApiCallStats', '');
+        $this->RegisterAttributeString('ApiCallStats', json_encode([]));
 
         $this->SetBuffer('ApiAccessToken', '');
         $this->SetBuffer('ConnectionType', '');
@@ -296,7 +296,7 @@ class AutomowerConnectIO extends IPSModule
                 $this->GetInstallVarProfilesFormItem(),
                 [
                     'type'    => 'Button',
-                    'caption' => 'Clear Token',
+                    'caption' => 'Clear token',
                     'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "ClearToken", "");',
                 ],
                 $this->GetApiCallStatsFormItem(),
@@ -697,7 +697,6 @@ class AutomowerConnectIO extends IPSModule
             while ($ts == time()) {
                 IPS_Sleep(100);
             }
-            $this->SetBuffer('LastApiCall', time());
         }
 
         $connection_type = $this->ReadPropertyInteger('connection_type');
@@ -727,6 +726,9 @@ class AutomowerConnectIO extends IPSModule
         $this->SendDebug(__FUNCTION__, 'cdata=' . print_r($cdata, true), 0);
 
         $this->MaintainStatus(IS_ACTIVE);
+
+        $this->SetBuffer('LastApiCall', time());
+
         IPS_SemaphoreLeave($this->SemaphoreID);
 
         return $cdata;

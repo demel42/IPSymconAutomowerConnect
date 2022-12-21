@@ -53,6 +53,8 @@ class AutomowerConnectConfig extends IPSModule
             return;
         }
 
+        $this->SetupDataCache(24 * 60 * 60);
+
         $this->MaintainStatus(IS_ACTIVE);
     }
 
@@ -72,14 +74,11 @@ class AutomowerConnectConfig extends IPSModule
 
         $catID = $this->ReadPropertyInteger('ImportCategoryID');
 
-        $cache = json_decode($this->ReadAttributeString('DataCache'), true);
-        if ($cache == false) {
-            $cache = [];
-        }
-        if (isset($cache['tstamp']) == false || $cache['tstamp'] < strtotime('-1 day')) {
-            $cache = [];
-        }
-        if ($cache == false) {
+        $dataCache = $this->ReadDataCache();
+        if (isset($dataCache['data']['mowers'])) {
+            $mowers = $dataCache['data']['mowers'];
+            $this->SendDebug(__FUNCTION__, 'mowers (from cache)=' . print_r($mowers, true), 0);
+        } else {
             $sdata = [
                 'DataID'   => '{4C746488-C0FD-A850-3532-8DEBC042C970}', // an AutomowerConnectIO
                 'CallerID' => $this->InstanceID,
@@ -87,18 +86,12 @@ class AutomowerConnectConfig extends IPSModule
             ];
             $this->SendDebug(__FUNCTION__, 'SendDataToParent(' . print_r($sdata, true) . ')', 0);
             $data = $this->SendDataToParent(json_encode($sdata));
-            $mowers = $data != '' ? json_decode($data, true) : '';
+            $mowers = @json_decode($data, true);
             $this->SendDebug(__FUNCTION__, 'mowers=' . print_r($mowers, true), 0);
             if (is_array($mowers)) {
-                $cache = [
-                    'tstamp' => time(),
-                    'mowers' => $mowers,
-                ];
-                $this->WriteAttributeString('DataCache', json_encode($cache));
+                $dataCache['data']['mowers'] = $mowers;
             }
-        } else {
-            $mowers = $cache['mowers'];
-            $this->SendDebug(__FUNCTION__, 'mowers (from cache)=' . print_r($mowers, true), 0);
+            $this->WriteDataCache($dataCache, time());
         }
 
         $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}'; // AutomowerConnectDevice
@@ -118,7 +111,7 @@ class AutomowerConnectConfig extends IPSModule
                 $instanceID = 0;
                 foreach ($instIDs as $instID) {
                     if (IPS_GetProperty($instID, 'serial') == $serial) {
-                        $this->SendDebug(__FUNCTION__, 'device found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
+                        $this->SendDebug(__FUNCTION__, 'instance found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
                         break;
                     }
@@ -131,7 +124,7 @@ class AutomowerConnectConfig extends IPSModule
                             $device_id = $r[1];
                         }
                         if ($device_id == $serial) {
-                            $this->SendDebug(__FUNCTION__, 'device found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
+                            $this->SendDebug(__FUNCTION__, 'instance found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                             $instanceID = $instID;
                             break;
                         }
@@ -247,6 +240,7 @@ class AutomowerConnectConfig extends IPSModule
             'values'            => $entries,
             'discoveryInterval' => 60 * 60 * 24,
         ];
+        $formElements[] = $this->GetRefreshDataCacheFormAction();
 
         return $formElements;
     }
@@ -264,60 +258,14 @@ class AutomowerConnectConfig extends IPSModule
             return $formActions;
         }
 
-        $cache = json_decode($this->ReadAttributeString('DataCache'), true);
-        if (isset($cache['tstamp']) && $cache['tstamp'] > 0) {
-            $t = date('d.m.y H:i:s', $cache['tstamp']);
-        } else {
-            $t = '-';
-        }
-        $s = $this->TranslateFormat('(last updated: ${tstamp})', ['${tstamp}' => $t]);
-
-        $formActions[] = [
-            'type'    => 'RowLayout',
-            'items'   => [
-                [
-                    'type'    => 'Button',
-                    'caption' => 'Refresh data cache',
-                    'onClick' => 'IPS_RequestAction($id, "RefreshDataCache", "");'
-                ],
-                [
-                    'type'    => 'Label',
-                    'caption' => $s,
-                ],
-            ],
-        ];
-
         $formActions[] = $this->GetInformationFormAction();
         $formActions[] = $this->GetReferencesFormAction();
 
         return $formActions;
     }
 
-    private function RefreshDataCache()
-    {
-        $this->WriteAttributeString('DataCache', '');
-        $this->ReloadForm();
-    }
-
-    private function LocalRequestAction($ident, $value)
-    {
-        $r = true;
-        switch ($ident) {
-            case 'RefreshDataCache':
-                $this->RefreshDataCache();
-                break;
-            default:
-                $r = false;
-                break;
-        }
-        return $r;
-    }
-
     public function RequestAction($ident, $value)
     {
-        if ($this->LocalRequestAction($ident, $value)) {
-            return;
-        }
         if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
