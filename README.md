@@ -204,6 +204,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.9.1 @ 11.01.2023 15:44
+  - Fix: Handling des Datencache abgesichert
+  - update submodule CommonStubs
+
 - 2.9 @ 21.12.2022 09:48
   - Verbesserung: Absicherung vor mehreren API-Calls/Sekunde (API lässt 1 Aufruf/Sekunde und 10000/Monat zu)
   - Neu: Führen einer Statistik der API-Calls im IO-Modul, Anzeige als Popup im Experten-Bereich
