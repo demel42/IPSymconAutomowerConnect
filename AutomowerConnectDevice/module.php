@@ -924,6 +924,7 @@ class AutomowerConnectDevice extends IPSModule
         }
         $sdata = [
             'DataID'    => '{4C746488-C0FD-A850-3532-8DEBC042C970}', // an AutomowerConnectIO
+            'CallerID'  => $this->InstanceID,
             'Function'  => 'MowerCmd',
             'id'        => $id,
             'command'   => $command,

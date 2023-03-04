@@ -204,6 +204,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 2.9.2 @ 04.03.2023 17:00
+  - Fix: Befehle an den Mäher wurden mit einem Fehler quittiert
+
 - 2.9.1 @ 11.01.2023 15:44
   - Fix: Handling des Datencache abgesichert
   - update submodule CommonStubs
