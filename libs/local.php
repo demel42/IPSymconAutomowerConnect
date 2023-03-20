@@ -161,6 +161,8 @@ trait AutomowerConnectLocalLib
 
         $this->CreateVarProfile('Automower.CuttingHeight', VARIABLETYPE_INTEGER, ' mm', 1, 9, 1, 0, '', [], $reInstall);
 
+        $this->CreateVarProfile('Automower.Time', VARIABLETYPE_INTEGER, ' s', 0, 0, 0, 0, '', [], $reInstall);
+
         $associations = [
             ['Wert' =>  0, 'Name' => '-', 'Farbe' => -1],
             ['Wert' => 1, 'Name' => $this->Translate('Outside working area'), 'Farbe' => 0xFFA500],
