@@ -48,6 +48,8 @@ class AutomowerConnectSplitter extends IPSModule
 
         $this->SetBuffer('LastApiCall', 0);
 
+        $this->RegisterTimer('RenewTimer', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "RenewToken", "");');
+
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
 
         $this->ConnectParent('{D68FD31F-0E90-7019-F16C-1949BD3079EF}');
@@ -118,16 +120,19 @@ class AutomowerConnectSplitter extends IPSModule
         $this->MaintainReferences();
 
         if ($this->CheckPrerequisites() != false) {
+            $this->MaintainTimer('RenewTimer', 0);
             $this->MaintainStatus(self::$IS_INVALIDPREREQUISITES);
             return;
         }
 
         if ($this->CheckUpdate() != false) {
+            $this->MaintainTimer('RenewTimer', 0);
             $this->MaintainStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
+            $this->MaintainTimer('RenewTimer', 0);
             $this->MaintainStatus(self::$IS_INVALIDCONFIG);
             return;
         }
@@ -155,6 +160,7 @@ class AutomowerConnectSplitter extends IPSModule
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
+            $this->MaintainTimer('RenewTimer', 0);
             $this->MaintainStatus(IS_INACTIVE);
             return;
         }
@@ -180,6 +186,29 @@ class AutomowerConnectSplitter extends IPSModule
                 return;
             }
         }
+
+        if (IPS_GetKernelRunlevel() == KR_READY) {
+            $this->SetRefreshTimer();
+        }
+    }
+
+    private function SetRefreshTimer()
+    {
+        $msec = 0;
+
+        $jtoken = @json_decode($this->ReadAttributeString('ApiAccessToken'), true);
+        if ($jtoken != false) {
+            $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
+            $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
+            if ($expiration) {
+                $sec = $expiration - time() - 60;
+                $msec = $sec > 0 ? $sec * 1000 : 100;
+            } else {
+                $msec = 0;
+            }
+        }
+
+        $this->MaintainTimer('RenewTimer', $msec);
     }
 
     private function GetRefreshToken()
@@ -230,6 +259,12 @@ class AutomowerConnectSplitter extends IPSModule
         return $access_token;
     }
 
+    private function RenewToken()
+    {
+        $this->SendDebug(__FUNCTION__, '', 0);
+        $this->GetApiAccessToken(true);
+    }
+
     private function SetAccessToken($access_token = '', $expiration = 0)
     {
         $jtoken = [
@@ -243,6 +278,9 @@ class AutomowerConnectSplitter extends IPSModule
             $this->SendDebug(__FUNCTION__, 'new access_token, valid until ' . date('d.m.y H:i:s', $expiration), 0);
         }
         $this->UpdateConfigurationForParent();
+        if ($expiration) {
+            $this->SetRefreshTimer();
+        }
     }
 
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
@@ -254,6 +292,7 @@ class AutomowerConnectSplitter extends IPSModule
             if ($connection_type == self::$CONNECTION_OAUTH) {
                 $this->RegisterOAuth($this->oauthIdentifer);
             }
+            $this->SetRefreshTimer();
         }
     }
 
@@ -412,12 +451,29 @@ class AutomowerConnectSplitter extends IPSModule
         return $formActions;
     }
 
-    public function RequestAction($Ident, $Value)
+    private function LocalRequestAction($ident, $value)
     {
-        if ($this->CommonRequestAction($Ident, $Value)) {
+        $r = true;
+        switch ($ident) {
+            case 'RenewToken':
+                $this->RenewToken();
+                break;
+            default:
+                $r = false;
+                break;
+        }
+        return $r;
+    }
+
+    public function RequestAction($ident, $value)
+    {
+        if ($this->LocalRequestAction($ident, $value)) {
             return;
         }
-        switch ($Ident) {
+        if ($this->CommonRequestAction($ident, $value)) {
+            return;
+        }
+        switch ($ident) {
             case 'TestAccount':
                 $this->TestAccount();
                 break;
@@ -425,7 +481,7 @@ class AutomowerConnectSplitter extends IPSModule
                 $this->ClearToken();
                 break;
             default:
-                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
         }
     }
@@ -629,17 +685,19 @@ class AutomowerConnectSplitter extends IPSModule
         return $jdata;
     }
 
-    private function GetApiAccessToken()
+    private function GetApiAccessToken($renew = false)
     {
         if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return false;
         }
 
-        $access_token = $this->GetAccessToken();
-        if ($access_token != '') {
-            IPS_SemaphoreLeave($this->SemaphoreID);
-            return $access_token;
+        if ($renew == false) {
+            $access_token = $this->GetAccessToken();
+            if ($access_token != '') {
+                IPS_SemaphoreLeave($this->SemaphoreID);
+                return $access_token;
+            }
         }
 
         $connection_type = $this->ReadPropertyInteger('connection_type');
