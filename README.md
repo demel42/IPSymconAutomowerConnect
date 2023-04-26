@@ -237,11 +237,11 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 3.0 @ 05.04.2023 18:12
+- 3.0 @ 26.04.2023 11:42
   - Neu: unlimited Symcon-API-Key
   - Neu: Benutzung der WebSocket-Schnittstelle von Husqvarna. Hierüber werden alle Änderungsmeldung des Mähers umgehend empfangen ohne zyklischen Datenabruf!
     Ein aktiver Abruf ist nur noch unter bestimmten Umständen sinnvoll und kann daher auf ein langes Intervall gesetzt werden.
-    Diese Änderung erfordert, das die Automower-I/O-Instanz nun als Splitter-Instanz geführt wird.
+    Diese Änderung erfordert, das die Automower-I/O-Instanz nun als Splitter-Instanz geführt wird; das erfolgt beim Modul-Update automatisch
 
 - 2.9.2 @ 04.03.2023 17:00
   - Fix: Befehle an den Mäher wurden mit einem Fehler quittiert

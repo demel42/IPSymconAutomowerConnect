@@ -82,6 +82,7 @@ class AutomowerConnectSplitter extends IPSModule
     }
 
     // bei jeder Änderung des access_token muss dieser im WebsocketClient als Header gesetzt werden
+	// Rücksprache mit NT per Mail am 26.04.2023
     private function UpdateConfigurationForParent()
     {
         $this->SendDebug(__FUNCTION__, '', 0);
@@ -201,10 +202,8 @@ class AutomowerConnectSplitter extends IPSModule
             $access_token = isset($jtoken['access_token']) ? $jtoken['access_token'] : '';
             $expiration = isset($jtoken['expiration']) ? $jtoken['expiration'] : 0;
             if ($expiration) {
-                $sec = $expiration - time() - 60;
+                $sec = $expiration - time() - (60 * 15);
                 $msec = $sec > 0 ? $sec * 1000 : 100;
-            } else {
-                $msec = 0;
             }
         }
 
