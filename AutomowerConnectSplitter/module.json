@@ -1,0 +1,22 @@
+{
+	"id": "{AEEFAA3E-8802-086D-6620-E971C03CBEFC}",
+	"name": "AutomowerConnectSplitter",
+	"type": 2,
+	"vendor": "Husqvarna",
+	"aliases": [
+		"AutomowerConnect Splitter"
+	],
+	"parentRequirements": [
+		"{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"
+	],
+	"childRequirements": [
+		"{277691A0-EF84-1883-2094-45C56419748A}",
+		"{D62B246F-6BE0-9D6C-C415-FD12560D70C9}"
+	],
+	"implemented": [
+		"{4C746488-C0FD-A850-3532-8DEBC042C970}",
+		"{018EF6B5-AB94-40C6-AA53-46943E824ACF}"
+	],
+	"prefix": "AutomowerConnect",
+	"url": "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md"
+}

@@ -11,7 +11,8 @@
 	],
 	"childRequirements": [],
 	"implemented": [
-		"{277691A0-EF84-1883-2094-45C56419748A}"
+		"{277691A0-EF84-1883-2094-45C56419748A}",
+		"{D62B246F-6BE0-9D6C-C415-FD12560D70C9}"
 	],
 	"prefix": "AutomowerConnect",
 	"url": "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md"

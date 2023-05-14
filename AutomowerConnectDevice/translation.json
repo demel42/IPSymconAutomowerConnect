@@ -7,6 +7,7 @@
 			"Delete variable 'MowerAction'": "Variable 'MowerAction' löschen",
 			"Delete variable-profile 'Automower.Action'": "Variablenprofil 'Automower.Action' löschen",
 			"Spelling error in variableprofile 'Automower.Error'": "Rechtschreibfehler im Variablenprofil 'Automower.Error'",
+			"Wrong dimension in variableprofile 'Automower.CuttingHeight'": "Falsche Dimension im Variablenprofil 'Automower.CuttingHeight'",
 
 			"__function__": "CheckModuleConfiguration",
 			"Field \"Serial\" is empty": "Feld \"Serial\" ist leer",
@@ -21,11 +22,16 @@
 			"Device-ID": "Geräte-ID",
 
 			"with GPS-Data": "mit GPS-Daten",
-			"save position to (logged) variable 'Position'": "Position in der (protokollierten) Variablen 'Position' speichern",
 			"save position": "Position speichern",
+			" ... by activating this switch, a additional variable is created and logged":
+				" ... durch die Aktivierung dieses Schalters wird eine zusätzliche Variable angelegt und geloggt",
 
-			"Cutting height adjustment": "Schnitthöhen-Verstellung",
-			"Headlight mode": "Scheinwerfer-Einstellung",
+			"with cutting height adjustment": "mit Schnitthöhen-Verstellung",
+			"with headlight mode": "mit Scheinwerfer-Einstellung",
+
+			"save statistic data": "Statistik-Daten speichern",
+			" ... by activating this switch, additional variables are created and logged as counters":
+				" ... durch die Aktivierung dieses Schalters werden zusätzliche Variablen angelegt und als Zähler geloggt",
 
 			"Update interval": "Aktualisierungs-Intervall",
 			"Minutes": "Minuten",
@@ -50,6 +56,13 @@
 			"Start action": "Start-Aktion",
 			"Timestamp of last error": "Zeitpunkt des letzten Fehlers",
 			"Working time (day)": "Arbeitszeit (Tag)",
+			"Total charging time": "Gesamtladezeit",
+			"Total cutting time": "Gesamtschneidzeit",
+			"Total running time": "Gesamtfahrzeit",
+			"Total searching time": "Gesamtsuchzeit",
+			"Number of charging cycles": "Anzahl der Ladezyklen",
+			"Number of collisions": "Anzahl der Kollisionen",
+			"Cutting blade usage time": "Nutzungszeit des Schneidmessers",
 
 			"__variable__": "MowerStatus",
 			"not applicable": "unzutreffend",

@@ -36,9 +36,9 @@ Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/d
 
 ### b. Einrichtung in IPS
 
-In IP-Symcon nun unterhalb von _I/O Instanzen_ die Funktion _Instanz hinzufügen_ auswählen und als Hersteller _Husqvarna_ angeben und _Automower I/O_ auswählen.
+In IP-Symcon nun unterhalb von _Splitter Instanzen_ die Funktion _Instanz hinzufügen_ auswählen und als Hersteller _Husqvarna_ angeben und _Automower Splitter_ auswählen.
 
-Num muss man im I/O-Modul den Verbindungstyp auswählen
+Nun muss man im Splitter-Modul den Verbindungstyp auswählen
 
 #### über IP-Symcon Connect
 _Anmelden bei Husqvarna_ auswählen und auf der Husqvarna Login-Seite Benutzernamen und Passwort eingeben.
@@ -47,7 +47,9 @@ _Anmelden bei Husqvarna_ auswählen und auf der Husqvarna Login-Seite Benutzerna
 Dazu muss man sich bei Husqvarna [hier](https://developer.husqvarnagroup.cloud/apps) anmelden, dazu die Anmeldedaten in der Husqvarna-App verwenden…
 Dann _My Applications_ anwählen, _Create Application_ auswählen. Als _Connected APIs_ sowohl _Authentication API_ also auch _Automower Connect API_ hinzufügen.
 Siehe auch [hier](https://developer.husqvarnagroup.cloud/docs/getting-started).<br>
-Den erzeugten _API-Key_ dann mit den Anmeldedaten in der I/O-Instanz eintragen.
+Den erzeugten _API-Key_ dann mit den Anmeldedaten in der Splitter-Instanz eintragen.
+
+Es wird automatisch eine I/O-Instanz vom Typ _WebSocket-Client_ angelegt; über diese Instanz werden die Informationen, die der Mäher an die Husqvarna-Cloud meldet, weiter geleitet.
 
 Nun in IP-Symcon in _Konfigurator Instanzen_ den Konfigurator _AutomowerConnect Konfigurator_ hinzufügen; dann kann man über den Konfigurator eine Instanz anlegen.
 
@@ -103,27 +105,55 @@ Einstellen der Scheinwerfer. _Value_ bedeutet
 
 ## 5. Konfiguration:
 
-### Variablen
+## AutomowerConnectSplitter
 
-| Eigenschaft              | Typ     | Standardwert | Beschreibung |
-| :----------------------- | :-----  | :----------- | :----------- |
-| Instanz ist deaktiviert  | boolean | false        | Instanz temporär deaktivieren |
-|                          |         |              | |
-| Seriennummer             | string  |              | Seriennummer |
-| Modell                   | string  |              | Modell |
-| Geräte-ID                | string  |              | interne Geräte-ID |
-|                          |         |              | |
-| mit GPS-Daten            | boolean | false        | Gerät schickt GPS-Daten |
-| Position speichern       | boolean | false        | Position in der Variablen 'Position' speichern |
-|                          |         |              | |
-| Aktualisiere Daten ...   | integer | 1            | Aktualisierungsintervall, Angabe in Minuten |
+### Einstellungen
 
+| Eigenschaft                  | Typ     | Standardwert | Beschreibung |
+| :--------------------------- | :-----  | :----------- | :----------- |
+| Instanz ist deaktiviert      | boolean | false        | Instanz temporär deaktivieren |
+|                              |         |              | |
+| Verbindungstyp               | integer |              | IP-Symcon-Connect oder Anwendungsschlüssel |
 
-## AutomowerConnect
+| Application key              | string  |              | aus dem Huyqvarna-Konto |
+| Application secret           | string  |              | aus dem Huyqvarna-Konto |
+| Benutzerkennung              | string  |              | Mail-Adresse |
+| Passwort                     | string  |              | |
+
+### Aktionen
 
 | Bezeichnung              | Beschreibung |
 | :----------------------- | :----------- |
 | Zugangsdaten überprüfen  | Testet die Zugangsdaten und gibt ggfs Accout-Details aus |
+
+## AutomowerConnectDevice
+
+### Einstellungen
+
+| Eigenschaft                  | Typ     | Standardwert | Beschreibung |
+| :--------------------------- | :-----  | :----------- | :----------- |
+| Instanz ist deaktiviert      | boolean | false        | Instanz temporär deaktivieren |
+|                              |         |              | |
+| Seriennummer                 | string  |              | Seriennummer |
+| Modell                       | string  |              | Modell |
+| Geräte-ID                    | string  |              | interne Geräte-ID |
+|                              |         |              | |
+| mit GPS-Daten                | boolean | false        | Gerät schickt GPS-Daten |
+| Position speichern           | boolean | false        | Position in der geloggten Variablen 'Position' speichern |
+|                              |         |              | |
+| mit Schnitthöhen-Verstellung | boolean | true         | Möglichkeit, die Schnitthöhe zu sehen und anzupassen |
+| mit Scheinwerfer-Einstellung | boolean | true         | Möglichkeit, das Verhalten der Scheinwerfer zu sehen und anzupassen |
+|                              |         |              | |
+| Statistik-Daten speichern    | boolean | true         | diverse Nutzungs-Informationen in geloggten Variablen speichern |
+|                              |         |              | |
+| Aktualisiere Daten ...       | integer | 1            | Aktualisierungsintervall, Angabe in Minuten _[1]_ |
+
+_[1]_: das Abruf-Intervall sollte so lang, wie möglich sein, da die Anzahl der API-Abrufe strikt limitiert ist. Über die WebSocket werde alle Werte von der Husqvarna-Cloud übertragen, sobald der Mäher Werte an die Cloud übertragen hat. Insofern ist ein zyklischer Abruf nur erforderlich/sinnvoll, um die Statistikdaten abzurufen oder wenn die WebSocket-Verbindung mal nicht zur Verfügung gestanden hat.
+
+### Aktionen
+
+| Bezeichnung              | Beschreibung |
+| :----------------------- | :----------- |
 | Aktualisiere Status      | Status des Rasenmähers abrufen |
 
 ### Statusvariablen
@@ -143,6 +173,8 @@ folgende Variable werden angelegt, zum Teil optional
 | LastLatitude  | integer        | letzter Breitengrad |
 | LastStatus    | UNIX-Timestamp | letzte Status-Abfrage |
 | Position      | string         | letzte Position (longitude, latitude, activity) |
+| Schnitthöhe   | integer        | Schnitthöhe in mm |
+| Scheinwerfer  | integer        | Verhalten der Scheinwerfer |
 
 In _MowerActivity_ werden die diversen _MowerStatus_ in die Haupt-Aktivitäten gruppiert und als Integer abgelegt:
 
@@ -181,28 +213,35 @@ Automower.Activity,
 Automower.Battery,
 Automower.CuttingHeight,
 Automower.Duration,
-Automower.HeadlightMode
+Automower.HeadlightMode,
+Automower.Time
 
 * Float<br>
 Automower.Location
-
 
 ## 6. Anhang
 
 GUIDs
 - Modul: `{5D3A5F03-B872-4C4F-802C-65A654A7772C}`
 - Instanzen:
-  - AutomowerConnectIO: `{AEEFAA3E-8802-086D-6620-E971C03CBEFC}`
+  - AutomowerConnectSplitter: `{AEEFAA3E-8802-086D-6620-E971C03CBEFC}`
   - AutomowerConnectConfig: `{664A5A69-6171-481A-BCB7-1CACDE4BF50D}`
   - AutomowerConnectDevice: `{B64D5F1C-6F12-474B-8DBC-3B263E67954E}`
 - Nachrichten
-  - `{4C746488-C0FD-A850-3532-8DEBC042C970}`: an AutomowerConnectIO
+  - `{4C746488-C0FD-A850-3532-8DEBC042C970}`: an AutomowerConnectSplitter
   - `{277691A0-EF84-1883-2094-45C56419748A}`: an AutomowerConnectConfig, AutomowerConnectDevice
+  - `{D62B246F-6BE0-9D6C-C415-FD12560D70C9}`: an AutomowerConnectDevice
 
 Quellen:
   - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
 
 ## 7. Versions-Historie
+
+- 3.0 @ 14.05.2023 13:50
+  - Neu: unlimited Symcon-API-Key
+  - Neu: Benutzung der WebSocket-Schnittstelle von Husqvarna. Hierüber werden alle Änderungsmeldung des Mähers umgehend empfangen ohne zyklischen Datenabruf!
+    Ein aktiver Abruf ist nur noch unter bestimmten Umständen sinnvoll und kann daher auf ein langes Intervall gesetzt werden.
+    Diese Änderung erfordert, das die Automower-I/O-Instanz nun als Splitter-Instanz geführt wird; das erfolgt beim Modul-Update automatisch
 
 - 2.9.2 @ 04.03.2023 17:00
   - Fix: Befehle an den Mäher wurden mit einem Fehler quittiert
