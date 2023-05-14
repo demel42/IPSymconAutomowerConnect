@@ -237,7 +237,7 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 3.0 @ 26.04.2023 11:42
+- 3.0 @ 14.05.2023 13:50
   - Neu: unlimited Symcon-API-Key
   - Neu: Benutzung der WebSocket-Schnittstelle von Husqvarna. Hierüber werden alle Änderungsmeldung des Mähers umgehend empfangen ohne zyklischen Datenabruf!
     Ein aktiver Abruf ist nur noch unter bestimmten Umständen sinnvoll und kann daher auf ein langes Intervall gesetzt werden.

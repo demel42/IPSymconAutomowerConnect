@@ -159,7 +159,7 @@ trait AutomowerConnectLocalLib
         ];
         $this->CreateVarProfile('Automower.HeadlightMode', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
 
-        $this->CreateVarProfile('Automower.CuttingHeight', VARIABLETYPE_INTEGER, ' mm', 1, 9, 1, 0, '', [], $reInstall);
+        $this->CreateVarProfile('Automower.CuttingHeight', VARIABLETYPE_INTEGER, ' cm', 1, 9, 1, 0, '', [], $reInstall);
 
         $this->CreateVarProfile('Automower.Time', VARIABLETYPE_INTEGER, ' s', 0, 0, 0, 0, '', [], $reInstall);
 

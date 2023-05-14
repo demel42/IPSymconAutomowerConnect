@@ -78,6 +78,7 @@ class AutomowerConnectDevice extends IPSModule
 
         if ($this->version2num($oldInfo) < $this->version2num('3.0')) {
             $r[] = $this->Translate('Change of polling interval to hourly (due to the change to push messages)');
+            $r[] = $this->Translate('Wrong dimension in variableprofile \'Automower.CuttingHeight\'');
         }
 
         return $r;
@@ -108,6 +109,10 @@ class AutomowerConnectDevice extends IPSModule
 
         if ($this->version2num($oldInfo) < $this->version2num('3.0')) {
             IPS_SetProperty($this->InstanceID, 'update_interval', 60);
+            if (IPS_VariableProfileExists('Automower.CuttingHeight')) {
+                IPS_DeleteVariableProfile('Automower.CuttingHeight');
+            }
+            $this->InstallVarProfiles(false);
         }
 
         return '';
