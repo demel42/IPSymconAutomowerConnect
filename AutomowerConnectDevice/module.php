@@ -25,6 +25,8 @@ class AutomowerConnectDevice extends IPSModule
 
         $this->RegisterPropertyBoolean('module_disable', false);
 
+        $this->RegisterPropertyBoolean('log_no_parent', true);
+
         $this->RegisterPropertyString('model', '');
         $this->RegisterPropertyString('serial', '');
         $this->RegisterPropertyString('id', '');
@@ -79,6 +81,9 @@ class AutomowerConnectDevice extends IPSModule
         if ($this->version2num($oldInfo) < $this->version2num('3.0')) {
             $r[] = $this->Translate('Change of polling interval to hourly (due to the change to push messages)');
             $r[] = $this->Translate('Wrong dimension in variableprofile \'Automower.CuttingHeight\'');
+            $r[] = $this->Translate('Spelling error in variableprofile \'Automower.Error\'');
+            $r[] = $this->Translate('Variable \'MowerStatus\' of type string will be deleted and replaced by \'MowerState\' of type int.');
+            $r[] = $this->Translate('Please check and correct a possible usage of the old variable.');
         }
 
         return $r;
@@ -112,7 +117,14 @@ class AutomowerConnectDevice extends IPSModule
             if (IPS_VariableProfileExists('Automower.CuttingHeight')) {
                 IPS_DeleteVariableProfile('Automower.CuttingHeight');
             }
+            if (IPS_VariableProfileExists('Automower.Error')) {
+                IPS_DeleteVariableProfile('Automower.Error');
+            }
             $this->InstallVarProfiles(false);
+            @$varID = $this->GetIDForIdent('MowerStatus');
+            if (@$varID != false) {
+                $this->UnregisterVariable('MowerStatus');
+            }
         }
 
         return '';
@@ -171,7 +183,7 @@ class AutomowerConnectDevice extends IPSModule
         $this->MaintainVariable('Connected', $this->Translate('Connection status'), VARIABLETYPE_BOOLEAN, 'Automower.Connection', $vpos++, true);
         $this->MaintainVariable('Battery', $this->Translate('Battery capacity'), VARIABLETYPE_INTEGER, 'Automower.Battery', $vpos++, true);
         $this->MaintainVariable('OperationMode', $this->Translate('Operation mode'), VARIABLETYPE_STRING, '', $vpos++, true);
-        $this->MaintainVariable('MowerStatus', $this->Translate('Mower status'), VARIABLETYPE_STRING, '', $vpos++, true);
+        $this->MaintainVariable('MowerState', $this->Translate('Mower status'), VARIABLETYPE_INTEGER, 'Automower.State', $vpos++, true);
         $this->MaintainVariable('MowerActivity', $this->Translate('Mower activity'), VARIABLETYPE_INTEGER, 'Automower.Activity', $vpos++, true);
         $this->MaintainVariable('RestrictedReason', $this->Translate('Restricted reason'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('NextStart', $this->Translate('Next start'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
@@ -327,6 +339,12 @@ class AutomowerConnectDevice extends IPSModule
             'caption' => 'Update interval',
         ];
 
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'log_no_parent',
+            'caption' => 'Generate message when the gateway is inactive',
+        ];
+
         return $formElements;
     }
 
@@ -347,6 +365,11 @@ class AutomowerConnectDevice extends IPSModule
             'type'    => 'Button',
             'caption' => 'Update status',
             'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "UpdateStatus", "");',
+        ];
+        $formActions[] = [
+            'type'    => 'Button',
+            'caption' => 'force restart',
+            'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "MowerActionStart", 0);',
         ];
 
         $formActions[] = [
@@ -414,8 +437,11 @@ class AutomowerConnectDevice extends IPSModule
         }
 
         if ($this->HasActiveParent() == false) {
-            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
-            $this->LogMessage('has no active parent instance', KL_WARNING);
+            $this->SendDebug(__FUNCTION__, 'has no active parent/gateway', 0);
+            $log_no_parent = $this->ReadPropertyBoolean('log_no_parent');
+            if ($log_no_parent) {
+                $this->LogMessage($this->Translate('Instance has no active gateway'), KL_WARNING);
+            }
             return false;
         }
 
@@ -473,9 +499,10 @@ class AutomowerConnectDevice extends IPSModule
             $this->SetValue('OperationMode', $operatingMode);
 
             $mower_state = $this->GetArrayElem($attributes, 'mower.state', '');
-            $mowerStatus = $this->decode_mowerStatus($mower_state);
-            $this->SendDebug(__FUNCTION__, 'mower_state="' . $mower_state . '" => MowerStatus=' . $mowerStatus, 0);
-            $this->SetValue('MowerStatus', $mowerStatus);
+            $mowerState = $this->decode_mowerState($mower_state);
+            $s = $this->CheckVarProfile4Value('Automower.State', $mowerState);
+            $this->SendDebug(__FUNCTION__, 'mower_state="' . $mower_state . '" => ' . $mowerState . '(' . $s . ')', 0);
+            $this->SetValue('MowerState', $mowerState);
 
             $oldActivity = $this->GetValue('MowerActivity');
 
@@ -521,6 +548,7 @@ class AutomowerConnectDevice extends IPSModule
 
             $this->SendDebug(__FUNCTION__, 'enable ActionStart=' . $this->bool2str($enableStart) . ',  ActionPause=' . $this->bool2str($enablePause) . ', ActionPark=' . $this->bool2str($enablePark), 0);
 
+            $enableStart = true;
             $chg = $this->AdjustAction('MowerActionStart', $enableStart);
             $chg |= $this->AdjustAction('MowerActionPause', $enablePause);
             $chg |= $this->AdjustAction('MowerActionPark', $enablePark);
@@ -600,6 +628,8 @@ class AutomowerConnectDevice extends IPSModule
                     $this->SendDebug(__FUNCTION__, 'tstamp[SET]=' . $tstamp . ', daily_working[SET]=' . $daily_working, 0);
                 }
             }
+        } else {
+            $mowerActivity = $this->GetValue('MowerActivity');
         }
 
         if (isset($attributes['planner'])) {
@@ -639,7 +669,8 @@ class AutomowerConnectDevice extends IPSModule
             $headlight_mode = $this->GetArrayElem($attributes, 'settings.headlight.mode', 0, $fnd);
             if ($fnd) {
                 $headlightMode = $this->decode_headlightMode($headlight_mode);
-                $this->SendDebug(__FUNCTION__, 'headlight_mode="' . $headlight_mode . '" => headlightMode=' . $headlightMode, 0);
+                $s = $this->CheckVarProfile4Value('Automower.HeadlightMode', $headlightMode);
+                $this->SendDebug(__FUNCTION__, 'headlight_mode="' . $headlight_mode . '" => ' . $headlightMode . '(' . $s . ')', 0);
                 $this->SetValue('HeadlightMode', $headlightMode);
             }
         }
@@ -823,7 +854,6 @@ class AutomowerConnectDevice extends IPSModule
 
     private function decode_operatingMode($val)
     {
-        // MAIN_AREA, SECONDARY_AREA, HOME, UNKNOWN
         $val2txt = [
             'MAIN_AREA'          => 'main area',
             'SECONDARY_AREA'     => 'secondary area',
@@ -842,32 +872,32 @@ class AutomowerConnectDevice extends IPSModule
         return $txt;
     }
 
-    private function decode_mowerStatus($val)
+    private function decode_mowerState($val)
     {
-        $val2txt = [
-            'UNKNOWN'           => 'unknown',
-            'NOT_APPLICABLE'    => 'not applicable',
-            'PAUSED'            => 'paused',
-            'IN_OPERATION'      => 'in operation',
-            'WAIT_UPDATING'     => 'wait updating',
-            'WAIT_POWER_UP'     => 'wait power up',
-            'RESTRICTED'        => 'restricted',
-            'OFF'               => 'off',
-            'STOPPED'           => 'stopped',
-            'ERROR'             => 'error',
-            'FATAL_ERROR'       => 'fatal error',
-            'ERROR_AT_POWER_UP' => 'error at power up',
+        $val2code = [
+            'UNKNOWN'           => self::$STATE_UNKNOWN,
+            'NOT_APPLICABLE'    => self::$STATE_NOT_APPLICABLE,
+            'PAUSED'            => self::$STATE_PAUSED,
+            'IN_OPERATION'      => self::$STATE_IN_OPERATION,
+            'WAIT_UPDATING'     => self::$STATE_WAIT_UPDATING,
+            'WAIT_POWER_UP'     => self::$STATE_WAIT_POWER_UP,
+            'RESTRICTED'        => self::$STATE_RESTRICTED,
+            'OFF'               => self::$STATE_OFF,
+            'STOPPED'           => self::$STATE_STOPPED,
+            'ERROR'             => self::$STATE_ERROR,
+            'FATAL_ERROR'       => self::$STATE_FATAL_ERROR,
+            'ERROR_AT_POWER_UP' => self::$STATE_ERROR_AT_POWER_UP,
         ];
 
-        if (isset($val2txt[$val])) {
-            $txt = $this->Translate($val2txt[$val]);
+        if (isset($val2code[$val])) {
+            $code = $val2code[$val];
         } else {
             $msg = 'unknown value "' . $val . '"';
             $this->LogMessage(__FUNCTION__ . ': ' . $msg, KL_WARNING);
             $this->SendDebug(__FUNCTION__, $msg, 0);
-            $txt = $val;
+            $code = self::$STATE_UNKNOWN;
         }
-        return $txt;
+        return $code;
     }
 
     private function decode_restrictedReason($val)
@@ -915,7 +945,7 @@ class AutomowerConnectDevice extends IPSModule
             $msg = 'unknown value "' . $val . '"';
             $this->LogMessage(__FUNCTION__ . ': ' . $msg, KL_WARNING);
             $this->SendDebug(__FUNCTION__, $msg, 0);
-            $code = self::$ACTIVITY_ERROR;
+            $code = self::$ACTIVITY_UNKNOWN;
         }
         return $code;
     }
@@ -1054,8 +1084,11 @@ class AutomowerConnectDevice extends IPSModule
     private function MowerCmd($command, $data)
     {
         if ($this->HasActiveParent() == false) {
-            $this->SendDebug(__FUNCTION__, 'has no active parent', 0);
-            $this->LogMessage('has no active parent instance', KL_WARNING);
+            $this->SendDebug(__FUNCTION__, 'has no active parent/gateway', 0);
+            $log_no_parent = $this->ReadPropertyBoolean('log_no_parent');
+            if ($log_no_parent) {
+                $this->LogMessage($this->Translate('Instance has no active gateway'), KL_WARNING);
+            }
             return false;
         }
 

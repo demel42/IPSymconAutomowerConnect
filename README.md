@@ -214,6 +214,7 @@ Automower.Battery,
 Automower.CuttingHeight,
 Automower.Duration,
 Automower.HeadlightMode,
+Automower.State,
 Automower.Time
 
 * Float<br>
@@ -237,8 +238,8 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 3.0 @ 14.05.2023 13:50
-  - Neu: unlimited Symcon-API-Key
+- 3.0 @ 05.07.2023 17:02
+  - Neu: unlimited Symcon-API-Key (bei Login via OAuth mittels SymconConnect)
   - Neu: Benutzung der WebSocket-Schnittstelle von Husqvarna. Hierüber werden alle Änderungsmeldung des Mähers umgehend empfangen ohne zyklischen Datenabruf!
     Ein aktiver Abruf ist nur noch unter bestimmten Umständen sinnvoll und kann daher auf ein langes Intervall gesetzt werden.
     Diese Änderung erfordert, das die AutomowerConnect-I/O-Instanz nun als Splitter-Instanz geführt wird; das erfolgt beim Modul-Update automatisch.
@@ -248,6 +249,12 @@ Quellen:
 
 	Wichtiger Hinweis: die AutomowerConnect-Splitter-Instanz wird fehlerhafterweise noch im Ordner "I/O Instanzen" angezeigt, das ist ein reines
 	Darstellungsproblem der Symcon-Console; einfach die Console neu öffnen. Die Automower-Splitter-Instanz kann in dem Zuge auch umbenannt werden.
+  - Geändert: Variable "MowerStatus" vom Typ string wird ersetzt durch die Variable "MowerState" vom Typ int
+    Eine eventuelle Nutzung der Variable in Scripten etc muss händisch nachgeführt werden.
+  - Neu: Schalter, um die Meldung eines inaktiven Gateway zu steuern
+  - Vorbereitung auf IPS 7 / PHP 8.2
+  - update submodule CommonStubs
+    - Absicherung bei Zugriff auf Objekte und Inhalte
 
 - 2.9.2 @ 04.03.2023 17:00
   - Fix: Befehle an den Mäher wurden mit einem Fehler quittiert

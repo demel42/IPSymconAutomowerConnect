@@ -82,7 +82,7 @@ class AutomowerConnectSplitter extends IPSModule
     }
 
     // bei jeder Änderung des access_token muss dieser im WebsocketClient als Header gesetzt werden
-	// Rücksprache mit NT per Mail am 26.04.2023
+    // Rücksprache mit NT per Mail am 26.04.2023
     private function UpdateConfigurationForParent()
     {
         $this->SendDebug(__FUNCTION__, '', 0);
@@ -119,6 +119,8 @@ class AutomowerConnectSplitter extends IPSModule
         parent::ApplyChanges();
 
         $this->MaintainReferences();
+
+        $this->UnregisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
 
         if ($this->CheckPrerequisites() != false) {
             $this->MaintainTimer('RenewTimer', 0);
@@ -173,6 +175,8 @@ class AutomowerConnectSplitter extends IPSModule
 
         $this->MaintainStatus(IS_ACTIVE);
 
+        $this->RegisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
+
         if ($connection_type == self::$CONNECTION_OAUTH) {
             if ($this->GetConnectUrl() == false) {
                 $this->MaintainStatus(self::$IS_NOSYMCONCONNECT);
@@ -185,6 +189,12 @@ class AutomowerConnectSplitter extends IPSModule
             if ($refresh_token == '') {
                 $this->MaintainStatus(self::$IS_NOLOGIN);
                 return;
+            }
+        } else {
+            if (IPS_GetKernelRunlevel() == KR_READY) {
+                if ($this->GetAccessToken() == '') {
+                    $this->RenewToken();
+                }
             }
         }
 
@@ -228,6 +238,7 @@ class AutomowerConnectSplitter extends IPSModule
     private function SetRefreshToken($refresh_token = '')
     {
         $jtoken = [
+            'tstamp'        => time(),
             'refresh_token' => $refresh_token,
         ];
         $this->WriteAttributeString('ApiRefreshToken', json_encode($jtoken));
@@ -267,6 +278,7 @@ class AutomowerConnectSplitter extends IPSModule
     private function SetAccessToken($access_token = '', $expiration = 0)
     {
         $jtoken = [
+            'tstamp'       => time(),
             'access_token' => $access_token,
             'expiration'   => $expiration,
         ];
@@ -282,16 +294,27 @@ class AutomowerConnectSplitter extends IPSModule
         }
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    public function MessageSink($timestamp, $senderID, $message, $data)
     {
-        parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
+        parent::MessageSink($timestamp, $senderID, $message, $data);
 
-        if ($Message == IPS_KERNELMESSAGE && $Data[0] == KR_READY) {
+        if ($message == IPS_KERNELMESSAGE && $data[0] == KR_READY) {
             $connection_type = $this->ReadPropertyInteger('connection_type');
             if ($connection_type == self::$CONNECTION_OAUTH) {
                 $this->RegisterOAuth($this->oauthIdentifer);
+            } else {
+                if ($this->GetAccessToken() == '') {
+                    $this->RenewToken();
+                }
             }
             $this->SetRefreshTimer();
+        }
+
+        if (IPS_GetKernelRunlevel() == KR_READY && $message == IM_CHANGESTATUS && $senderID == $this->GetConnectionID()) {
+            $this->SendDebug(__FUNCTION__, 'timestamp=' . $timestamp . ', senderID=' . $senderID . ', message=' . $message . ', data=' . print_r($data, true), 0);
+            if ($data[0] == IS_ACTIVE && $data[1] == IS_INACTIVE) {
+                $this->MaintainTimer('RenewTimer', 60 * 1000);
+            }
         }
     }
 
@@ -701,24 +724,24 @@ class AutomowerConnectSplitter extends IPSModule
 
         $connection_type = $this->ReadPropertyInteger('connection_type');
         switch ($connection_type) {
-                case self::$CONNECTION_OAUTH:
-                    $refresh_token = $this->GetRefreshToken();
-                    if ($refresh_token == '') {
-                        $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
-                        $this->SetAccessToken('');
-                        $this->MaintainStatus(self::$IS_NOLOGIN);
-                        IPS_SemaphoreLeave($this->SemaphoreID);
-                        return false;
-                    }
-                    $jdata = $this->Call4ApiToken(['refresh_token' => $refresh_token]);
-                    break;
-                case self::$CONNECTION_DEVELOPER:
-                    $jdata = $this->DeveloperApiAccessToken();
-                    break;
-                default:
-                    $jdata = false;
-                    break;
-            }
+            case self::$CONNECTION_OAUTH:
+                $refresh_token = $this->GetRefreshToken();
+                if ($refresh_token == '') {
+                    $this->SendDebug(__FUNCTION__, 'has no refresh_token', 0);
+                    $this->SetAccessToken('');
+                    $this->MaintainStatus(self::$IS_NOLOGIN);
+                    IPS_SemaphoreLeave($this->SemaphoreID);
+                    return false;
+                }
+                $jdata = $this->Call4ApiToken(['refresh_token' => $refresh_token]);
+                break;
+            case self::$CONNECTION_DEVELOPER:
+                $jdata = $this->DeveloperApiAccessToken();
+                break;
+            default:
+                $jdata = false;
+                break;
+        }
         if ($jdata == false) {
             $this->SendDebug(__FUNCTION__, 'got no access_token', 0);
             $this->SetAccessToken('');
@@ -786,7 +809,7 @@ class AutomowerConnectSplitter extends IPSModule
                 default:
                     $this->SendDebug(__FUNCTION__, 'unknown function "' . $jdata['Function'] . '"', 0);
                     break;
-                }
+            }
         } else {
             $this->SendDebug(__FUNCTION__, 'unknown message-structure', 0);
         }
@@ -986,6 +1009,8 @@ class AutomowerConnectSplitter extends IPSModule
             $this->PopupMessage($msg);
             return;
         }
+
+        $this->UpdateConfigurationForParent();
 
         $cdata = $this->GetMowerList();
         $mowers = $cdata != '' ? json_decode($cdata, true) : '';

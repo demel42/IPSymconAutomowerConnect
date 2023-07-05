@@ -49,18 +49,18 @@ if ($activity < 0 || $activity >= count($activity_label)) {
 $label = $activity_label[$activity];
 
 $markers[] = [
-    'color'     => 'green',
-    'label'		   => $label,
-    'points'    => $marker_points,
+    'color'  => 'green',
+    'label'  => $label,
+    'points' => $marker_points,
 ];
 
 $map['markers'] = $markers;
 
 $paths = [];
 $paths[] = [
-    'color'     => '0xff0000ff',       // 0xhhhhhhoo oo=opacity
-    'weight'    => 2,
-    'points'    => $points,
+    'color'  => '0xff0000ff',       // 0xhhhhhhoo oo=opacity
+    'weight' => 2,
+    'points' => $points,
 ];
 
 $map['paths'] = $paths;

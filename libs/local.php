@@ -60,7 +60,21 @@ trait AutomowerConnectLocalLib
         return $class;
     }
 
-    // MowerStatus
+    // MowerState
+    public static $STATE_UNKNOWN = 0;
+    public static $STATE_NOT_APPLICABLE = 1;
+    public static $STATE_PAUSED = 2;
+    public static $STATE_IN_OPERATION = 3;
+    public static $STATE_WAIT_UPDATING = 4;
+    public static $STATE_WAIT_POWER_UP = 5;
+    public static $STATE_RESTRICTED = 6;
+    public static $STATE_OFF = 7;
+    public static $STATE_STOPPED = 8;
+    public static $STATE_ERROR = 9;
+    public static $STATE_FATAL_ERROR = 10;
+    public static $STATE_ERROR_AT_POWER_UP = 11;
+
+    // MowerActivity
     public static $ACTIVITY_UNKNOWN = 0;
     public static $ACTIVITY_NOT_APPLICABLE = 1;
     public static $ACTIVITY_ERROR = 2;
@@ -135,6 +149,22 @@ trait AutomowerConnectLocalLib
             ['Wert' => self::$ACTION_PAUSE, 'Name' => $this->Translate('Pause'), 'Farbe' => -1],
         ];
         $this->CreateVarProfile('Automower.ActionPause', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
+
+        $associations = [
+            ['Wert' => self::$STATE_UNKNOWN, 'Name' => $this->Translate('unknown'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_NOT_APPLICABLE, 'Name' => $this->Translate('not applicable'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_PAUSED, 'Name' => $this->Translate('paused'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_IN_OPERATION, 'Name' => $this->Translate('in operation'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_WAIT_UPDATING, 'Name' => $this->Translate('wait updating'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_WAIT_POWER_UP, 'Name' => $this->Translate('wait power up'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_RESTRICTED, 'Name' => $this->Translate('restricted'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_OFF, 'Name' => $this->Translate('off'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_STOPPED, 'Name' => $this->Translate('stopped'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_ERROR, 'Name' => $this->Translate('error'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_FATAL_ERROR, 'Name' => $this->Translate('fatal error'), 'Farbe' => -1],
+            ['Wert' => self::$STATE_ERROR_AT_POWER_UP, 'Name' => $this->Translate('error at power up'), 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('Automower.State', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
 
         $associations = [
             ['Wert' => self::$ACTIVITY_UNKNOWN, 'Name' => $this->Translate('unknown'), 'Farbe' => -1],

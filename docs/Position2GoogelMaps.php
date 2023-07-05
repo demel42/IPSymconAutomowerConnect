@@ -36,9 +36,9 @@ if ($activity < 0 || $activity >= count($activity_label)) {
 $label = $activity_label[$activity];
 
 $markers[] = [
-    'color'     => 'green',
-    'label'		   => $label,
-    'points'    => $marker_points,
+    'color'  => 'green',
+    'label'  => $label,
+    'points' => $marker_points,
 ];
 
 $map['markers'] = $markers;
@@ -67,9 +67,9 @@ for ($i = 2; $i >= 0; $i--) {
     }
 
     $paths[] = [
-        'color'     => $paths_color[$i],
-        'weight'    => 2,
-        'points'    => $points,
+        'color'  => $paths_color[$i],
+        'weight' => 2,
+        'points' => $points,
     ];
 }
 

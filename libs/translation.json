@@ -1,6 +1,20 @@
 {
 	"translations": {
 		"de": {
+			"__variableprofile__": "Automower.State",
+			"unknown": "unbekannt",
+			"not applicable": "unzutreffend",
+			"paused": "pausiert",
+			"in operation": "in Betrieb",
+			"wait updating": "wird aktualisiert",
+			"wait power up": "startet",
+			"restricted": "inaktiv",
+			"off": "aus",
+			"stopped": "gestoppt",
+			"error": "Fehler",
+			"fatal error": "fataler Fehler",
+			"error at power up": "Fehler beim Start",
+
 			"__variableprofile__": "Automower.ActionStart",
 			"next schedule": "nächster Zeitplan",
 			"3 hours": "3 Stunden",
@@ -51,7 +65,7 @@
 			"Loop sensor problem, left": "Schleifensensorproblem, links",
 			"Loop sensor problem, right": "Problem mit dem Schleifensensor, richtig",
 			"Wrong PIN code": "Falscher PIN-Code",
-			"Trapped": "Gefangen",
+			"Trapped": "Eingeschlossen",
 			"Upside down": "Kopfüber",
 			"Low battery": "Niedriger Batteriestatus",
 			"Empty battery": "Batterie ist leer",
