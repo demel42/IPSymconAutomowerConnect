@@ -10,13 +10,16 @@ class AutomowerConnectDevice extends IPSModule
     use AutomowerConnect\StubsCommonLib;
     use AutomowerConnectLocalLib;
 
-    private $ModuleDir;
-
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
 
-        $this->ModuleDir = __DIR__;
+        $this->CommonContruct(__DIR__);
+    }
+
+    public function __destruct()
+    {
+        $this->CommonDestruct();
     }
 
     public function Create()
@@ -47,7 +50,8 @@ class AutomowerConnectDevice extends IPSModule
         $this->RegisterAttributeInteger('WorkingStart', 0);
         $this->RegisterAttributeInteger('DailyWorking', 0);
 
-        $this->RegisterAttributeString('UpdateInfo', '');
+        $this->RegisterAttributeString('UpdateInfo', json_encode([]));
+        $this->RegisterAttributeString('ModuleStats', json_encode([]));
 
         $this->InstallVarProfiles(false);
 
@@ -365,11 +369,6 @@ class AutomowerConnectDevice extends IPSModule
             'type'    => 'Button',
             'caption' => 'Update status',
             'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "UpdateStatus", "");',
-        ];
-        $formActions[] = [
-            'type'    => 'Button',
-            'caption' => 'force restart',
-            'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "MowerActionStart", 0);',
         ];
 
         $formActions[] = [

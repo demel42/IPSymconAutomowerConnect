@@ -10,13 +10,16 @@ class AutomowerConnectConfig extends IPSModule
     use AutomowerConnect\StubsCommonLib;
     use AutomowerConnectLocalLib;
 
-    private $ModuleDir;
-
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
 
-        $this->ModuleDir = __DIR__;
+        $this->CommonContruct(__DIR__);
+    }
+
+    public function __destruct()
+    {
+        $this->CommonDestruct();
     }
 
     public function Create()
@@ -25,8 +28,9 @@ class AutomowerConnectConfig extends IPSModule
 
         $this->RegisterPropertyInteger('ImportCategoryID', 0);
 
-        $this->RegisterAttributeString('UpdateInfo', '');
-        $this->RegisterAttributeString('DataCache', '');
+        $this->RegisterAttributeString('UpdateInfo', json_encode([]));
+        $this->RegisterAttributeString('ModuleStats', json_encode([]));
+        $this->RegisterAttributeString('DataCache', json_encode([]));
 
         $this->ConnectParent('{AEEFAA3E-8802-086D-6620-E971C03CBEFC}');
     }
