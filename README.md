@@ -238,6 +238,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 3.2 @ 03.11.2023 12:40
+  - Fix: bei der Anlage einer Splitter-Instanz wurde u.U. eine bereits vorhandene Websocket-Instanze verwendet
+  - update submodule CommonStubs
+
 - 3.1 @ 15.10.2023 13:51
   - Neu: Ermittlung von Speicherbedarf und Laufzeit (aktuell und für 31 Tage) und Anzeige im Panel "Information"
   - Fix: die Statistik der ApiCalls wird nicht mehr nach uri sondern nur noch host+cmd differenziert
@@ -358,7 +362,7 @@ Quellen:
   - die Positionen wurden bei LEAVING nicht in die Variable "Positions" protokolliert
   - Nutzung von Attributes statt Buffer (damit reboot-fest)
 
-- 2.3.6 @ 13.04.2022 17:17 
+- 2.3.6 @ 13.04.2022 17:17
   - Anpassung des Aktualisierungsintervalls: Korrektur von 2.3.3
 
 - 2.3.5 @ 13.04.2022 14:28

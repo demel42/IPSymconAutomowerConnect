@@ -57,7 +57,7 @@ class AutomowerConnectSplitter extends IPSModule
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
 
-        $this->ConnectParent('{D68FD31F-0E90-7019-F16C-1949BD3079EF}');
+        $this->RequireParent('{D68FD31F-0E90-7019-F16C-1949BD3079EF}');
     }
 
     public function GetConfigurationForParent()
