@@ -774,7 +774,13 @@ class AutomowerConnectDevice extends IPSModule
 
         $type = $this->GetArrayElem($jbuffer, 'type', '');
         if ($type == '') {
-            $this->SendDebug(__FUNCTION__, 'buffer=' . print_r($jbuffer, true), 0);
+            $this->SendDebug(__FUNCTION__, 'missing type, buffer=' . print_r($jbuffer, true), 0);
+            return;
+        }
+
+        $id = $this->GetArrayElem($jbuffer, 'id', '');
+        if ($id == '' || $id != $this->ReadPropertyString('id')) {
+            $this->SendDebug(__FUNCTION__, 'id mismatch, buffer=' . print_r($jbuffer, true), 0);
             return;
         }
 
@@ -788,6 +794,7 @@ class AutomowerConnectDevice extends IPSModule
             default:
                 break;
         }
+
         $this->SendDebug(__FUNCTION__, 'type=' . $type . ', attributes=' . print_r($attributes, true), 0);
         $this->DecodeAttributes($attributes);
     }

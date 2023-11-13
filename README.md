@@ -238,6 +238,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 3.3 @ 13.11.2023 11:01
+  - Fix: bei dem Empfang von Daten per Websocket wird nun die Geräte-ID ausgewertet und somit nur noch vom richtigen Gerät verarbeitet.
+
 - 3.2 @ 03.11.2023 12:40
   - Fix: bei der Anlage einer Splitter-Instanz wurde u.U. eine bereits vorhandene Websocket-Instanze verwendet
   - update submodule CommonStubs
