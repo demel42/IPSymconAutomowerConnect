@@ -238,6 +238,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 3.4 @ 09.12.2023 16:52
+  - Neu: ab IPS-Version 7 ist im Konfigurator die Angabe einer Import-Kategorie integriert, daher entfällt die bisher vorhandene separate Einstellmöglichkeit
+
 - 3.3 @ 13.11.2023 11:01
   - Fix: bei dem Empfang von Daten per Websocket wird nun die Geräte-ID ausgewertet und somit nur noch vom richtigen Gerät verarbeitet.
 
