@@ -47,8 +47,9 @@ class AutomowerConnectSplitter extends IPSModule
         $this->RegisterPropertyString('api_key', '');
         $this->RegisterPropertyString('api_secret', '');
 
+        $this->RegisterPropertyBoolean('collectApiCallStats', true);
+
         $this->RegisterAttributeString('UpdateInfo', json_encode([]));
-        $this->RegisterAttributeString('ApiCallStats', json_encode([]));
         $this->RegisterAttributeString('ModuleStats', json_encode([]));
 
         $this->SetBuffer('LastApiCall', 0);
@@ -164,7 +165,7 @@ class AutomowerConnectSplitter extends IPSModule
                 'unit'  => 'month',
             ];
         }
-        $this->ApiCallsSetInfo($apiLimits, '');
+        $this->ApiCallSetInfo($apiLimits, '');
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
@@ -426,6 +427,12 @@ class AutomowerConnectSplitter extends IPSModule
                 break;
         }
 
+        $formElements[] = [
+            'type'    => 'CheckBox',
+            'name'    => 'collectApiCallStats',
+            'caption' => 'Collect data of API calls'
+        ];
+
         return $formElements;
     }
 
@@ -457,19 +464,25 @@ class AutomowerConnectSplitter extends IPSModule
             'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "TestAccount", "");',
         ];
 
+        $items = [
+            $this->GetInstallVarProfilesFormItem(),
+            [
+                'type'    => 'Button',
+                'caption' => 'Clear token',
+                'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "ClearToken", "");',
+            ],
+        ];
+
+        $collectApiCallStats = $this->ReadPropertyBoolean('collectApiCallStats');
+        if ($collectApiCallStats) {
+            $items[] = $this->GetApiCallStatsFormItem();
+        }
+
         $formActions[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Expert area',
             'expanded'  => false,
-            'items'     => [
-                $this->GetInstallVarProfilesFormItem(),
-                [
-                    'type'    => 'Button',
-                    'caption' => 'Clear token',
-                    'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "ClearToken", "");',
-                ],
-                $this->GetApiCallStatsFormItem(),
-            ]
+            'items'     => $items,
         ];
 
         $formActions[] = $this->GetInformationFormAction();
@@ -993,7 +1006,10 @@ class AutomowerConnectSplitter extends IPSModule
             $this->MaintainStatus($statuscode);
         }
 
-        $this->ApiCallsCollect($url, $err, $statuscode);
+        $collectApiCallStats = $this->ReadPropertyBoolean('collectApiCallStats');
+        if ($collectApiCallStats) {
+            $this->ApiCallCollect($url, $err, $statuscode);
+        }
 
         return $data;
     }
