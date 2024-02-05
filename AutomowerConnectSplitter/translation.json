@@ -10,6 +10,9 @@
 			"'Application secret' or Username and Password must be specified":
 				"'Application secret' oder Benutzerkennung und Passwort müssen angegeben werden",
 
+			"__function__": "CheckUpdate",
+			"Set ident of media objects": "Ident der Media-Objekte setzen",
+
 			"__elements__": "",
 			"Disable instance": "Instanz deaktivieren",
 
@@ -47,6 +50,9 @@
 			"Valid account-data": "gültige Zugangsdaten",
 			"Mower": "Rasenmäher",
 			"Model": "Modell",
+
+			"__media__": "",
+			"API call statistics": "API-Aufruf-Statistkdaten",
 
 			"__end__": ""
 		}
