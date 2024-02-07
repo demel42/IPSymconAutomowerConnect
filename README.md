@@ -238,8 +238,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 3.6 @ 28.01.2024 16:45
+- 3.6 @ 07.02.2024 17:31
   - Änderung: Medien-Objekte haben zur eindeutigen Identifizierung jetzt ebenfalls ein Ident
+  - Fix: Absicherung von Zugriffen auf andere Instanzen in Konfiguratoren
   - update submodule CommonStubs
 
 - 3.5 @ 27.01.2024 11:09

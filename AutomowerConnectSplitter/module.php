@@ -209,7 +209,7 @@ class AutomowerConnectSplitter extends IPSModule
                     'unit'  => 'month',
                 ];
             }
-			$apiNotes = '';
+            $apiNotes = '';
             $this->ApiCallSetInfo($apiLimits, $apiNotes);
         }
 

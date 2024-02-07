@@ -114,6 +114,7 @@ class AutomowerConnectConfig extends IPSModule
         if (is_array($mowers)) {
             foreach ($mowers['data'] as $mower) {
                 $this->SendDebug(__FUNCTION__, 'mower=' . print_r($mower, true), 0);
+
                 $id = $this->GetArrayElem($mower, 'id', '');
                 $name = $this->GetArrayElem($mower, 'attributes.system.name', '');
                 $model = $this->GetArrayElem($mower, 'attributes.system.model', '');
@@ -124,7 +125,7 @@ class AutomowerConnectConfig extends IPSModule
 
                 $instanceID = 0;
                 foreach ($instIDs as $instID) {
-                    if (IPS_GetProperty($instID, 'serial') == $serial) {
+                    if (@IPS_GetProperty($instID, 'serial') == $serial) {
                         $this->SendDebug(__FUNCTION__, 'instance found: ' . IPS_GetName($instID) . ' (' . $instID . ')', 0);
                         $instanceID = $instID;
                         break;
@@ -133,7 +134,7 @@ class AutomowerConnectConfig extends IPSModule
                 // Kompatibilität mit alter API
                 if ($instanceID == 0) {
                     foreach ($instIDs as $instID) {
-                        $device_id = IPS_GetProperty($instID, 'device_id');
+                        @$device_id = IPS_GetProperty($instID, 'device_id');
                         if (preg_match('/^([^-]*)-.*$/', $device_id, $r)) {
                             $device_id = $r[1];
                         }
@@ -166,9 +167,8 @@ class AutomowerConnectConfig extends IPSModule
                         ],
                     ],
                 ];
-
                 $entries[] = $entry;
-                $this->SendDebug(__FUNCTION__, 'entry=' . print_r($entry, true), 0);
+                $this->SendDebug(__FUNCTION__, 'instanceID=' . $instanceID . ', entry=' . print_r($entry, true), 0);
             }
         }
         foreach ($instIDs as $instID) {
@@ -188,9 +188,9 @@ class AutomowerConnectConfig extends IPSModule
             }
 
             $name = IPS_GetName($instID);
-            $model = IPS_GetProperty($instID, 'model');
-            $serial = IPS_GetProperty($instID, 'serial');
-            $id = IPS_GetProperty($instID, 'id');
+            @$model = IPS_GetProperty($instID, 'model');
+            @$serial = IPS_GetProperty($instID, 'serial');
+            @$id = IPS_GetProperty($instID, 'id');
 
             $entry = [
                 'instanceID' => $instID,
@@ -199,9 +199,8 @@ class AutomowerConnectConfig extends IPSModule
                 'serial'     => $serial,
                 'id'         => $id,
             ];
-
             $entries[] = $entry;
-            $this->SendDebug(__FUNCTION__, 'missing entry=' . print_r($entry, true), 0);
+            $this->SendDebug(__FUNCTION__, 'lost: instanceID=' . $instID . ', entry=' . print_r($entry, true), 0);
         }
 
         return $entries;
