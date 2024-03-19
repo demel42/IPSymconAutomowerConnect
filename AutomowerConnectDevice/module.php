@@ -919,6 +919,7 @@ class AutomowerConnectDevice extends IPSModule
             'UNTIL_FURTHER_NOTICE' => 'until further notice',
             'FROST'                => 'frost',
             'FOTA'                 => 'firmware update',
+            'EXTERNAL'             => 'external control',
         ];
 
         if (isset($val2txt[$val])) {

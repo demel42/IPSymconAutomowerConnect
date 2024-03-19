@@ -238,6 +238,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 3.7 @ 19.03.2024 18:05
+  - Ergänzung: "Grund für Inaktivität" ergänzt um EXTERNAL ("Fremdsteuerung")
+
 - 3.6 @ 07.02.2024 17:31
   - Änderung: Medien-Objekte haben zur eindeutigen Identifizierung jetzt ebenfalls ein Ident
   - Fix: Absicherung von Zugriffen auf andere Instanzen in Konfiguratoren
