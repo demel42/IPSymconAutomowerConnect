@@ -20,7 +20,7 @@ class AutomowerConnectSplitter extends IPSModule
     {
         parent::__construct($InstanceID);
 
-        $this->CommonContruct(__DIR__);
+        $this->CommonConstruct(__DIR__);
         $this->SemaphoreID = __CLASS__ . '_' . $InstanceID;
     }
 
@@ -364,7 +364,7 @@ class AutomowerConnectSplitter extends IPSModule
 
         if (IPS_GetKernelRunlevel() == KR_READY && $message == IM_CHANGESTATUS && $senderID == $this->GetConnectionID()) {
             $this->SendDebug(__FUNCTION__, 'timestamp=' . $timestamp . ', senderID=' . $senderID . ', message=' . $message . ', data=' . print_r($data, true), 0);
-            if ($data[0] == IS_ACTIVE && $data[1] == IS_INACTIVE) {
+            if ($data[0] == IS_ACTIVE && $data[1] != IS_ACTIVE) {
                 $this->MaintainTimer('RenewTimer', 60 * 1000);
             }
         }

@@ -115,8 +115,8 @@ Einstellen der Scheinwerfer. _Value_ bedeutet
 |                              |         |              | |
 | Verbindungstyp               | integer |              | IP-Symcon-Connect oder Anwendungsschlüssel |
 
-| Application key              | string  |              | aus dem Huyqvarna-Konto |
-| Application secret           | string  |              | aus dem Huyqvarna-Konto |
+| Application key              | string  |              | aus dem Husqvarna-Konto |
+| Application secret           | string  |              | aus dem Husqvarna-Konto |
 | Benutzerkennung              | string  |              | Mail-Adresse |
 | Passwort                     | string  |              | |
 
@@ -237,6 +237,13 @@ Quellen:
   - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
 
 ## 7. Versions-Historie
+
+- 3.8 @ 19.07.2024 17:40
+  - Fix: Variablenprofil "Automower.CuttingHeight" korrigiert
+  - Fix: Schreibfehler im README korrigiert
+  - Verbesserung: Erkennung der Inaktivität des Parent (WebSocket-IO) verbessert
+  - interne Änderung
+  - update submodule CommonStubs
 
 - 3.7 @ 15.04.2024 11:44
   - Ergänzung: "Grund für Inaktivität" ergänzt um EXTERNAL ("Fremdsteuerung")

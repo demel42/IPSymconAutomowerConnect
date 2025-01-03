@@ -189,7 +189,19 @@ trait AutomowerConnectLocalLib
         ];
         $this->CreateVarProfile('Automower.HeadlightMode', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
 
-        $this->CreateVarProfile('Automower.CuttingHeight', VARIABLETYPE_INTEGER, ' cm', 1, 9, 1, 0, '', [], $reInstall);
+        $associations = [
+            ['Wert' => 0, 'Name' => '0 (2,0 cm)', 'Farbe' => -1],
+            ['Wert' => 1, 'Name' => '1 (2,4 cm)', 'Farbe' => -1],
+            ['Wert' => 2, 'Name' => '2 (2,9 cm)', 'Farbe' => -1],
+            ['Wert' => 3, 'Name' => '3 (3,3 cm)', 'Farbe' => -1],
+            ['Wert' => 4, 'Name' => '4 (3,8 cm)', 'Farbe' => -1],
+            ['Wert' => 5, 'Name' => '5 (4,2 cm)', 'Farbe' => -1],
+            ['Wert' => 6, 'Name' => '6 (4,6 cm)', 'Farbe' => -1],
+            ['Wert' => 7, 'Name' => '7 (5,1 cm)', 'Farbe' => -1],
+            ['Wert' => 8, 'Name' => '8 (5,5 cm)', 'Farbe' => -1],
+            ['Wert' => 9, 'Name' => '9 (6,0 cm)', 'Farbe' => -1],
+        ];
+        $this->CreateVarProfile('Automower.CuttingHeight', VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, '', $associations, $reInstall);
 
         $this->CreateVarProfile('Automower.Time', VARIABLETYPE_INTEGER, ' s', 0, 0, 0, 0, '', [], $reInstall);
 

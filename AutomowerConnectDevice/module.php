@@ -14,7 +14,7 @@ class AutomowerConnectDevice extends IPSModule
     {
         parent::__construct($InstanceID);
 
-        $this->CommonContruct(__DIR__);
+        $this->CommonConstruct(__DIR__);
     }
 
     public function __destruct()
@@ -90,6 +90,10 @@ class AutomowerConnectDevice extends IPSModule
             $r[] = $this->Translate('Please check and correct a possible usage of the old variable.');
         }
 
+        if ($this->version2num($oldInfo) < $this->version2num('3.8')) {
+            $r[] = $this->Translate('Variableprofile \'Automower.CuttingHeight\' will be corrected');
+        }
+
         return $r;
     }
 
@@ -129,6 +133,13 @@ class AutomowerConnectDevice extends IPSModule
             if (@$varID != false) {
                 $this->UnregisterVariable('MowerStatus');
             }
+        }
+
+        if ($this->version2num($oldInfo) < $this->version2num('3.8')) {
+            if (IPS_VariableProfileExists('Automower.CuttingHeight')) {
+                IPS_DeleteVariableProfile('Automower.CuttingHeight');
+            }
+            $this->InstallVarProfiles(false);
         }
 
         return '';

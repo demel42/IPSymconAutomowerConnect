@@ -14,6 +14,7 @@
 				"Die Variable 'MowerStatus' vom Typ string wird gelöscht und durch 'MowerState' vom Typ int ersetzt.",
 			"Please check and correct a possible usage of the old variable.":
 				"Bitte prüfen und korrigieren Sie eine mögliche Verwendung der alten Variable.",
+			"Variableprofile 'Automower.CuttingHeight' will be corrected": "Variablenprofil 'Automower.CuttingHeight' wird korrigiert",
 
 			"__function__": "CheckModuleConfiguration",
 			"Field \"Serial\" is empty": "Feld \"Serial\" ist leer",
