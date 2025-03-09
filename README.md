@@ -238,6 +238,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 3.9 @ 09.03.2025 11:47
+  - Verbesserung: neue API-Version mit Änderung an der Event-Schnittstelle
+
 - 3.8 @ 19.07.2024 17:40
   - Fix: Variablenprofil "Automower.CuttingHeight" korrigiert
   - Fix: Schreibfehler im README korrigiert

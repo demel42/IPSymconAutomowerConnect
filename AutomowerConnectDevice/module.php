@@ -783,31 +783,163 @@ class AutomowerConnectDevice extends IPSModule
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($jdata, true), 0);
         $jbuffer = json_decode($jdata['Buffer'], true);
 
+        $connectionId = $this->GetArrayElem($jbuffer, 'connectionId', '');
+        if ($connectionId != '') {
+            $ready = (bool) $this->GetArrayElem($jbuffer, 'ready', false);
+            $this->SendDebug(__FUNCTION__, 'connectionId=' . $connectionId . ', ready=' . $this->bool2str($ready), 0);
+            return;
+        }
+
         $type = $this->GetArrayElem($jbuffer, 'type', '');
-        if ($type == '') {
-            $this->SendDebug(__FUNCTION__, 'missing type, buffer=' . print_r($jbuffer, true), 0);
+        if ($type != '') {
+            $id = $this->GetArrayElem($jbuffer, 'id', '');
+            if ($id == '' || $id != $this->ReadPropertyString('id')) {
+                $this->SendDebug(__FUNCTION__, 'id mismatch, buffer=' . print_r($jbuffer, true), 0);
+                return;
+            }
+
+            $attributes = $this->GetArrayElem($jbuffer, 'attributes', '');
+            $_attributes = false;
+            switch ($type) {
+                case 'settings-event':
+                    $_attributes = [
+                        'settings' => $attributes,
+                    ];
+                    break;
+                case 'battery-event-v2':
+                    /*
+                        "attributes": {
+                            "battery": {
+                                "batteryPercent": 77
+                            }
+                        }
+                     */
+                    $_attributes = $attributes;
+                    break;
+                case 'calendar-event-v2':
+                    /*
+                        "attributes": {
+                            "calendar": {
+                                "tasks": [
+                                    {
+                                        "start": 420,
+                                        "duration": 780,
+                                        "workAreaId": 78543,
+                                        "monday": true,
+                                        "tuesday": true,
+                                        "wednesday": true,
+                                        "thursday": true,
+                                        "friday": true,
+                                        "saturday": false,
+                                        "sunday": false
+                                    }
+                                ]
+                            }
+                        }
+                     */
+                    break;
+                case 'cuttingHeight-event-v2':
+                    /*
+                        "attributes": {
+                            "cuttingHeight": {
+                                "height": 5
+                            }
+                        }
+                     */
+                    $_attributes = [
+                        'settings' => [
+                            'cuttingHeight' => $attributes['cuttingHeight']['height'],
+                        ],
+                    ];
+                    break;
+                case 'headLights-event-v2':
+                    /*
+                        "attributes": {
+                            "headLight": {
+                                "mode": "ALWAYS_ON"
+                            }
+                        }
+                     */
+                    $_attributes = [
+                        'settings' => $attributes,
+                    ];
+                    break;
+                case 'messages-event-v2':
+                    /*
+                        "attributes": {
+                            "message": {
+                                "time": 1728034996,
+                                "code": 3,
+                                "severity": "WARNING",
+                                "latitude": 57.7086409,
+                                "longitude": 14.1678988
+                            }
+                        }
+                     */
+                    break;
+                case 'mower-event-v2':
+                    /*
+                        "attributes": {
+                            "mower": {
+                                "mode": "MAIN_AREA",
+                                "activity": "MOWING",
+                                "inactiveReason": "NONE",
+                                "state": "IN_OPERATION",
+                                "errorCode": 0,
+                                "isErrorConfirmable": false,
+                                "workAreaId": "78555",
+                                "errorCodeTimestamp": 0 // In local time for the mower
+                            }
+                        }
+                     */
+                    $_attributes = $attributes;
+                    break;
+                case 'planner-event-v2':
+                    /*
+                        "attributes": {
+                            "planner": {
+                                "nextStartTimestamp": 0, // In local time for the mower
+                                "override": {
+                                    "action": "FORCE_MOW"
+                                },
+                                "restrictedReason": "PARK_OVERRIDE",
+                                "externalReason": 7
+                            }
+                        }
+                     */
+                    $_attributes = $attributes;
+                    break;
+                case 'position-event-v2':
+                    /*
+                        "attributes": {
+                            "position": {
+                                "latitude": 57.70074,
+                                "longitude": 14.4787133
+                            }
+                        }
+                     */
+                    $_attributes = [
+                        'positions' => [
+                            $attributes['position'],
+                        ],
+                    ];
+                    break;
+                default:
+                    break;
+            }
+
+            if ($_attributes == false) {
+                $this->SendDebug(__FUNCTION__, 'unknown/unsupported event type=' . $type . ', attributes=' . print_r($attributes, true), 0);
+                return;
+            }
+
+            $this->SendDebug(__FUNCTION__, 'type=' . $type . ', attributes=' . print_r($_attributes, true), 0);
+            $this->DecodeAttributes($_attributes);
             return;
         }
 
-        $id = $this->GetArrayElem($jbuffer, 'id', '');
-        if ($id == '' || $id != $this->ReadPropertyString('id')) {
-            $this->SendDebug(__FUNCTION__, 'id mismatch, buffer=' . print_r($jbuffer, true), 0);
-            return;
-        }
-
-        $attributes = $this->GetArrayElem($jbuffer, 'attributes', '');
-        switch ($type) {
-            case 'settings-event':
-                $attributes = [
-                    'settings' => $attributes,
-                ];
-                break;
-            default:
-                break;
-        }
-
-        $this->SendDebug(__FUNCTION__, 'type=' . $type . ', attributes=' . print_r($attributes, true), 0);
-        $this->DecodeAttributes($attributes);
+        $this->SendDebug(__FUNCTION__, 'unsupported message ' . print_r($jbuffer, true), 0);
+        return;
     }
 
     private function LocalRequestAction($ident, $value)
