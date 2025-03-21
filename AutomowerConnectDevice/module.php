@@ -503,24 +503,33 @@ class AutomowerConnectDevice extends IPSModule
         }
 
         if (isset($attributes['mower'])) {
-            $mower_mode = $this->GetArrayElem($attributes, 'mower.mode', '');
-            $operatingMode = $this->decode_operatingMode($mower_mode);
-            $this->SendDebug(__FUNCTION__, 'mower_mode="' . $mower_mode . '" => OperationMode=' . $operatingMode, 0);
-            $this->SetValue('OperationMode', $operatingMode);
+            $operatingMode = '';
+            $mower_mode = $this->GetArrayElem($attributes, 'mower.mode', '', $fnd);
+            if ($fnd) {
+                $operatingMode = $this->decode_operatingMode($mower_mode);
+                $this->SendDebug(__FUNCTION__, 'mower_mode="' . $mower_mode . '" => OperationMode=' . $operatingMode, 0);
+                $this->SetValue('OperationMode', $operatingMode);
+            }
 
-            $mower_state = $this->GetArrayElem($attributes, 'mower.state', '');
-            $mowerState = $this->decode_mowerState($mower_state);
-            $s = $this->CheckVarProfile4Value('Automower.State', $mowerState);
-            $this->SendDebug(__FUNCTION__, 'mower_state="' . $mower_state . '" => ' . $mowerState . '(' . $s . ')', 0);
-            $this->SetValue('MowerState', $mowerState);
+            $mowerState = self::$STATE_UNKNOWN;
+            $mower_state = $this->GetArrayElem($attributes, 'mower.state', '', $fnd);
+            if ($fnd) {
+                $mowerState = $this->decode_mowerState($mower_state);
+                $s = $this->CheckVarProfile4Value('Automower.State', $mowerState);
+                $this->SendDebug(__FUNCTION__, 'mower_state="' . $mower_state . '" => ' . $mowerState . '(' . $s . ')', 0);
+                $this->SetValue('MowerState', $mowerState);
+            }
 
             $oldActivity = $this->GetValue('MowerActivity');
 
-            $mower_activity = $this->GetArrayElem($attributes, 'mower.activity', '');
-            $mowerActivity = $this->decode_mowerActivity($mower_activity);
-            $s = $this->CheckVarProfile4Value('Automower.Activity', $mowerActivity);
-            $this->SendDebug(__FUNCTION__, 'mower_activity="' . $mower_activity . '" => ' . $mowerActivity . '(' . $s . ')', 0);
-            $this->SetValue('MowerActivity', $mowerActivity);
+            $mowerActivity = self::$ACTIVITY_UNKNOWN;
+            $mower_activity = $this->GetArrayElem($attributes, 'mower.activity', '', $fnd);
+            if ($fnd) {
+                $mowerActivity = $this->decode_mowerActivity($mower_activity);
+                $s = $this->CheckVarProfile4Value('Automower.Activity', $mowerActivity);
+                $this->SendDebug(__FUNCTION__, 'mower_activity="' . $mower_activity . '" => ' . $mowerActivity . '(' . $s . ')', 0);
+                $this->SetValue('MowerActivity', $mowerActivity);
+            }
 
             $enableStart = false;
             $enablePause = false;
@@ -651,14 +660,15 @@ class AutomowerConnectDevice extends IPSModule
             $planner_override = $this->GetArrayElem($attributes, 'planner.override.action', '');
             $this->SendDebug(__FUNCTION__, 'planner_override=' . $planner_override, 0);
 
-            $restricted_reason = $this->GetArrayElem($attributes, 'planner.restrictedReason', '');
-            if ($mower_state == 'RESTRICTED') {
-                if ($restricted_reason == 'NOT_APPLICABLE' && $mower_activity == 'PARKED_IN_CS') {
-                    $restricted_reason = 'UNTIL_FURTHER_NOTICE';
+            $restrictedReason = '';
+            $restricted_reason = $this->GetArrayElem($attributes, 'planner.restrictedReason', '', $fnd);
+            if ($fnd) {
+                if ($mower_state == 'RESTRICTED') {
+                    if ($restricted_reason == 'NOT_APPLICABLE' && $mower_activity == 'PARKED_IN_CS') {
+                        $restricted_reason = 'UNTIL_FURTHER_NOTICE';
+                    }
+                    $restrictedReason = $this->decode_restrictedReason($restricted_reason);
                 }
-                $restrictedReason = $this->decode_restrictedReason($restricted_reason);
-            } else {
-                $restrictedReason = '';
             }
 
             $this->SendDebug(__FUNCTION__, 'restricted_reason="' . $restricted_reason . '" => ' . $restrictedReason, 0);
