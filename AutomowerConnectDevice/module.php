@@ -537,7 +537,7 @@ class AutomowerConnectDevice extends IPSModule
 
             switch ($mowerActivity) {
                 case self::$ACTIVITY_NOT_APPLICABLE:
-                    if ($mower_state == 'PAUSED') {
+                    if ($mowerState == self::$STATE_PAUSED) {
                         $enableStart = true;
                         $enablePark = true;
                     }
@@ -663,7 +663,8 @@ class AutomowerConnectDevice extends IPSModule
             $restrictedReason = '';
             $restricted_reason = $this->GetArrayElem($attributes, 'planner.restrictedReason', '', $fnd);
             if ($fnd) {
-                if ($mower_state == 'RESTRICTED') {
+                $mowerState = $this->GetValue('MowerState');
+                if ($mowerState == self::$STATE_RESTRICTED) {
                     if ($restricted_reason == 'NOT_APPLICABLE' && $mower_activity == 'PARKED_IN_CS') {
                         $restricted_reason = 'UNTIL_FURTHER_NOTICE';
                     }

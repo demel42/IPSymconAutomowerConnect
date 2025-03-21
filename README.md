@@ -238,7 +238,7 @@ Quellen:
 
 ## 7. Versions-Historie
 
-- 3.9.1 @ 21.03.2025 13:10
+- 3.9.1 @ 21.03.2025 16:53
   - Fix: es scheinen unter bestimmten Umständen Felder zu fehlen, wird nun abgefangen
 
 - 3.9 @ 09.03.2025 11:47
