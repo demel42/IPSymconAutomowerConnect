@@ -100,6 +100,8 @@
 			"frost": "Frost",
 			"firmware update": "Firmware Update",
 			"external control": "Fremdsteuerung",
+			"all areas completed": "alle Bereiche fertig",
+			"searching for satellites": "Suche nach Satelliten",
 			"unknown": "unbekannt",
 
 			"__variable__": "OperationMode",

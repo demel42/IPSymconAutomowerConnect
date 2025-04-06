@@ -1063,17 +1063,19 @@ class AutomowerConnectDevice extends IPSModule
     private function decode_restrictedReason($val)
     {
         $val2txt = [
-            'NONE'                 => 'none',
-            'UNKNOWN'              => 'unknown',
-            'NOT_APPLICABLE'       => 'not applicable',
-            'WEEK_SCHEDULE'        => 'week schedule',
-            'PARK_OVERRIDE'        => 'park overwrite',
-            'SENSOR'               => 'sensor',
-            'DAILY_LIMIT'          => 'daily limit',
-            'UNTIL_FURTHER_NOTICE' => 'until further notice',
-            'FROST'                => 'frost',
-            'FOTA'                 => 'firmware update',
-            'EXTERNAL'             => 'external control',
+            'NONE'                     => 'none',
+            'UNKNOWN'                  => 'unknown',
+            'NOT_APPLICABLE'           => 'not applicable',
+            'WEEK_SCHEDULE'            => 'week schedule',
+            'PARK_OVERRIDE'            => 'park overwrite',
+            'SENSOR'                   => 'sensor',
+            'DAILY_LIMIT'              => 'daily limit',
+            'UNTIL_FURTHER_NOTICE'     => 'until further notice',
+            'FROST'                    => 'frost',
+            'FOTA'                     => 'firmware update',
+            'EXTERNAL'                 => 'external control',
+            'ALL_WORK_AREAS_COMPLETED' => 'all areas completed',
+            'SEARCHING_FOR_SATELLITES' => 'searching for satellites',
         ];
 
         if (isset($val2txt[$val])) {

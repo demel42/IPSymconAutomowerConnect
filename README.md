@@ -238,6 +238,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 3.9.2 @ 06.04.2025 08:09
+  - Fix: fehlende Umsetzung des Datenfelds "RestrictedReason"
+
 - 3.9.1 @ 21.03.2025 16:53
   - Fix: es scheinen unter bestimmten Umständen Felder zu fehlen, wird nun abgefangen
 
