@@ -92,6 +92,10 @@ class AutomowerConnectSplitter extends IPSModule
 
     // bei jeder Änderung des access_token muss dieser im WebsocketClient als Header gesetzt werden
     // Rücksprache mit NT per Mail am 26.04.2023
+	// Das temporäre Inaktiv-Setzen des IO dient dazu, ein Problem im IO zu reparieren: es kommt unter
+	// bestimmten Umstäbnen wohl dazu, das der IO keine Verbindung zur Gegenseite hat, sich aber auch
+	// nicht mehr von alleine neu startet.
+	// AKtiv wird der IO wieder durch das GetConfigurationForParent() // IPS_SetConfiguration() gesetzt.
     private function UpdateConfigurationForParent()
     {
         if (IPS_GetInstance($this->GetConnectionID())['InstanceStatus'] >= IS_EBASE) {
