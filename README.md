@@ -109,16 +109,26 @@ Einstellen der Scheinwerfer. _Value_ bedeutet
 
 ### Einstellungen
 
-| Eigenschaft                  | Typ     | Standardwert | Beschreibung |
-| :--------------------------- | :-----  | :----------- | :----------- |
-| Instanz ist deaktiviert      | boolean | false        | Instanz temporär deaktivieren |
-|                              |         |              | |
-| Verbindungstyp               | integer |              | IP-Symcon-Connect oder Anwendungsschlüssel |
+| Eigenschaft                    | Typ     | Standardwert | Beschreibung |
+| :----------------------------- | :-----  | :----------- | :----------- |
+| Instanz ist deaktiviert        | boolean | false        | Instanz temporär deaktivieren |
+|                                |         |              | |
+| Verbindungstyp                 | integer |              | IP-Symcon-Connect oder Anwendungsschlüssel |
+|                                |         |              | |
+| Application key                | string  |              | aus dem Husqvarna-Konto |
+| Application secret             | string  |              | aus dem Husqvarna-Konto |
+| Benutzerkennung                | string  |              | Mail-Adresse |
+| Passwort                       | string  |              | |
+|                                |         |              | |
+|                                |         |              | Behandlung von Kommunikationsfehlern _[1]_ |
+| Timeout eines Abrufs           | integer | 15           | - Timeout eines HTTP-Aufrufs in Sekunden |
+| Anzahl der Versuche            | integer | 3            | - Anzahl der Versuche nach Kommunikationsfehler |
+| Verzögerung zwischen Versuchen | float   | 1            | - Verzögerung zwischen den Versuchen in Sekunden |
 
-| Application key              | string  |              | aus dem Husqvarna-Konto |
-| Application secret           | string  |              | aus dem Husqvarna-Konto |
-| Benutzerkennung              | string  |              | Mail-Adresse |
-| Passwort                     | string  |              | |
+_[1]_: als Kommunikationsfehler werden die Abrufe definiert, bei der es keine qualifizierte Reaktion der Gegenseite gibt (also einen HTTP-Code).<br>
+Achtung: die maximale Wartezeit in Sekunden berechnet sich wie folgt: ((*Timeout* + *Verzögerung*) * *Anzahl*) + 1 => solange ist der Thread der Instanz maximal blockiert!<br>
+Ein Hinweis: diese Angabe betreffen nur die Kommunikation durch das Splitter-Modul. Der als IO verwendete WebSocket-Client ist Bestandteil von Symcon und kann nicht geändert werden. 
+Der Splitter versucht, eventuelle problematische Situationen in der IO-Instanz zu "reparieren".
 
 ### Aktionen
 
@@ -237,6 +247,11 @@ Quellen:
   - https://developer.husqvarnagroup.cloud/apis/Automower+Connect+API
 
 ## 7. Versions-Historie
+
+- 3.10 @ 12.04.2025 11:42
+  - Verbesserung: ein aufgrund Nichterreichbarkeit des Servers fehlgeschlagener HTTP-Aufruf wird mehrfach wiederholt.
+    Der Timeout des Abrufs und die Anzahl der Versuche und die Verzögerung zwischen den Versuchen kann nun eingestellt werden.
+    Achtung: Hinweis zu diesen Einstellungen im README.md beachten
 
 - 3.9.2 @ 06.04.2025 08:09
   - Fix: fehlende Umsetzung des Datenfelds "RestrictedReason"

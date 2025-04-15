@@ -12,9 +12,8 @@ class AutomowerConnectSplitter extends IPSModule
 
     private $oauthIdentifer = 'husqvarna';
 
-    private static $semaphoreTM = 5 * 1000;
-
     private $SemaphoreID;
+    private $SemaphoreTM;
 
     public function __construct(string $InstanceID)
     {
@@ -46,6 +45,10 @@ class AutomowerConnectSplitter extends IPSModule
         $this->RegisterPropertyString('password', '');
         $this->RegisterPropertyString('api_key', '');
         $this->RegisterPropertyString('api_secret', '');
+
+        $this->RegisterPropertyInteger('curl_exec_timeout', 15);
+        $this->RegisterPropertyInteger('curl_exec_attempts', 3);
+        $this->RegisterPropertyFloat('curl_exec_delay', 1);
 
         $this->RegisterPropertyBoolean('collectApiCallStats', true);
 
@@ -91,7 +94,14 @@ class AutomowerConnectSplitter extends IPSModule
     // Rücksprache mit NT per Mail am 26.04.2023
     private function UpdateConfigurationForParent()
     {
-        $this->SendDebug(__FUNCTION__, '', 0);
+        if (IPS_GetInstance($this->GetConnectionID())['InstanceStatus'] >= IS_EBASE) {
+            if (IPS_GetProperty($this->GetConnectionID(), 'Active') == true) {
+                $this->SendDebug(__FUNCTION__, 'set parent inactive', 0);
+                IPS_SetProperty($this->GetConnectionID(), 'Active', false);
+                IPS_ApplyChanges($this->GetConnectionID());
+            }
+        }
+        $this->SendDebug(__FUNCTION__, 'update parent configuration', 0);
         $d = $this->GetConfigurationForParent();
         IPS_SetConfiguration($this->GetConnectionID(), $d);
         IPS_ApplyChanges($this->GetConnectionID());
@@ -224,6 +234,11 @@ class AutomowerConnectSplitter extends IPSModule
             $this->ClearToken();
             $this->WriteAttributeInteger('ConnectionType', $connection_type);
         }
+
+        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
+        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
+        $this->SemaphoreTM = ((($curl_exec_timeout + ceil($curl_exec_delay)) * $curl_exec_attempts) + 1) * 1000;
 
         $this->MaintainStatus(IS_ACTIVE);
 
@@ -474,6 +489,39 @@ class AutomowerConnectSplitter extends IPSModule
         }
 
         $formElements[] = [
+            'type'    => 'ExpansionPanel',
+            'items'   => [
+                [
+                    'type'    => 'Label',
+                    'caption' => 'Behavior of HTTP requests at the technical level'
+                ],
+                [
+                    'type'    => 'NumberSpinner',
+                    'minimum' => 0,
+                    'suffix'  => 'Seconds',
+                    'name'    => 'curl_exec_timeout',
+                    'caption' => 'Timeout of an HTTP call'
+                ],
+                [
+                    'type'    => 'NumberSpinner',
+                    'minimum' => 0,
+                    'name'    => 'curl_exec_attempts',
+                    'caption' => 'Number of attempts after communication failure'
+                ],
+                [
+                    'type'     => 'NumberSpinner',
+                    'minimum'  => 0.1,
+                    'maximum'  => 60,
+                    'digits'   => 1,
+                    'suffix'   => 'Seconds',
+                    'name'     => 'curl_exec_delay',
+                    'caption'  => 'Delay between attempts'
+                ],
+            ],
+            'caption' => 'Communication'
+        ];
+
+        $formElements[] = [
             'type'    => 'CheckBox',
             'name'    => 'collectApiCallStats',
             'caption' => 'Collect data of API calls'
@@ -614,75 +662,108 @@ class AutomowerConnectSplitter extends IPSModule
 
     protected function Call4ApiToken($content)
     {
+        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
+        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
+
         $url = 'https://oauth.ipmagic.de/access_token/' . $this->oauthIdentifer;
         $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
         $this->SendDebug(__FUNCTION__, '    content=' . print_r($content, true), 0);
 
-        $statuscode = 0;
-        $err = '';
-        $jdata = false;
+        $headerfields = [
+            'Content-Type' => 'application/x-www-form-urlencoded',
+        ];
 
         $time_start = microtime(true);
-        $options = [
-            'http' => [
-                'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
-                'method'  => 'POST',
-                'content' => http_build_query($content)
-            ]
+        $curl_opts = [
+            CURLOPT_URL            => $url,
+            CURLOPT_HTTPHEADER     => $this->build_header($headerfields),
+            CURLOPT_CUSTOMREQUEST  => 'POST',
+            CURLOPT_POSTFIELDS     => http_build_query($content),
+            CURLOPT_HEADER         => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => $curl_exec_timeout,
         ];
-        $context = stream_context_create($options);
-        $cdata = @file_get_contents($url, false, $context);
-        $duration = round(microtime(true) - $time_start, 2);
-        $httpcode = 0;
-        if ($cdata == false) {
-            $this->LogMessage('file_get_contents() failed: url=' . $url . ', context=' . print_r($context, true), KL_WARNING);
-            $this->SendDebug(__FUNCTION__, 'file_get_contents() failed: url=' . $url . ', context=' . print_r($context, true), 0);
-        } elseif (isset($http_response_header[0]) && preg_match('/HTTP\/[0-9\.]+\s+([0-9]*)/', $http_response_header[0], $r)) {
-            $httpcode = $r[1];
-        } else {
-            $this->LogMessage('missing http_response_header, cdata=' . $cdata, KL_WARNING);
-            $this->SendDebug(__FUNCTION__, 'missing http_response_header, cdata=' . $cdata, 0);
-        }
-        $this->SendDebug(__FUNCTION__, ' => httpcode=' . $httpcode . ', duration=' . $duration . 's', 0);
-        $this->SendDebug(__FUNCTION__, '    cdata=' . $cdata, 0);
 
-        if ($httpcode != 200) {
+        $ch = curl_init();
+        curl_setopt_array($ch, $curl_opts);
+
+        $statuscode = 0;
+        $err = '';
+        $jbody = false;
+
+        $attempt = 1;
+        do {
+            $response = curl_exec($ch);
+            $cerrno = curl_errno($ch);
+            $cerror = $cerrno ? curl_error($ch) : '';
+            if ($cerrno) {
+                $this->SendDebug(__FUNCTION__, ' => attempt=' . $attempt . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
+                IPS_Sleep((int) floor($curl_exec_delay * 1000));
+            }
+        } while ($cerrno && $attempt++ <= $curl_exec_attempts);
+
+        $curl_info = curl_getinfo($ch);
+        curl_close($ch);
+
+        $httpcode = $curl_info['http_code'];
+
+        $duration = round(microtime(true) - $time_start, 2);
+        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's, attempts=' . $attempt, 0);
+
+        if ($cerrno) {
+            $statuscode = self::$IS_SERVERERROR;
+            $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
+        } else {
+            $header_size = $curl_info['header_size'];
+            $head = substr($response, 0, $header_size);
+            $body = substr($response, $header_size);
+
+            $this->SendDebug(__FUNCTION__, ' => head=' . $head, 0);
+            if ($body == '' || ctype_print($body)) {
+                $this->SendDebug(__FUNCTION__, ' => body=' . $body, 0);
+            } else {
+                $this->SendDebug(__FUNCTION__, ' => body potentially contains binary data, size=' . strlen($body), 0);
+            }
+        }
+        if ($statuscode == 0) {
             if ($httpcode == 401) {
                 $statuscode = self::$IS_UNAUTHORIZED;
                 $err = 'got http-code ' . $httpcode . ' (unauthorized)';
             } elseif ($httpcode == 403) {
                 $statuscode = self::$IS_FORBIDDEN;
                 $err = 'got http-code ' . $httpcode . ' (forbidden)';
-            } elseif ($httpcode == 409) {
-                $data = $cdata;
             } elseif ($httpcode >= 500 && $httpcode <= 599) {
                 $statuscode = self::$IS_SERVERERROR;
                 $err = 'got http-code ' . $httpcode . ' (server error)';
-            } else {
+            } elseif ($httpcode != 200) {
                 $statuscode = self::$IS_HTTPERROR;
                 $err = 'got http-code ' . $httpcode;
             }
-        } elseif ($cdata == '') {
-            $statuscode = self::$IS_INVALIDDATA;
-            $err = 'no data';
-        } else {
-            $jdata = json_decode($cdata, true);
-            if ($jdata == '') {
+        }
+        if ($statuscode == 0) {
+            if ($body == '') {
                 $statuscode = self::$IS_INVALIDDATA;
-                $err = 'malformed response';
+                $err = 'no data';
             } else {
-                if (!isset($jdata['refresh_token'])) {
+                $jbody = json_decode($body, true);
+                if ($jbody == '') {
+                    $statuscode = self::$IS_NODATA;
+                    $err = 'malformed response';
+                } elseif (isset($jbody['refresh_token']) == false) {
                     $statuscode = self::$IS_INVALIDDATA;
                     $err = 'malformed response';
                 }
             }
         }
+
         if ($statuscode) {
+            $this->LogMessage('url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err, KL_WARNING);
             $this->SendDebug(__FUNCTION__, '    statuscode=' . $statuscode . ', err=' . $err, 0);
             $this->MaintainStatus($statuscode);
             return false;
         }
-        return $jdata;
+        return $jbody;
     }
 
     private function DeveloperApiAccessToken()
@@ -691,6 +772,9 @@ class AutomowerConnectSplitter extends IPSModule
         $password = $this->ReadPropertyString('password');
         $api_key = $this->ReadPropertyString('api_key');
         $api_secret = $this->ReadPropertyString('api_secret');
+        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
+        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
 
         $url = 'https://api.authentication.husqvarnagroup.dev/v1/oauth2/token';
 
@@ -727,14 +811,23 @@ class AutomowerConnectSplitter extends IPSModule
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        $cdata = curl_exec($ch);
-        $cerrno = curl_errno($ch);
-        $cerror = $cerrno ? curl_error($ch) : '';
+
+        $attempt = 1;
+        do {
+            $cdata = curl_exec($ch);
+            $cerrno = curl_errno($ch);
+            $cerror = $cerrno ? curl_error($ch) : '';
+            if ($cerrno) {
+                $this->SendDebug(__FUNCTION__, ' => attempt=' . $attempt . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
+                IPS_Sleep((int) floor($curl_exec_delay * 1000));
+            }
+        } while ($cerrno && $attempt++ <= $curl_exec_attempts);
+
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $duration = round(microtime(true) - $time_start, 2);
-        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's', 0);
+        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's, attempts=' . $attempt, 0);
         $this->SendDebug(__FUNCTION__, ' => cdata=' . $cdata, 0);
 
         $statuscode = 0;
@@ -773,7 +866,7 @@ class AutomowerConnectSplitter extends IPSModule
 
     private function GetApiAccessToken($renew = false)
     {
-        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return false;
         }
@@ -931,7 +1024,7 @@ class AutomowerConnectSplitter extends IPSModule
 
         $access_token = $this->GetApiAccessToken();
 
-        if (IPS_SemaphoreEnter($this->SemaphoreID, self::$semaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return;
         }
@@ -967,6 +1060,10 @@ class AutomowerConnectSplitter extends IPSModule
 
     private function do_HttpRequest($url, $header = '', $postdata = '')
     {
+        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
+        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
+
         $req = $postdata != '' ? 'post' : 'get';
 
         $this->SendDebug(__FUNCTION__, 'http-' . $req . ': url=' . $url, 0);
@@ -986,14 +1083,23 @@ class AutomowerConnectSplitter extends IPSModule
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        $cdata = curl_exec($ch);
-        $cerrno = curl_errno($ch);
-        $cerror = $cerrno ? curl_error($ch) : '';
+
+        $attempt = 1;
+        do {
+            $cdata = curl_exec($ch);
+            $cerrno = curl_errno($ch);
+            $cerror = $cerrno ? curl_error($ch) : '';
+            if ($cerrno) {
+                $this->SendDebug(__FUNCTION__, ' => attempt=' . $attempt . ', got curl-errno ' . $cerrno . ' (' . $cerror . ')', 0);
+                IPS_Sleep((int) floor($curl_exec_delay * 1000));
+            }
+        } while ($cerrno && $attempt++ <= $curl_exec_attempts);
+
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         $duration = round(microtime(true) - $time_start, 2);
-        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's', 0);
+        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's, attempts=' . $attempt, 0);
         $this->SendDebug(__FUNCTION__, ' => cdata=' . $cdata, 0);
 
         $statuscode = 0;
@@ -1101,5 +1207,25 @@ class AutomowerConnectSplitter extends IPSModule
             $this->SendDebug(__FUNCTION__, 'id=' . $id . ', name=' . $name . ', model=' . $model, 0);
         }
         $this->PopupMessage($msg);
+    }
+
+    private function build_url($url, $params)
+    {
+        $n = 0;
+        if (is_array($params)) {
+            foreach ($params as $param => $value) {
+                $url .= ($n++ ? '&' : '?') . $param . '=' . rawurlencode(strval($value));
+            }
+        }
+        return $url;
+    }
+
+    private function build_header($headerfields)
+    {
+        $header = [];
+        foreach ($headerfields as $key => $value) {
+            $header[] = $key . ': ' . $value;
+        }
+        return $header;
     }
 }
