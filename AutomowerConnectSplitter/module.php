@@ -13,7 +13,17 @@ class AutomowerConnectSplitter extends IPSModule
     private $oauthIdentifer = 'husqvarna';
 
     private $SemaphoreID;
-    private $SemaphoreTM;
+
+    private function GetSemaphoreTM()
+    {
+        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
+        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
+        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
+        $semaphoreTM = ((($curl_exec_timeout + ceil($curl_exec_delay)) * $curl_exec_attempts) + 1) * 1000;
+
+        //$this->SendDebug(__FUNCTION__, 'semaphoreTM='.$semaphoreTM, 0);
+        return $semaphoreTM;
+    }
 
     public function __construct(string $InstanceID)
     {
@@ -92,10 +102,10 @@ class AutomowerConnectSplitter extends IPSModule
 
     // bei jeder Änderung des access_token muss dieser im WebsocketClient als Header gesetzt werden
     // Rücksprache mit NT per Mail am 26.04.2023
-	// Das temporäre Inaktiv-Setzen des IO dient dazu, ein Problem im IO zu reparieren: es kommt unter
-	// bestimmten Umstäbnen wohl dazu, das der IO keine Verbindung zur Gegenseite hat, sich aber auch
-	// nicht mehr von alleine neu startet.
-	// AKtiv wird der IO wieder durch das GetConfigurationForParent() // IPS_SetConfiguration() gesetzt.
+    // Das temporäre Inaktiv-Setzen des IO dient dazu, ein Problem im IO zu reparieren: es kommt unter
+    // bestimmten Umstäbnen wohl dazu, das der IO keine Verbindung zur Gegenseite hat, sich aber auch
+    // nicht mehr von alleine neu startet.
+    // AKtiv wird der IO wieder durch das GetConfigurationForParent() // IPS_SetConfiguration() gesetzt.
     private function UpdateConfigurationForParent()
     {
         if (IPS_GetInstance($this->GetConnectionID())['InstanceStatus'] >= IS_EBASE) {
@@ -238,11 +248,6 @@ class AutomowerConnectSplitter extends IPSModule
             $this->ClearToken();
             $this->WriteAttributeInteger('ConnectionType', $connection_type);
         }
-
-        $curl_exec_timeout = $this->ReadPropertyInteger('curl_exec_timeout');
-        $curl_exec_attempts = $this->ReadPropertyInteger('curl_exec_attempts');
-        $curl_exec_delay = $this->ReadPropertyFloat('curl_exec_delay');
-        $this->SemaphoreTM = ((($curl_exec_timeout + ceil($curl_exec_delay)) * $curl_exec_attempts) + 1) * 1000;
 
         $this->MaintainStatus(IS_ACTIVE);
 
@@ -870,7 +875,7 @@ class AutomowerConnectSplitter extends IPSModule
 
     private function GetApiAccessToken($renew = false)
     {
-        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->GetSemaphoreTM()) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return false;
         }
@@ -1028,7 +1033,7 @@ class AutomowerConnectSplitter extends IPSModule
 
         $access_token = $this->GetApiAccessToken();
 
-        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->SemaphoreTM) == false) {
+        if (IPS_SemaphoreEnter($this->SemaphoreID, $this->GetSemaphoreTM()) == false) {
             $this->SendDebug(__FUNCTION__, 'unable to lock sempahore ' . $this->SemaphoreID, 0);
             return;
         }

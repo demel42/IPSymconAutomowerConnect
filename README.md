@@ -248,6 +248,9 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 3.11 @ 03.09.2025 16:57
+  - Fix: verbessertes Semaphore-Handling
+
 - 3.10 @ 12.04.2025 11:42
   - Verbesserung: ein aufgrund Nichterreichbarkeit des Servers fehlgeschlagener HTTP-Aufruf wird mehrfach wiederholt.
     Der Timeout des Abrufs und die Anzahl der Versuche und die Verzögerung zwischen den Versuchen kann nun eingestellt werden.
