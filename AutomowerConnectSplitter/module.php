@@ -268,7 +268,8 @@ class AutomowerConnectSplitter extends IPSModule
 
         $this->MaintainStatus(IS_ACTIVE);
 
-        if ($this->IsValidID($cID) && IPS_InstanceExists($cID)) {
+        $cID = $this->GetConnectionID();
+        if (IPS_InstanceExists($cID)) {
             $this->RegisterMessage($cID, IM_CHANGESTATUS);
         }
 
