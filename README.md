@@ -248,6 +248,13 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 3.12 @ 21.03.2026 08:41
+  - Fix: verbessertes Semaphore-Handling
+  - Fix: Zeitstempel werden von der API nicht mehr (immer?) in Millisekunden sondern nun in Sekunden übertragen
+  - Fix: es wurde auch bei deaktivierter Instanz der AccessToken versucht zu erneuern
+  - interne Änderung
+  - update submodule CommonStubs
+
 - 3.11 @ 03.09.2025 16:57
   - Fix: verbessertes Semaphore-Handling
 

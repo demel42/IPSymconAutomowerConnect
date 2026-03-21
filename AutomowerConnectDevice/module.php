@@ -1293,8 +1293,10 @@ class AutomowerConnectDevice extends IPSModule
     {
         if ($ts_s == '') {
             $ts = 0;
-        } else {
+        } elseif (strlen($ts_s) > 10) {
             $ts = (int) substr($ts_s, 0, -3);
+        } else {
+            $ts = (int) $ts_s;
         }
         if ($ts > 0) {
             // 'ts' ist nicht UTC sondern auf localtime umgerechnet.

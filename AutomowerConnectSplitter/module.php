@@ -91,11 +91,11 @@ class AutomowerConnectSplitter extends IPSModule
         $r = IPS_GetConfiguration($this->GetConnectionID());
         $j = [
             'Active'            => $active,
-            'Headers'           => json_encode($headers),
+            'Headers'           => json_encode($headers, JSON_UNESCAPED_SLASHES),
             'URL'               => 'wss://ws.openapi.husqvarna.dev/v1',
             'VerifyCertificate' => false,
         ];
-        $d = json_encode($j);
+        $d = json_encode($j, JSON_UNESCAPED_SLASHES);
         $this->SendDebug(__FUNCTION__, $d, 0);
         return $d;
     }
@@ -383,13 +383,19 @@ class AutomowerConnectSplitter extends IPSModule
                     $this->RenewToken();
                 }
             }
-            $this->SetRefreshTimer();
+            $module_disable = $this->ReadPropertyBoolean('module_disable');
+            if ($module_disable == false) {
+                $this->SetRefreshTimer();
+            }
         }
 
         if (IPS_GetKernelRunlevel() == KR_READY && $message == IM_CHANGESTATUS && $senderID == $this->GetConnectionID()) {
             $this->SendDebug(__FUNCTION__, 'timestamp=' . $timestamp . ', senderID=' . $senderID . ', message=' . $message . ', data=' . print_r($data, true), 0);
             if ($data[0] == IS_ACTIVE && $data[1] != IS_ACTIVE) {
-                $this->MaintainTimer('RenewTimer', 60 * 1000);
+                $module_disable = $this->ReadPropertyBoolean('module_disable');
+                if ($module_disable == false) {
+                    $this->MaintainTimer('RenewTimer', 60 * 1000);
+                }
             }
         }
     }
@@ -747,7 +753,7 @@ class AutomowerConnectSplitter extends IPSModule
                 $err = 'got http-code ' . $httpcode . ' (server error)';
             } elseif ($httpcode != 200) {
                 $statuscode = self::$IS_HTTPERROR;
-                $err = 'got http-code ' . $httpcode;
+                $err = 'got http-code ' . $httpcode . ' (' . $this->HttpCode2Text($httpcode) . ')';
             }
         }
         if ($statuscode == 0) {
@@ -853,7 +859,7 @@ class AutomowerConnectSplitter extends IPSModule
                 $this->SetAccessToken('');
             } else {
                 $statuscode = self::$IS_HTTPERROR;
-                $err = 'got http-code ' . $httpcode;
+                $err = 'got http-code ' . $httpcode . ' (' . $this->HttpCode2Text($httpcode) . ')';
             }
         } elseif ($cdata == '') {
             $statuscode = self::$IS_INVALIDDATA;
@@ -1146,7 +1152,7 @@ class AutomowerConnectSplitter extends IPSModule
                 $err = 'got http-code ' . $httpcode . ' (server error)';
             } else {
                 $statuscode = self::$IS_HTTPERROR;
-                $err = 'got http-code ' . $httpcode;
+                $err = 'got http-code ' . $httpcode . ' (' . $this->HttpCode2Text($httpcode) . ')';
             }
         } elseif ($cdata == '') {
             $statuscode = self::$IS_INVALIDDATA;
