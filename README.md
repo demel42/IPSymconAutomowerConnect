@@ -252,6 +252,7 @@ Quellen:
   - Fix: verbessertes Semaphore-Handling
   - Fix: Zeitstempel werden von der API nicht mehr (immer?) in Millisekunden sondern nun in Sekunden übertragen
   - Fix: es wurde auch bei deaktivierter Instanz der AccessToken versucht zu erneuern
+  - Fix: Anpassung für IPS 9: Reihenfolge der Anlage von Parents hat sich geändert
   - interne Änderung
   - update submodule CommonStubs
 

@@ -76,6 +76,11 @@ class AutomowerConnectSplitter extends IPSModule
 
     public function GetConfigurationForParent()
     {
+        $cID = $this->GetConnectionID();
+        if ($this->IsValidID($cID) == false || IPS_InstanceExists($cID) == false) {
+            return [];
+        }
+
         $headers = [];
         $access_token = $this->GetAccessToken();
         if ($access_token != '') {
@@ -88,7 +93,7 @@ class AutomowerConnectSplitter extends IPSModule
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         $active = $module_disable != true && $headers != [];
 
-        $r = IPS_GetConfiguration($this->GetConnectionID());
+        $r = IPS_GetConfiguration($cID);
         $j = [
             'Active'            => $active,
             'Headers'           => json_encode($headers, JSON_UNESCAPED_SLASHES),
@@ -108,6 +113,11 @@ class AutomowerConnectSplitter extends IPSModule
     // AKtiv wird der IO wieder durch das GetConfigurationForParent() // IPS_SetConfiguration() gesetzt.
     private function UpdateConfigurationForParent()
     {
+        $cID = $this->GetConnectionID();
+        if ($this->IsValidID($cID) == false || IPS_InstanceExists($cID) == false) {
+            return;
+        }
+
         if (IPS_GetInstance($this->GetConnectionID())['InstanceStatus'] >= IS_EBASE) {
             if (IPS_GetProperty($this->GetConnectionID(), 'Active') == true) {
                 $this->SendDebug(__FUNCTION__, 'set parent inactive', 0);
@@ -188,7 +198,10 @@ class AutomowerConnectSplitter extends IPSModule
 
         $this->MaintainReferences();
 
-        $this->UnregisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
+        $cID = $this->GetConnectionID();
+        if ($this->IsValidID($cID) && IPS_InstanceExists($cID)) {
+            $this->UnregisterMessage($cID, IM_CHANGESTATUS);
+        }
 
         if ($this->CheckPrerequisites() != false) {
             $this->MaintainTimer('RenewTimer', 0);
@@ -251,7 +264,9 @@ class AutomowerConnectSplitter extends IPSModule
 
         $this->MaintainStatus(IS_ACTIVE);
 
-        $this->RegisterMessage($this->GetConnectionID(), IM_CHANGESTATUS);
+        if ($this->IsValidID($cID) && IPS_InstanceExists($cID)) {
+            $this->RegisterMessage($cID, IM_CHANGESTATUS);
+        }
 
         if ($connection_type == self::$CONNECTION_OAUTH) {
             if ($this->GetConnectUrl() == false) {
