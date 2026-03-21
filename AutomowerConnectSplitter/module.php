@@ -76,11 +76,6 @@ class AutomowerConnectSplitter extends IPSModule
 
     public function GetConfigurationForParent()
     {
-        $cID = $this->GetConnectionID();
-        if ($this->IsValidID($cID) == false || IPS_InstanceExists($cID) == false) {
-            return [];
-        }
-
         $headers = [];
         $access_token = $this->GetAccessToken();
         if ($access_token != '') {
@@ -93,7 +88,6 @@ class AutomowerConnectSplitter extends IPSModule
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         $active = $module_disable != true && $headers != [];
 
-        $r = IPS_GetConfiguration($cID);
         $j = [
             'Active'            => $active,
             'Headers'           => json_encode($headers, JSON_UNESCAPED_SLASHES),
@@ -110,25 +104,32 @@ class AutomowerConnectSplitter extends IPSModule
     // Das temporäre Inaktiv-Setzen des IO dient dazu, ein Problem im IO zu reparieren: es kommt unter
     // bestimmten Umstäbnen wohl dazu, das der IO keine Verbindung zur Gegenseite hat, sich aber auch
     // nicht mehr von alleine neu startet.
-    // AKtiv wird der IO wieder durch das GetConfigurationForParent() // IPS_SetConfiguration() gesetzt.
+    // Aktiv wird der IO wieder durch das GetConfigurationForParent() // IPS_SetConfiguration() gesetzt.
     private function UpdateConfigurationForParent()
     {
         $cID = $this->GetConnectionID();
-        if ($this->IsValidID($cID) == false || IPS_InstanceExists($cID) == false) {
+        if (IPS_InstanceExists($cID) == false) {
+            $this->SendDebug(__FUNCTION__, 'no parent', 0);
             return;
         }
 
-        if (IPS_GetInstance($this->GetConnectionID())['InstanceStatus'] >= IS_EBASE) {
-            if (IPS_GetProperty($this->GetConnectionID(), 'Active') == true) {
+        if (IPS_GetInstance($cID)['InstanceStatus'] >= IS_EBASE) {
+            if (IPS_GetProperty($cID, 'Active') == true) {
                 $this->SendDebug(__FUNCTION__, 'set parent inactive', 0);
-                IPS_SetProperty($this->GetConnectionID(), 'Active', false);
-                IPS_ApplyChanges($this->GetConnectionID());
+                IPS_SetProperty($cID, 'Active', false);
+                IPS_ApplyChanges($cID);
             }
         }
-        $this->SendDebug(__FUNCTION__, 'update parent configuration', 0);
-        $d = $this->GetConfigurationForParent();
-        IPS_SetConfiguration($this->GetConnectionID(), $d);
-        IPS_ApplyChanges($this->GetConnectionID());
+
+        $old_cfg = IPS_GetConfiguration($cID);
+        $new_cfg = $this->GetConfigurationForParent();
+        if ($old_cfg != $new_cfg) {
+            $this->SendDebug(__FUNCTION__, 'configuration of ' . $cID . '(' . IPS_GetName($cID) . ') changed', 0);
+            IPS_SetConfiguration($cID, $new_cfg);
+            IPS_ApplyChanges($cID);
+        } else {
+            $this->SendDebug(__FUNCTION__, 'configuration of ' . $cID . '(' . IPS_GetName($cID) . ') is unchanged', 0);
+        }
     }
 
     private function CheckModuleConfiguration()
@@ -198,9 +199,12 @@ class AutomowerConnectSplitter extends IPSModule
 
         $this->MaintainReferences();
 
-        $cID = $this->GetConnectionID();
-        if ($this->IsValidID($cID) && IPS_InstanceExists($cID)) {
-            $this->UnregisterMessage($cID, IM_CHANGESTATUS);
+        foreach ($this->GetMessageList() as $senderID => $messages) {
+            foreach ($messages as $message) {
+                if ($message == IM_CHANGESTATUS) {
+                    $this->UnregisterMessage($senderID, $message);
+                }
+            }
         }
 
         if ($this->CheckPrerequisites() != false) {
