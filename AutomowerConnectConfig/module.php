@@ -109,7 +109,7 @@ class AutomowerConnectConfig extends IPSModule
         }
 
         $guid = '{B64D5F1C-6F12-474B-8DBC-3B263E67954E}'; // AutomowerConnectDevice
-        $instIDs = IPS_GetInstanceListByModuleID($guid);
+        $instIDs = (array) IPS_GetInstanceListByModuleID($guid);
 
         if (is_array($mowers)) {
             foreach ($mowers['data'] as $mower) {

@@ -248,6 +248,10 @@ Quellen:
 
 ## 7. Versions-Historie
 
+- 3.13 @ 09.05.2026 11:36
+  - Fix: Änderung von deprecated php code
+  - update submodule CommonStubs
+
 - 3.12 @ 21.03.2026 08:41
   - Fix: verbessertes Semaphore-Handling
   - Fix: Zeitstempel werden von der API nicht mehr (immer?) in Millisekunden sondern nun in Sekunden übertragen

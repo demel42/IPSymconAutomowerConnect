@@ -417,7 +417,7 @@ class AutomowerConnectDevice extends IPSModule
         }
     }
 
-    private function SetUpdateTimer(int $min = null)
+    private function SetUpdateTimer(?int $min = null)
     {
         if (is_null($min)) {
             $min = $this->ReadAttributeString('ManualUpdateInterval');
@@ -429,7 +429,7 @@ class AutomowerConnectDevice extends IPSModule
         $this->MaintainTimer('UpdateStatus', $msec);
     }
 
-    public function SetUpdateInterval(int $min = null)
+    public function SetUpdateInterval(?int $min = null)
     {
         if (is_null($min)) {
             $this->WriteAttributeString('ManualUpdateInterval', '');
